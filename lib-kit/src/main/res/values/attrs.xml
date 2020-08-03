@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="ProgressWheel">
+        <attr name="matProg_progressIndeterminate" format="boolean" />
+        <attr name="matProg_barColor" format="color" />
+        <attr name="matProg_rimColor" format="color" />
+        <attr name="matProg_rimWidth" format="dimension" />
+        <attr name="matProg_spinSpeed" format="float" />
+        <attr name="matProg_barSpinCycleTime" format="integer" />
+        <attr name="matProg_circleRadius" format="dimension" />
+        <attr name="matProg_fillRadius" format="boolean" />
+        <attr name="matProg_barWidth" format="dimension" />
+        <attr name="matProg_linearProgress" format="boolean" />
+    </declare-styleable>
+
+    <attr name="Gravity">
+        <enum name="center" value="0" />
+        <enum name="left" value="1" />
+        <enum name="right" value="2" />
+    </attr>
+    <attr name="bottomAnim">
+        <enum name="decelerate" value="0" />
+        <enum name="accelerated" value="1" />
+    </attr>
+    <attr name="TextStyle">
+        <enum name="normal" value="0" />
+        <enum name="bold" value="1" />
+        <enum name="italic" value="2" />
+    </attr>
+
+    <attr name="PaddingLeft" format="dimension" />
+    <attr name="PaddingRight" format="dimension" />
+    <attr name="PaddingTop" format="dimension" />
+    <attr name="PaddingBottom" format="dimension" />
+    <attr name="Padding" format="dimension" />
+    <attr name="Src" format="reference" />
+    <attr name="Text" format="string" />
+    <attr name="TextSize" format="dimension" />
+    <attr name="TextColor" format="color" />
+    <attr name="NormalTextColor" format="color" />
+    <attr name="PressTextColor" format="color" />
+    <attr name="normalColor" format="color" />
+    <attr name="selectColor" format="color" />
+    <attr name="radius" format="dimension" />
+    <attr name="length" format="dimension" />
+    <attr name="ivlength" format="dimension" />
+
+
+
+    <attr name="isNeedFence" format="boolean" />
+    <attr name="FenceHeight" format="dimension" />
+    <attr name="FooterBackground" format="color" />
+    <attr name="FenceBackground" format="color" />
+    <attr name="isNeedBounce" format="boolean" />
+    <attr name="isNeedFooter" format="boolean" />
+
+
+    <!-- FlipListView    ############################-->
+    <declare-styleable name="FlipLayout">
+        <attr name="isNeedFence" />
+        <attr name="FenceHeight" />
+        <attr name="FooterBackground" />
+        <attr name="FenceBackground" />
+        <attr name="isNeedBounce" />
+        <attr name="isNeedFooter" />
+    </declare-styleable>
+
+    <!-- FlipGridLayout    #########################-->
+    <declare-styleable name="FlipGridLayout">
+        <attr name="isNeedFence" />
+        <attr name="FenceHeight" />
+        <attr name="FenceBackground" />
+        <attr name="isNeedBounce" />
+        <attr name="isNeedFooterRefresh" format="boolean" />
+    </declare-styleable>
+
+
+    <!-- RoundImageView    #########################-->
+    <declare-styleable name="RoundImageView">
+        <attr name="radus" format="dimension" />
+        <attr name="topLeftRadus" format="dimension" />
+        <attr name="topRightRadus" format="dimension" />
+        <attr name="bottomLeftRadus" format="dimension" />
+        <attr name="bottomRightRadus" format="dimension" />
+
+    </declare-styleable>
+
+    <declare-styleable name="LimitButton">
+        <attr name="PaddingLeft" />
+        <attr name="PaddingRight" />
+        <attr name="PaddingTop" />
+        <attr name="PaddingBottom" />
+        <attr name="Gravity" />
+        <attr name="Text" />
+        <attr name="TextSize" />
+        <attr name="NormalTextColor" />
+        <attr name="PressTextColor" />
+        <attr name="TextFront" format="boolean" />
+        <attr name="Space" format="dimension" />
+        <attr name="Iv_Width" format="dimension" />
+        <attr name="Iv_Height" format="dimension" />
+        <attr name="Tv_Width" format="dimension" />
+        <attr name="Tv_Height" format="dimension" />
+        <attr name="NormalSrc" format="reference" />
+        <attr name="PressSrc" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="CeyeAct">
+        <attr name="backgroud" format="reference" />
+        <attr name="length" />
+        <attr name="isneedprimaryhide" format="boolean" />
+    </declare-styleable>
+
+
+
+
+    <declare-styleable name="DragSortListView">
+        <attr name="collapsed_height" format="dimension" />
+        <attr name="drag_scroll_start" format="float" />
+        <attr name="max_drag_scroll_speed" format="float" />
+        <attr name="float_background_color" format="color" />
+        <attr name="remove_mode">
+            <enum name="clickRemove" value="0" />
+            <enum name="flingRemove" value="1" />
+        </attr>
+        <attr name="track_drag_sort" format="boolean" />
+        <attr name="float_alpha" format="float" />
+        <attr name="slide_shuffle_speed" format="float" />
+        <attr name="remove_animation_duration" format="integer" />
+        <attr name="drop_animation_duration" format="integer" />
+        <attr name="drag_enabled" format="boolean" />
+        <attr name="sort_enabled" format="boolean" />
+        <attr name="remove_enabled" format="boolean" />
+        <attr name="drag_start_mode">
+            <enum name="onDown" value="0" />
+            <enum name="onMove" value="1" />
+            <enum name="onLongPress" value="2" />
+        </attr>
+        <attr name="drag_handle_id" format="integer" />
+        <attr name="fling_handle_id" format="integer" />
+        <attr name="click_remove_id" format="integer" />
+        <attr name="use_default_controller" format="boolean" />
+    </declare-styleable>
+
+</resources>

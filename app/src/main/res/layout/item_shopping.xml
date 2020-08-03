@@ -1,0 +1,115 @@
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center_vertical">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_white_coner"
+        android:layout_marginEnd="12dp"
+        android:orientation="horizontal">
+
+        <com.lib.kit.view.RoundImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/temp_live_avatar"
+            app:radus="5dp" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:textColor="@color/app_black_l"
+                android:textSize="13sp"
+                tools:text="盛世福缘翡翠直播观音玉佛手镯平安扣花件吊坠手链挂件" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvPrice"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="#FF3A3A"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="￥1290.00" />
+
+                <com.deadline.statebutton.StateButton
+                    android:id="@+id/btnSoleOn"
+                    android:layout_width="50dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="12dp"
+                    android:paddingStart="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="@string/sole_on"
+                    android:textSize="13sp"
+                    app:normalStrokeWidth="0.8dp"
+                    app:pressedStrokeWidth="0.8dp"
+                    app:normalStrokeColor="@color/black"
+                    app:pressedStrokeColor="@color/black"
+                    app:normalTextColor="@color/app_black_l"
+                    app:round="true" />
+
+                <com.deadline.statebutton.StateButton
+                    android:id="@+id/btnSoleOut"
+                    android:layout_width="50dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="12dp"
+                    android:paddingStart="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="@string/sole_out"
+                    android:textSize="13sp"
+                    app:normalStrokeWidth="0.8dp"
+                    app:pressedStrokeWidth="0.8dp"
+                    app:normalStrokeColor="@color/black"
+                    app:pressedStrokeColor="@color/black"
+                    app:normalTextColor="@color/app_black_l"
+                    app:round="true" />
+
+                <com.deadline.statebutton.StateButton
+                    android:id="@+id/btnRecommend"
+                    android:layout_width="50dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="12dp"
+                    android:paddingStart="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingBottom="0dp"
+                    android:text="@string/recommend"
+                    android:textSize="13sp"
+                    app:normalStrokeWidth="0.8dp"
+                    app:pressedStrokeWidth="0.8dp"
+                    app:normalStrokeColor="@color/black"
+                    app:pressedStrokeColor="@color/black"
+                    app:normalTextColor="@color/app_black_l"
+                    app:round="true" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.appcompat.widget.LinearLayoutCompat>

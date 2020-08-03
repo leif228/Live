@@ -1,0 +1,44 @@
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_f5"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/status"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/status_bar_default_height" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/blank_title_height"
+        android:background="@color/black">
+
+        <com.lib.kit.view.LimitButton
+            android:id="@+id/lmb_return"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            app:Gravity="center"
+            app:Iv_Height="@dimen/ic_arrow_length"
+            app:Iv_Width="@dimen/ic_arrow_length"
+            app:NormalSrc="@mipmap/arrow_left_white" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/Immediate_promotion"
+            android:textColor="@color/white"
+            android:textSize="@dimen/app_title_text_size" />
+
+        <View
+            android:layout_width="50dp"
+            android:gravity="center_vertical"
+            android:layout_height="match_parent" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

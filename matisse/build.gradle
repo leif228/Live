@@ -1,0 +1,31 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion versions.targetSdk
+    buildToolsVersion versions.buildTools
+    defaultConfig {
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation "androidx.appcompat:appcompat:${versions.appcompat}"
+    implementation "androidx.annotation:annotation:${versions.annotation}"
+    implementation "androidx.recyclerview:recyclerview:${versions.recyclerview}"
+    implementation "it.sephiroth.android.library.imagezoom:library:${versions.imagezoom}"
+
+    compileOnly "com.github.bumptech.glide:glide:${versions.glide}"
+    compileOnly "com.squareup.picasso:picasso:${versions.picasso}"
+
+//    api project(path: ':base')
+}

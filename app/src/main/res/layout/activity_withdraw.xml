@@ -1,0 +1,151 @@
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_f5"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/status"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/status_bar_default_height" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/blank_title_height"
+        android:background="@color/black">
+
+        <com.lib.kit.view.LimitButton
+            android:id="@+id/lmb_return"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            app:Gravity="center"
+            app:Iv_Height="@dimen/ic_arrow_length"
+            app:Iv_Width="@dimen/ic_arrow_length"
+            app:NormalSrc="@mipmap/arrow_left_white" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/Immediate_withdrawal"
+            android:textColor="@color/white"
+            android:textSize="@dimen/app_title_text_size" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvWithdrawTrans"
+            android:layout_width="wrap_content"
+            android:text="@string/withdraw_trans"
+            android:textSize="14sp"
+            android:layout_marginEnd="10dp"
+            android:gravity="center_vertical"
+            android:padding="12dp"
+            android:textColor="@color/white"
+            android:layout_height="match_parent" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvCash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="可提现金额 0.00"
+        android:padding="10dp"
+        android:textColor="@color/textColor53"
+        android:textSize="13sp" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rmb"
+            android:layout_marginStart="15dp"
+            android:padding="10dp"
+            android:textColor="@color/textColor53"
+            android:textSize="28sp" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etAmount"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="35dp"
+            android:background="@null"
+            android:inputType="numberDecimal"
+            android:textSize="24sp"
+            android:textColor="@color/textColor53"
+            android:textColorHint="#888888"
+            />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/btnWithdrawAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/withdraw_for_all"
+            android:layout_marginStart="15dp"
+            android:padding="10dp"
+            android:textColor="#D89F4A"
+            android:textSize="16sp" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/etAliName"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/white"
+        android:layout_marginTop="5dp"
+        android:hint="@string/Please_enter_ali_real_name"
+        android:textSize="16sp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:textColor="@color/textColor53"
+        android:textColorHint="#888888"
+        />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/etAliAccount"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/white"
+        android:layout_marginTop="1dp"
+        android:hint="@string/Please_enter_ali_account"
+        android:textSize="16sp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:textColor="@color/textColor53"
+        android:textColorHint="#888888"
+        />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:text="@string/tip_withdraw"
+        android:layout_marginTop="10dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:textSize="14sp"
+        android:textColor="@color/textColor86"
+        android:layout_height="wrap_content"/>
+
+    <com.deadline.statebutton.StateButton
+        android:id="@+id/login"
+        android:layout_width="match_parent"
+        android:text="@string/Submit_immediately"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:layout_marginTop="50dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        app:normalBackgroundColor="@color/black"
+        app:pressedBackgroundColor="@color/black"
+        app:round="true"
+        />
+
+</androidx.appcompat.widget.LinearLayoutCompat>

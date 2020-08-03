@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+
+    <color name="textColor10">#101010</color>
+    <color name="textColor00">#000000</color>
+
+
+    <!--FF完全不透明  00完全透明-->
+    <color name="white">#FFffffff</color>
+    <color name="black">#FF000000</color>
+    <color name="app_black_l">#101010</color>
+    <color name="app_black_hint">#6C6C6C</color>
+    <color name="transparent">#00000000</color>
+    <color name="app_orange">#D89F4A</color>
+    <color name="app_orange_deep">#AF7C2C</color>
+    <color name="app_orange2">#E4B581</color>
+    <color name="app_divider">#FFF5F5F5</color>
+    <color name="app_statusbar_gray">#60000000</color>
+
+    <color name="app_gray_64">#FF646464</color>
+    <color name="app_gray_D7">#FFD7D7D7</color>
+    <color name="app_gray_84">#FF848484</color>
+    <color name="app_gray_F0">#FFF0F0F0</color>
+    <color name="app_gray_C8">#FFC8C8C8</color>
+    <color name="app_gray_BF">#BFBFBF</color>
+    <color name="app_gray_F5">#FFF5F5F5</color>
+    <color name="app_gray_59">#595959</color>
+    <color name="app_gray_aa">#FFaaaaaa</color>
+    <color name="app_gray_f4">#f4f4f4</color>
+
+    <color name="text_gray">#FF929292</color>
+    <color name="gray_f5">#FFF5F5F5</color>
+    <color name="white_press">#cccccc</color>
+    <color name="gray_a1">#A1A1A1</color>
+
+    <color name="gray_33">#333333</color>
+    <color name="gray_10">#101010</color>
+    <color name="textColor9B">#9B9B9B</color>
+    <color name="textColor53">#535353</color>
+    <color name="textColor454849">#454849</color>
+    <color name="textColorFE364E">#FE364E</color>
+    <color name="textColor86">#868686</color>
+    <color name="textColorGray1">#403E3E</color>
+
+</resources>

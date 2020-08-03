@@ -1,0 +1,245 @@
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_f5"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/status"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/status_bar_default_height" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/blank_title_height"
+        android:background="@color/black">
+
+        <com.lib.kit.view.LimitButton
+            android:id="@+id/lmb_return"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            app:Gravity="center"
+            app:Iv_Height="@dimen/ic_return_lengh"
+            app:Iv_Width="@dimen/ic_return_lengh"
+            app:NormalSrc="@mipmap/ic_return_white" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/my_prevue"
+            android:textColor="@color/white"
+            android:textSize="@dimen/app_title_text_size" />
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="match_parent" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/bg_mine_prevue" />
+
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <com.lib.kit.view.RoundImageView
+                android:id="@+id/ivCover"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="64dp"
+                android:src="@mipmap/temp_avatar_def"
+                app:radus="3dp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="双十一大回馈" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@mipmap/ic_time" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="2020/02/05 16:00" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="26dp"
+                android:layout_marginTop="16dp"
+                android:gravity="center_horizontal">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvDay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_black_corner"
+                    android:gravity="center"
+                    android:minWidth="26dp"
+                    android:textSize="15sp"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:textColor="@color/white"
+                    tools:text="1" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:minWidth="26dp"
+                    android:paddingStart="2dp"
+                    android:textSize="15sp"
+                    android:paddingEnd="2dp"
+                    android:text="@string/day"
+                    android:textColor="@color/white" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvHour"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_black_corner"
+                    android:gravity="center"
+                    android:minWidth="26dp"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:textSize="15sp"
+                    android:textColor="@color/white"
+                    tools:text="1" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:minWidth="26dp"
+                    android:paddingStart="2dp"
+                    android:textSize="15sp"
+                    android:paddingEnd="2dp"
+                    android:text="@string/hour"
+                    android:textColor="@color/white" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvMinute"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_black_corner"
+                    android:gravity="center"
+                    android:minWidth="26dp"
+                    android:paddingStart="2dp"
+                    android:textSize="15sp"
+                    android:paddingEnd="2dp"
+                    android:textColor="@color/white"
+                    tools:text="1" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:minWidth="26dp"
+                    android:textSize="15sp"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="@string/minute"
+                    android:textColor="@color/white" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvSecond"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_black_corner"
+                    android:gravity="center"
+                    android:minWidth="26dp"
+                    android:textSize="15sp"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:textColor="@color/white"
+                    tools:text="30" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:minWidth="26dp"
+                    android:textSize="15sp"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="@string/second"
+                    android:textColor="@color/white" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <com.deadline.statebutton.StateButton
+                android:id="@+id/btnStartLive"
+                android:layout_width="match_parent"
+                android:text="@string/start_live"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_marginStart="60dp"
+                android:layout_marginEnd="60dp"
+                android:layout_marginTop="40dp"
+                android:layout_height="45dp"
+                app:normalBackgroundColor="@color/app_orange2"
+                app:pressedBackgroundColor="@color/app_orange_deep"
+                app:round="true"
+                />
+
+            <com.deadline.statebutton.StateButton
+                android:id="@+id/btnDeletePre"
+                android:layout_width="match_parent"
+                android:text="@string/delete_prevue"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:layout_marginTop="40dp"
+                android:layout_height="45dp"
+                android:layout_marginStart="60dp"
+                android:layout_marginEnd="60dp"
+                app:normalStrokeWidth="1dp"
+                app:pressedStrokeWidth="1dp"
+                android:layout_marginBottom="67dp"
+                app:normalStrokeColor="@color/white"
+                app:pressedStrokeColor="#888888"
+                app:round="true"
+                />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </FrameLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

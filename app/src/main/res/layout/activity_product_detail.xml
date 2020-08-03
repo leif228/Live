@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/status"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/status_bar_default_height" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:background="@color/black"
+        android:layout_height="@dimen/blank_title_height">
+
+        <com.lib.kit.view.LimitButton
+            android:id="@+id/lmb_return"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            app:Gravity="center"
+            app:Iv_Height="@dimen/ic_return_lengh"
+            app:Iv_Width="@dimen/ic_return_lengh"
+            app:NormalSrc="@mipmap/ic_return_white" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/product_detail"
+            android:textColor="@color/white"
+            android:textSize="@dimen/app_title_text_size" />
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="match_parent" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <com.ogaclejapan.smarttablayout.SmartTabLayout
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/black"
+        app:stl_indicatorInterpolation="smart"
+        app:stl_indicatorThickness="3dp"
+        app:stl_indicatorInFront="true"
+        app:stl_indicatorColor="@color/app_orange"
+        app:stl_underlineColor="#00FFFFFF"
+        app:stl_indicatorCornerRadius="1dp"
+        app:stl_dividerThickness="0dp"
+        app:stl_defaultTabTextHorizontalPadding="10dp"
+        app:stl_distributeEvenly="true"
+        app:stl_defaultTabTextSize="15sp"
+        app:stl_defaultTabTextColor="@color/gray_a1"
+        app:stl_indicatorGravity="bottom"
+        app:stl_indicatorWidth="auto"
+        app:stl_indicatorWithoutPadding="false"
+        />
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:layout_height="50dp">
+        
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="50dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_height="50dp">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="25dp"
+                android:src="@mipmap/ic_attention_store"
+                android:layout_height="25dp"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:text="@string/store"
+                android:textSize="12sp"
+                android:layout_height="wrap_content"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="50dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_height="50dp">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="25dp"
+                android:src="@mipmap/ic_attention"
+                android:layout_height="25dp"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:text="@string/store"
+                android:textSize="12sp"
+                android:layout_height="wrap_content"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"/>
+
+        <com.deadline.statebutton.StateButton
+            android:id="@+id/btn_add"
+            android:layout_width="180dp"
+            android:text="@string/add"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="12dp"
+            app:normalBackgroundColor="@color/app_black_l"
+            app:pressedBackgroundColor="@color/black"
+            app:round="true"
+            />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.appcompat.widget.LinearLayoutCompat>

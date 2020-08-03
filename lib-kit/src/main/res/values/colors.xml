@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <!--FF完全不透明  00完全透明-->
+    <color name="kit_black">#FF000000</color>
+    <color name="kit_white">#FFffffff</color>
+
+</resources>
