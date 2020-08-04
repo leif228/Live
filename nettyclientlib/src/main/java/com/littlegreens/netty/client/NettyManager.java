@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.alibaba.fastjson.JSONObject;
 import com.littlegreens.netty.client.extra.LoginTask;
+import com.littlegreens.netty.client.extra.NetInfoTask;
 import com.littlegreens.netty.client.extra.NettyConfig;
 import com.littlegreens.netty.client.extra.WjProtocol;
 import com.littlegreens.netty.client.listener.MessageStateListener;
@@ -104,6 +105,25 @@ public class NettyManager {
 //        byte [] objectBytes= ByteUtils.InstanceObjectMapper().writeValueAsBytes(loginTask);
 
         String jsonStr = JSONObject.toJSONString(loginTask);
+        Log.v("ly", jsonStr);
+        byte[] objectBytes = jsonStr.getBytes();
+
+        int len = 21 + objectBytes.length;
+        wjProtocol.setLen((short) len);
+        wjProtocol.setUserdata(objectBytes);
+
+        mNettyTcpClient.sendMsgToServerF(wjProtocol,null);
+    }
+
+    public void sendMsgToNetInfo(NetInfoTask netInfoTask) {
+        WjProtocol wjProtocol = new WjProtocol();
+        wjProtocol.setPlat(Short.parseShort("20"));
+        wjProtocol.setMaincmd(Short.parseShort("0"));
+        wjProtocol.setSubcmd(Short.parseShort("2"));
+        wjProtocol.setFormat("JS");
+        wjProtocol.setBack(Short.parseShort("0"));
+
+        String jsonStr = JSONObject.toJSONString(netInfoTask);
         Log.v("ly", jsonStr);
         byte[] objectBytes = jsonStr.getBytes();
 

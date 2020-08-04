@@ -2,7 +2,7 @@ package com.littlegreens.netty.client.extra;
 
 import java.io.Serializable;
 
-public class LoginTask implements Serializable {
+public class LoginTask extends BaseTask {
     private String oid;
 
     public String getOid() {

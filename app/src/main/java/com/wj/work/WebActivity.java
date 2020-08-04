@@ -12,6 +12,8 @@ import android.webkit.JavascriptInterface;
 
 import com.lib.kit.utils.LL;
 import com.lib.kit.utils.StatusBarUtils;
+import com.littlegreens.netty.client.extra.BaseTask;
+import com.littlegreens.netty.client.extra.NetInfoTask;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
@@ -90,9 +92,10 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
 
     }
 
-    private void sendMsgToNetService(String data) {
+    private void sendMsgToNetService(String data, BaseTask baseTask) {
         //向Service传递data
         nIntent.putExtra(NetService.COUNTER, data);
+        nIntent.putExtra("task",baseTask);
         startService(nIntent);
 
 //        new Handler().postDelayed(new Runnable() {
@@ -132,7 +135,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         webSetting.setUseWideViewPort(true);
         webSetting.setSupportMultipleWindows(true);
         // webSetting.setLoadWithOverviewMode(true);
-        webSetting.setAppCacheEnabled(true);
+        webSetting.setAppCacheEnabled(false);
         // webSetting.setDatabaseEnabled(true);
         webSetting.setDomStorageEnabled(true);
         webSetting.setGeolocationEnabled(true);
@@ -196,6 +199,26 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     }
 
     @Override
+    @JavascriptInterface
+    public void toNetInfo(String fzwno, String userName, String preip, String preport, String loginfzwno, String owerip, String owerport, String owerfzwno, String passWord) {
+
+        LL.V("toNetInfo:" + fzwno);
+
+        NetInfoTask netInfoTask = new NetInfoTask();
+        netInfoTask.setOID(fzwno);
+        netInfoTask.setName(userName);
+        netInfoTask.setServerIP(preip);
+        netInfoTask.setServerPort(preport);
+        netInfoTask.setServerOID(loginfzwno);
+        netInfoTask.setOwnerServerIP(owerip);
+        netInfoTask.setOwnerServerPort(owerport);
+        netInfoTask.setOwnerServerOID(owerfzwno);
+        netInfoTask.setPassNum(passWord);
+
+        sendMsgToNetService("2",netInfoTask );
+    }
+
+    @Override
     protected boolean isRegisterEventBus() {
         return true;
     }
@@ -206,7 +229,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
             LL.V("-----------    网络可用");
             if (event.isWiFiAvailable()) {
                 LL.V("+++++++++++   wifi网络可用");
-                sendMsgToNetService("connect ");
+                sendMsgToNetService("1",null);
             }
             LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
             if (!"".equals(loginEntity.getIp())) {
