@@ -65,9 +65,7 @@ public class NetService extends Service implements NettyClientListener {
         data = intent.getStringExtra(COUNTER);
 
         LL.V("NetService onStartCommand: " + data);
-        final Intent mIntent = new Intent();
-        mIntent.setAction(ACTION_NAME);
-        connecting = true;
+
         if ("1".equals(data)) {
             getIp();
         } else if ("2".equals(data)) {
@@ -78,30 +76,19 @@ public class NetService extends Service implements NettyClientListener {
             deviceComp(netDevCompTask);
         }
 
-        //开启一个线程，对数据进行处理
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-
-//                try {
-////                    while (connecting) {
-////                        //耗时操作：数据处理并保存，向Activity发送广播
-////                        mIntent.putExtra(COUNTER, data);
-////                        sendBroadcast(mIntent);
-////                        data++;
-////                        Thread.sleep(300);
-////                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }).start();
-
         return START_STICKY;
     }
 
+    private void sendMsgToActivity(String data) {
+        //向Activity传递data
+        final Intent mIntent = new Intent();
+        mIntent.setAction(ACTION_NAME);
+        mIntent.putExtra(COUNTER, data);
+        sendBroadcast(mIntent);
+    }
+
     private void searchNet() {
-        if (nettyManager != null){
+        if (nettyManager != null) {
             WjProtocol wjProtocol = new WjProtocol();
             wjProtocol.setPlat(Short.parseShort("50"));
             wjProtocol.setMaincmd(Short.parseShort("12"));
@@ -121,7 +108,7 @@ public class NetService extends Service implements NettyClientListener {
     }
 
     private void deviceComp(NetDevCompTask netDevCompTask) {
-        if (nettyManager != null){
+        if (nettyManager != null) {
             WjProtocol wjProtocol = new WjProtocol();
             wjProtocol.setPlat(Short.parseShort("50"));
             wjProtocol.setMaincmd(Short.parseShort("12"));
@@ -142,7 +129,7 @@ public class NetService extends Service implements NettyClientListener {
     }
 
     private void toNetInfo(NetInfoTask netInfoTask) {
-        if (nettyManager != null){
+        if (nettyManager != null) {
             WjProtocol wjProtocol = new WjProtocol();
             wjProtocol.setPlat(Short.parseShort("50"));
             wjProtocol.setMaincmd(Short.parseShort("0"));
@@ -181,6 +168,7 @@ public class NetService extends Service implements NettyClientListener {
                     if (iplist != null && iplist.size() > 0)
                         connectNet();
                 } catch (Exception e) {
+                    LL.V("getIp:[error]"+e.getMessage());
                     e.printStackTrace();
                 }
             }

@@ -38,36 +38,26 @@ public class ManageService extends Service implements NettyClientListener {
     public int onStartCommand(Intent intent, int flags, int startId) {
         //从Activity获取data
         data = intent.getStringExtra(COUNTER);
+
         String ip = intent.getStringExtra("ip");
         String port = intent.getStringExtra("port");
         fzwno = intent.getStringExtra("fzwno");
         LL.V("ManageService onStartCommand " + ip);
+
         if (ip == null && port == null)
             return START_STICKY;
 
-//        final Intent mIntent = new Intent();
-//        mIntent.setAction(ACTION_NAME);
-//        connecting = true;
-        //开启一个线程，对数据进行处理
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    connectManage(ip, port, fzwno);
-//                    while (connecting) {
-//                        //耗时操作：数据处理并保存，向Activity发送广播
-//                        mIntent.putExtra(COUNTER, data);
-//                        sendBroadcast(mIntent);
-//                        data++;
-//                        Thread.sleep(300);
-//                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+        connectManage(ip, port, fzwno);
 
         return START_STICKY;
+    }
+
+    private void sendMsgToActivity(String data) {
+        //向Activity传递data
+        final Intent mIntent = new Intent();
+        mIntent.setAction(ACTION_NAME);
+        mIntent.putExtra(COUNTER, data);
+        sendBroadcast(mIntent);
     }
 
     private void connectManage(String ip, String port, String fzwno) {
