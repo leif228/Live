@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.alibaba.fastjson.JSONObject;
 import com.littlegreens.netty.client.extra.LoginTask;
+import com.littlegreens.netty.client.extra.NetDevCompTask;
 import com.littlegreens.netty.client.extra.NetInfoTask;
 import com.littlegreens.netty.client.extra.NettyConfig;
 import com.littlegreens.netty.client.extra.WjProtocol;
@@ -65,72 +66,13 @@ public class NettyManager {
         mNettyTcpClient.sendMsgToServer(msg, listener);
     }
 
-    /**
-     * 搜索网关消息
-     */
-    public void sendMsgToSearchNet() {
-        WjProtocol wjProtocol = new WjProtocol();
-        wjProtocol.setPlat(Short.parseShort("50"));
-        wjProtocol.setMaincmd(Short.parseShort("12"));
-        wjProtocol.setSubcmd(Short.parseShort("0"));
-        wjProtocol.setFormat("TX");
-        wjProtocol.setBack(Short.parseShort("0"));
-
-//        String jsonStr = "pipo";
-//        byte[] objectBytes = jsonStr.getBytes();
-
-        int len = 21 + 0;
-        wjProtocol.setLen((short) len);
-//        wjProtocol.setUserdata(objectBytes);
-
-        mNettyTcpClient.sendMsgToServerF(wjProtocol, null);
-    }
-
     // release 断开连接
     public void release() {
         mNettyTcpClient.release();
     }
 
-    public void sendMsgToManageLoin(String fzwno) {
-        WjProtocol wjProtocol = new WjProtocol();
-        wjProtocol.setPlat(Short.parseShort("20"));
-        wjProtocol.setMaincmd(Short.parseShort("0"));
-        wjProtocol.setSubcmd(Short.parseShort("1"));
-        wjProtocol.setFormat("JS");
-        wjProtocol.setBack(Short.parseShort("0"));
-
-        LoginTask loginTask = new LoginTask();
-        loginTask.setOid(fzwno);
-
-//        byte [] objectBytes= ByteUtils.InstanceObjectMapper().writeValueAsBytes(loginTask);
-
-        String jsonStr = JSONObject.toJSONString(loginTask);
-        Log.v("ly", jsonStr);
-        byte[] objectBytes = jsonStr.getBytes();
-
-        int len = 21 + objectBytes.length;
-        wjProtocol.setLen((short) len);
-        wjProtocol.setUserdata(objectBytes);
-
-        mNettyTcpClient.sendMsgToServerF(wjProtocol,null);
+    public void senMessage(WjProtocol wjProtocol){
+        mNettyTcpClient.sendMsgToServerF(wjProtocol, null);
     }
 
-    public void sendMsgToNetInfo(NetInfoTask netInfoTask) {
-        WjProtocol wjProtocol = new WjProtocol();
-        wjProtocol.setPlat(Short.parseShort("20"));
-        wjProtocol.setMaincmd(Short.parseShort("0"));
-        wjProtocol.setSubcmd(Short.parseShort("2"));
-        wjProtocol.setFormat("JS");
-        wjProtocol.setBack(Short.parseShort("0"));
-
-        String jsonStr = JSONObject.toJSONString(netInfoTask);
-        Log.v("ly", jsonStr);
-        byte[] objectBytes = jsonStr.getBytes();
-
-        int len = 21 + objectBytes.length;
-        wjProtocol.setLen((short) len);
-        wjProtocol.setUserdata(objectBytes);
-
-        mNettyTcpClient.sendMsgToServerF(wjProtocol,null);
-    }
 }

@@ -13,6 +13,7 @@ import android.webkit.JavascriptInterface;
 import com.lib.kit.utils.LL;
 import com.lib.kit.utils.StatusBarUtils;
 import com.littlegreens.netty.client.extra.BaseTask;
+import com.littlegreens.netty.client.extra.NetDevCompTask;
 import com.littlegreens.netty.client.extra.NetInfoTask;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
@@ -216,6 +217,15 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         netInfoTask.setPassNum(passWord);
 
         sendMsgToNetService("2",netInfoTask );
+    }
+
+    @Override
+    @JavascriptInterface
+    public void deviceComp(String name) {
+        NetDevCompTask netDevCompTask = new NetDevCompTask();
+        netDevCompTask.setCompanyName(name);
+        netDevCompTask.setPRO("CompanyChoosed");
+        sendMsgToNetService("3",netDevCompTask);
     }
 
     @Override

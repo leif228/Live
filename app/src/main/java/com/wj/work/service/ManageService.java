@@ -3,11 +3,15 @@ package com.wj.work.service;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.alibaba.fastjson.JSONObject;
 import com.lib.kit.utils.LL;
 import com.littlegreens.netty.client.NettyManager;
+import com.littlegreens.netty.client.extra.LoginTask;
+import com.littlegreens.netty.client.extra.WjProtocol;
 import com.littlegreens.netty.client.listener.NettyClientListener;
 
 import java.util.ArrayList;
@@ -49,7 +53,7 @@ public class ManageService extends Service implements NettyClientListener {
             @Override
             public void run() {
                 try {
-                    connectManage(ip,port,fzwno);
+                    connectManage(ip, port, fzwno);
 //                    while (connecting) {
 //                        //耗时操作：数据处理并保存，向Activity发送广播
 //                        mIntent.putExtra(COUNTER, data);
@@ -95,8 +99,32 @@ public class ManageService extends Service implements NettyClientListener {
     @Override
     public void connectSuccess(String ip, int index) {
         LL.V(ip + ":index:" + index);
+
+        LoginTask loginTask = new LoginTask();
+        loginTask.setOid(fzwno);
         nettyManager = nettyManagers.get(index);
-        nettyManager.sendMsgToManageLoin(fzwno);
+        manageLoin(loginTask);
+    }
+
+    private void manageLoin(LoginTask loginTask) {
+        if (nettyManager != null) {
+            WjProtocol wjProtocol = new WjProtocol();
+            wjProtocol.setPlat(Short.parseShort("50"));
+            wjProtocol.setMaincmd(Short.parseShort("0"));
+            wjProtocol.setSubcmd(Short.parseShort("1"));
+            wjProtocol.setFormat("JS");
+            wjProtocol.setBack(Short.parseShort("0"));
+
+            String jsonStr = JSONObject.toJSONString(loginTask);
+            Log.v("ly", jsonStr);
+            byte[] objectBytes = jsonStr.getBytes();
+
+            int len = 21 + objectBytes.length;
+            wjProtocol.setLen((short) len);
+            wjProtocol.setUserdata(objectBytes);
+
+            nettyManager.senMessage(wjProtocol);
+        }
     }
 
     @Override
