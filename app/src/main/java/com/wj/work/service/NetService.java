@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 
 import com.lib.kit.utils.LL;
 import com.littlegreens.netty.client.NettyManager;
-import com.littlegreens.netty.client.extra.BaseTask;
 import com.littlegreens.netty.client.extra.NetDevCompTask;
 import com.littlegreens.netty.client.extra.NetInfoTask;
 import com.littlegreens.netty.client.extra.WjProtocol;
@@ -19,13 +18,14 @@ import com.wj.work.utils.ScanDeviceUtile;
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class NetService extends Service implements NettyClientListener {
     private boolean connecting = false;
-    private boolean iping = true;
     public static final String COUNTER = "data";
-    public static final Integer port = 8777;
+    public static final Integer port = 8778;
     public static final String ACTION_NAME = "com.wj.work.netservice.COUNTER_ACTION";
 
     private String data;
@@ -33,6 +33,7 @@ public class NetService extends Service implements NettyClientListener {
     List<NettyManager> nettyManagers = new ArrayList<>();
 
     NettyManager nettyManager;
+    Queue<WjProtocol> queue;
 
     @Nullable
     @Override
@@ -44,7 +45,8 @@ public class NetService extends Service implements NettyClientListener {
     public void onCreate() {
         super.onCreate();
         LL.V("NetService onCreate");
-//        getIp();
+        queue = new LinkedList<WjProtocol>();
+        getIpConnectNet();
     }
 
     private void connectNet() {
@@ -67,13 +69,13 @@ public class NetService extends Service implements NettyClientListener {
         LL.V("NetService onStartCommand: " + data);
 
         if ("1".equals(data)) {
-            getIp();
+            getIpConnectNet();
         } else if ("2".equals(data)) {
             NetInfoTask netInfoTask = (NetInfoTask) intent.getSerializableExtra("task");
             toNetInfo(netInfoTask);
         } else if ("3".equals(data)) {
             NetDevCompTask netDevCompTask = (NetDevCompTask) intent.getSerializableExtra("task");
-            deviceComp(netDevCompTask);
+            toDeviceComp(netDevCompTask);
         }
 
         return START_STICKY;
@@ -87,92 +89,107 @@ public class NetService extends Service implements NettyClientListener {
         sendBroadcast(mIntent);
     }
 
-    private void searchNet() {
-        if (nettyManager != null) {
-            WjProtocol wjProtocol = new WjProtocol();
-            wjProtocol.setPlat(Short.parseShort("50"));
-            wjProtocol.setMaincmd(Short.parseShort("12"));
-            wjProtocol.setSubcmd(Short.parseShort("0"));
-            wjProtocol.setFormat("TX");
-            wjProtocol.setBack(Short.parseShort("0"));
+    private void toSearchNet() {
+
+        WjProtocol wjProtocol = new WjProtocol();
+
+        wjProtocol.setPlat(new byte[]{0x50,0x00});
+        wjProtocol.setMaincmd(new byte[]{0x12,0x00});
+        wjProtocol.setSubcmd(new byte[]{0x00,0x00});
+        wjProtocol.setFormat("TX");
+        wjProtocol.setBack(new byte[]{0x00,0x00});
 
 //        String jsonStr = "pipo";
 //        byte[] objectBytes = jsonStr.getBytes();
 
-            int len = 21 + 0;
-            wjProtocol.setLen((short) len);
+        int len = WjProtocol.MIN_DATA_LEN + 0;
+        wjProtocol.setLen(wjProtocol.short2byte((short) len));
 //        wjProtocol.setUserdata(objectBytes);
 
+        if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
+        } else {
+            queue.offer(wjProtocol);
         }
     }
 
-    private void deviceComp(NetDevCompTask netDevCompTask) {
+    private void toDeviceComp(NetDevCompTask netDevCompTask) {
+
+        WjProtocol wjProtocol = new WjProtocol();
+        wjProtocol.setPlat(new byte[]{0x50,0x00});
+        wjProtocol.setMaincmd(new byte[]{0x12,0x00});
+        wjProtocol.setSubcmd(new byte[]{0x01,0x00});
+        wjProtocol.setFormat("JS");
+        wjProtocol.setBack(new byte[]{0x00,0x00});
+
+        String jsonStr = JSONObject.toJSONString(netDevCompTask);
+        Log.v("ly", jsonStr);
+        byte[] objectBytes = jsonStr.getBytes();
+
+        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
+        wjProtocol.setLen(wjProtocol.short2byte((short) len));
+        wjProtocol.setUserdata(objectBytes);
+
         if (nettyManager != null) {
-            WjProtocol wjProtocol = new WjProtocol();
-            wjProtocol.setPlat(Short.parseShort("50"));
-            wjProtocol.setMaincmd(Short.parseShort("12"));
-            wjProtocol.setSubcmd(Short.parseShort("1"));
-            wjProtocol.setFormat("JS");
-            wjProtocol.setBack(Short.parseShort("0"));
-
-            String jsonStr = JSONObject.toJSONString(netDevCompTask);
-            Log.v("ly", jsonStr);
-            byte[] objectBytes = jsonStr.getBytes();
-
-            int len = 21 + objectBytes.length;
-            wjProtocol.setLen((short) len);
-            wjProtocol.setUserdata(objectBytes);
-
             nettyManager.senMessage(wjProtocol);
+        } else {
+            queue.offer(wjProtocol);
         }
     }
 
     private void toNetInfo(NetInfoTask netInfoTask) {
+
+        WjProtocol wjProtocol = new WjProtocol();
+        wjProtocol.setPlat(new byte[]{0x50,0x00});
+        wjProtocol.setMaincmd(new byte[]{0x00,0x00});
+        wjProtocol.setSubcmd(new byte[]{0x02,0x00});
+        wjProtocol.setFormat("JS");
+        wjProtocol.setBack(new byte[]{0x00,0x00});
+
+        String jsonStr = JSONObject.toJSONString(netInfoTask);
+        Log.v("ly", jsonStr);
+        byte[] objectBytes = jsonStr.getBytes();
+
+        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
+        wjProtocol.setLen(wjProtocol.short2byte((short) len));
+        wjProtocol.setUserdata(objectBytes);
+
         if (nettyManager != null) {
-            WjProtocol wjProtocol = new WjProtocol();
-            wjProtocol.setPlat(Short.parseShort("50"));
-            wjProtocol.setMaincmd(Short.parseShort("0"));
-            wjProtocol.setSubcmd(Short.parseShort("2"));
-            wjProtocol.setFormat("JS");
-            wjProtocol.setBack(Short.parseShort("0"));
-
-            String jsonStr = JSONObject.toJSONString(netInfoTask);
-            Log.v("ly", jsonStr);
-            byte[] objectBytes = jsonStr.getBytes();
-
-            int len = 21 + objectBytes.length;
-            wjProtocol.setLen((short) len);
-            wjProtocol.setUserdata(objectBytes);
-
             nettyManager.senMessage(wjProtocol);
+        } else {
+            queue.offer(wjProtocol);
         }
     }
 
-    private void getIp() {
+    private void getIpConnectNet() {
+        if (!connecting) {
+            connecting = true;
 
-        //开启一个线程，对数据进行处理
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    while (iping) {
-                        iplist = ScanDeviceUtile.getInstance().scan();
-                        if (iplist != null && iplist.size() > 0) {
-                            iping = false;
-                            LL.V(iplist.toString());
-                        } else {
-                            Thread.sleep(10000);
+            //开启一个线程，对数据进行处理
+            new Thread(new Runnable() {
+                boolean iping = true;
+
+                @Override
+                public void run() {
+                    try {
+                        while (iping) {
+                            iplist = ScanDeviceUtile.getInstance().scan();
+                            if (iplist != null && iplist.size() > 0) {
+                                iping = false;
+                                LL.V(iplist.toString());
+                            } else {
+                                Thread.sleep(10000);
+                            }
                         }
+                        if (iplist != null && iplist.size() > 0)
+                            connectNet();
+                    } catch (Exception e) {
+                        LL.V("getIp:[error]" + e.getMessage());
+                        e.printStackTrace();
                     }
-                    if (iplist != null && iplist.size() > 0)
-                        connectNet();
-                } catch (Exception e) {
-                    LL.V("getIp:[error]"+e.getMessage());
-                    e.printStackTrace();
                 }
-            }
-        }).start();
+            }).start();
+        }
     }
 
     @Override
@@ -194,12 +211,29 @@ public class NetService extends Service implements NettyClientListener {
     @Override
     public void connectSuccess(String ip, int index) {
         LL.V(ip + ":index:" + index);
+        connecting = false;
         nettyManager = nettyManagers.get(index);
-        searchNet();
+        toSearchNet();
+        this.doTask();
+    }
+
+    private void doTask() {
+        boolean flag = true;
+
+        if (nettyManager != null) {
+
+            while (flag) {
+                if (!queue.isEmpty()) {
+                    nettyManager.senMessage(queue.poll());
+                } else {
+                    flag = false;
+                }
+            }
+        }
     }
 
     @Override
     public void nettyNetSearchBack() {
-
+        LL.V("nettyNetSearchBack");
     }
 }

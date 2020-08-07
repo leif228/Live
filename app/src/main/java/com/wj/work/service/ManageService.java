@@ -35,6 +35,12 @@ public class ManageService extends Service implements NettyClientListener {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        LL.V("ManageService onCreate");
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //从Activity获取data
         data = intent.getStringExtra(COUNTER);
@@ -98,22 +104,22 @@ public class ManageService extends Service implements NettyClientListener {
 
     private void manageLoin(LoginTask loginTask) {
         if (nettyManager != null) {
-            WjProtocol wjProtocol = new WjProtocol();
-            wjProtocol.setPlat(Short.parseShort("50"));
-            wjProtocol.setMaincmd(Short.parseShort("0"));
-            wjProtocol.setSubcmd(Short.parseShort("1"));
-            wjProtocol.setFormat("JS");
-            wjProtocol.setBack(Short.parseShort("0"));
-
-            String jsonStr = JSONObject.toJSONString(loginTask);
-            Log.v("ly", jsonStr);
-            byte[] objectBytes = jsonStr.getBytes();
-
-            int len = 21 + objectBytes.length;
-            wjProtocol.setLen((short) len);
-            wjProtocol.setUserdata(objectBytes);
-
-            nettyManager.senMessage(wjProtocol);
+//            WjProtocol wjProtocol = new WjProtocol();
+//            wjProtocol.setPlat(Short.parseShort("50"));
+//            wjProtocol.setMaincmd(Short.parseShort("0"));
+//            wjProtocol.setSubcmd(Short.parseShort("1"));
+//            wjProtocol.setFormat("JS");
+//            wjProtocol.setBack(Short.parseShort("0"));
+//
+//            String jsonStr = JSONObject.toJSONString(loginTask);
+//            Log.v("ly", jsonStr);
+//            byte[] objectBytes = jsonStr.getBytes();
+//
+//            int len = 21 + objectBytes.length;
+//            wjProtocol.setLen((short) len);
+//            wjProtocol.setUserdata(objectBytes);
+//
+//            nettyManager.senMessage(wjProtocol);
         }
     }
 

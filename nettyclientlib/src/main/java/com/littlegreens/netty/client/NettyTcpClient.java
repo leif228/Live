@@ -3,6 +3,7 @@ package com.littlegreens.netty.client;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.littlegreens.netty.client.extra.TaskHandler;
 import com.littlegreens.netty.client.extra.WebSocketClientHandler;
 import com.littlegreens.netty.client.extra.WjDecoderHandler;
 import com.littlegreens.netty.client.extra.WjEncoderHandler;
@@ -164,7 +165,7 @@ public class NettyTcpClient {
 //                                        handler);
                                 p.addLast(new IdleStateHandler(0, 0, 30));
                                 p.addLast(new WjEncoderHandler());
-                                p.addLast(new WjDecoderHandler(NettyTcpClient.this));//解码器，接收消息时候用
+                                p.addLast(new WjDecoderHandler(new TaskHandler(NettyTcpClient.this),NettyTcpClient.this));//解码器，接收消息时候用
                             }
                         });
                 // ---------------------------
