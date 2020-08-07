@@ -176,13 +176,21 @@ public class NettyTcpClient {
                                 @Override
                                 public void operationComplete(ChannelFuture cf) throws Exception {
                                     if (cf.isSuccess()) {
-                                        Log.v(TAG, "连接成功");
+                                        Log.v(TAG, "连接server成功");
 //                                        reconnectNum = MAX_CONNECT_TIMES;
 //                                        isConnected = true;
                                         channel = cf.channel();
                                         listener.connectSuccess(mBuilder.host,mBuilder.mIndex);
                                     } else {
-                                        Log.e(TAG, "连接失败");
+                                        Log.e(TAG, "连接server失败");
+                                        Log.v(TAG, "每隔5s重连....");
+                                        cf.channel().eventLoop().schedule(new Runnable() {
+
+                                            @Override
+                                            public void run() {
+                                                reconnect();
+                                            }
+                                        }, 5, TimeUnit.SECONDS);
 //                                        isConnected = false;
                                     }
 //                                    isConnecting = false;
@@ -263,12 +271,12 @@ public class NettyTcpClient {
 
     // 执行重连
     public void reconnect() {
-        Log.v(TAG, "reconnect in");
+//        Log.v(TAG, "reconnect in");
 //        if (isNeedReconnect && reconnectNum > 0 && !isConnected) {
 //            reconnectNum--;
 //            SystemClock.sleep(mBuilder.reconnectIntervalTime);
 //            if (isNeedReconnect && reconnectNum > 0 && !isConnected) {
-                Log.v(TAG, "重新连接");
+                Log.v(TAG, "重新连接server");
                 connectServer();
 //            }
 //        }

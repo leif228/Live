@@ -25,7 +25,7 @@ import java.util.Queue;
 public class NetService extends Service implements NettyClientListener {
     private boolean connecting = false;
     public static final String COUNTER = "data";
-    public static final Integer port = 8778;
+    public static final Integer port = 8666;
     public static final String ACTION_NAME = "com.wj.work.netservice.COUNTER_ACTION";
 
     private String data;
@@ -181,8 +181,12 @@ public class NetService extends Service implements NettyClientListener {
                                 Thread.sleep(10000);
                             }
                         }
-                        if (iplist != null && iplist.size() > 0)
-                            connectNet();
+                        if (iplist != null && iplist.size() > 0){
+                            while (connecting){
+                                connectNet();
+                                Thread.sleep(30000);
+                            }
+                        }
                     } catch (Exception e) {
                         LL.V("getIp:[error]" + e.getMessage());
                         e.printStackTrace();

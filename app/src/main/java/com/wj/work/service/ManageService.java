@@ -104,22 +104,22 @@ public class ManageService extends Service implements NettyClientListener {
 
     private void manageLoin(LoginTask loginTask) {
         if (nettyManager != null) {
-//            WjProtocol wjProtocol = new WjProtocol();
-//            wjProtocol.setPlat(Short.parseShort("50"));
-//            wjProtocol.setMaincmd(Short.parseShort("0"));
-//            wjProtocol.setSubcmd(Short.parseShort("1"));
-//            wjProtocol.setFormat("JS");
-//            wjProtocol.setBack(Short.parseShort("0"));
-//
-//            String jsonStr = JSONObject.toJSONString(loginTask);
-//            Log.v("ly", jsonStr);
-//            byte[] objectBytes = jsonStr.getBytes();
-//
-//            int len = 21 + objectBytes.length;
-//            wjProtocol.setLen((short) len);
-//            wjProtocol.setUserdata(objectBytes);
-//
-//            nettyManager.senMessage(wjProtocol);
+            WjProtocol wjProtocol = new WjProtocol();
+            wjProtocol.setPlat(new byte[]{0x50,0x00});
+            wjProtocol.setMaincmd(new byte[]{0x00,0x00});
+            wjProtocol.setSubcmd(new byte[]{0x01,0x00});
+            wjProtocol.setFormat("JS");
+            wjProtocol.setBack(new byte[]{0x00,0x00});
+
+            String jsonStr = JSONObject.toJSONString(loginTask);
+            Log.v("ly", jsonStr);
+            byte[] objectBytes = jsonStr.getBytes();
+
+            int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
+            wjProtocol.setLen(wjProtocol.short2byte((short) len));
+            wjProtocol.setUserdata(objectBytes);
+
+            nettyManager.senMessage(wjProtocol);
         }
     }
 
