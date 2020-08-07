@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.littlegreens.netty.client.NettyTcpClient;
 
+import java.util.Arrays;
 import java.util.List;
 
 import io.netty.buffer.ByteBuf;
@@ -100,6 +101,8 @@ public class WjDecoderHandler extends ByteToMessageDecoder {
 
                 byte checkSumChar = in.readByte();//##1
                 wjProtocol.setCheckSum(checkSumChar);
+
+                Log.e(TAG, "数组打印："+Arrays.toString(wjProtocol.getCheckSumArray(wjProtocol)));
 
                 boolean check = wjProtocol.checkXOR(wjProtocol.getCheckSumArray(wjProtocol),checkSumChar);
                 if(!check){

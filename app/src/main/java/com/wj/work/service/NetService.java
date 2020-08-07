@@ -51,6 +51,8 @@ public class NetService extends Service implements NettyClientListener {
 
     private void connectNet() {
         LL.V("connectNet");
+        //清空列表
+        nettyManagers.clear();
         for (int i = 0; i < iplist.size(); i++) {
             LL.V("connectNet=" + i + ":ip=" + iplist.get(i));
             NettyManager nettyManager = new NettyManager(i, iplist.get(i), port);

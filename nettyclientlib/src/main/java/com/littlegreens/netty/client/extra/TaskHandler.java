@@ -39,7 +39,7 @@ public class TaskHandler {
         if (wjProtocol.byte2shortSmall(wjProtocol.getMaincmd()) == 0 && wjProtocol.byte2shortSmall(wjProtocol.getSubcmd()) == 0) {//终端→服务 心跳ping
             this.nettyIdle(ctx, tx);
         }
-        if (wjProtocol.byte2shortSmall(wjProtocol.getMaincmd()) == 12 && wjProtocol.byte2shortSmall(wjProtocol.getSubcmd()) == 0) {//手机←网关 搜索返回
+        if (wjProtocol.byte2shortSmall(wjProtocol.getMaincmd()) == 0x12 && wjProtocol.byte2shortSmall(wjProtocol.getSubcmd()) == 0) {//手机←网关 搜索返回
             this.nettyNetSearchBack(ctx, tx);
         }
     }

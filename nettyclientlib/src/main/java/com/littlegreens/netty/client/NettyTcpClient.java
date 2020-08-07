@@ -200,6 +200,7 @@ public class NettyTcpClient {
 //                    handler.handshakeFuture().sync();
                 } catch (Exception e) {
                     e.printStackTrace();
+                    Log.v(TAG, "连接server报错...."+ e.getMessage());
 //                    isConnected = false;
                     listener.onClientStatusConnectChanged(ConnectState.STATUS_CONNECT_ERROR, mBuilder.mIndex);
                     if (channel != null && channel.isOpen()) {
