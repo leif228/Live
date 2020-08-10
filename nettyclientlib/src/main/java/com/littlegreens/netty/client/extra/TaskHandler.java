@@ -5,6 +5,8 @@ import android.util.Log;
 import com.alibaba.fastjson.JSONObject;
 import com.littlegreens.netty.client.NettyTcpClient;
 
+import java.util.Arrays;
+
 import io.netty.channel.ChannelHandlerContext;
 
 public class TaskHandler {
@@ -36,10 +38,12 @@ public class TaskHandler {
         }
 
         //======业务处理======
-        if (wjProtocol.byte2shortSmall(wjProtocol.getMaincmd()) == 0 && wjProtocol.byte2shortSmall(wjProtocol.getSubcmd()) == 0) {//终端→服务 心跳ping
+        if (Arrays.toString(new Byte[]{0x00, 0x00}).equals(Arrays.toString(wjProtocol.getMaincmd()))
+                && Arrays.toString(new Byte[]{0x00, 0x00}).equals(Arrays.toString(wjProtocol.getSubcmd()))) {//终端→服务 心跳ping
             this.nettyIdle(ctx, tx);
         }
-        if (wjProtocol.byte2shortSmall(wjProtocol.getMaincmd()) == 0x12 && wjProtocol.byte2shortSmall(wjProtocol.getSubcmd()) == 0) {//手机←网关 搜索返回
+        if (Arrays.toString(new Byte[]{0x12, 0x00}).equals(Arrays.toString(wjProtocol.getMaincmd()))
+                && Arrays.toString(new Byte[]{0x00, 0x00}).equals(Arrays.toString(wjProtocol.getSubcmd()))) {//手机←网关 搜索返回
             this.nettyNetSearchBack(ctx, tx);
         }
     }

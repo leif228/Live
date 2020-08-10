@@ -13,6 +13,7 @@ import com.littlegreens.netty.client.NettyManager;
 import com.littlegreens.netty.client.extra.LoginTask;
 import com.littlegreens.netty.client.extra.WjProtocol;
 import com.littlegreens.netty.client.listener.NettyClientListener;
+import com.littlegreens.netty.client.status.ConnectState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +90,9 @@ public class ManageService extends Service implements NettyClientListener {
 
     @Override
     public void onClientStatusConnectChanged(int statusCode, int index) {
+        if(statusCode == ConnectState.STATUS_CONNECT_ERROR){
 
+        }
     }
 
     @Override
