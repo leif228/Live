@@ -19,15 +19,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ManageService extends Service implements NettyClientListener {
-    private boolean connecting = false;
     public static final String COUNTER = "data";
     public static final String ACTION_NAME = "com.wj.work.manageservice.COUNTER_ACTION";
 
+    private boolean havaConnectSuccessed = false;
+    int connetSuccessIndex = -1;//连接成功的下标
     private String data;
 
     NettyManager nettyManager;
     List<NettyManager> nettyManagers = new ArrayList<>();
     String fzwno = "";
+    String ip;
+    String port;
 
     @Nullable
     @Override
@@ -46,15 +49,17 @@ public class ManageService extends Service implements NettyClientListener {
         //从Activity获取data
         data = intent.getStringExtra(COUNTER);
 
-        String ip = intent.getStringExtra("ip");
-        String port = intent.getStringExtra("port");
-        fzwno = intent.getStringExtra("fzwno");
-        LL.V("ManageService onStartCommand " + ip);
+        LL.V("ManageService onStartCommand :" + data);
 
-        if (ip == null && port == null)
-            return START_STICKY;
-
-        connectManage(ip, port, fzwno);
+        if ("1".equals(data)) {
+            ip = intent.getStringExtra("ip");
+            port = intent.getStringExtra("port");
+            fzwno = intent.getStringExtra("fzwno");
+            if (ip == null && port == null)
+                return START_STICKY;
+            //没有成功连接过的则重新连接，有成功连接过的，断线内部会自动重连
+            connectManage();
+        }
 
         return START_STICKY;
     }
@@ -67,10 +72,16 @@ public class ManageService extends Service implements NettyClientListener {
         sendBroadcast(mIntent);
     }
 
-    private void connectManage(String ip, String port, String fzwno) {
+    private void connectManage() {
+        if (nettyManager != null)
+            nettyManager.release();
+        nettyManagers.clear();
+        havaConnectSuccessed = false;
+        connetSuccessIndex = -1;
+
         LL.V("connectManage");
         LL.V("connectManage=" + ":ip=" + ip);
-        NettyManager nettyManager = new NettyManager(1, ip, Integer.valueOf(port));
+        NettyManager nettyManager = new NettyManager(0, ip, Integer.valueOf(port));
         nettyManager.setNettyClientListener(this);
         nettyManager.connect();
 
@@ -80,7 +91,6 @@ public class ManageService extends Service implements NettyClientListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        connecting = false;
     }
 
     @Override
@@ -90,14 +100,22 @@ public class ManageService extends Service implements NettyClientListener {
 
     @Override
     public void onClientStatusConnectChanged(int statusCode, int index) {
-        if(statusCode == ConnectState.STATUS_CONNECT_ERROR){
-
+        if (statusCode == ConnectState.STATUS_CONNECT_ERROR) {
+            Log.v("ly", "onClientStatusConnectChanged:===" + index);
+            if (havaConnectSuccessed) {
+                NettyManager nettyManagerFire = nettyManagers.get(index);
+                nettyManagerFire.release();
+            }
+            if(index == connetSuccessIndex)
+                connectManage();
         }
     }
 
     @Override
     public void connectSuccess(String ip, int index) {
         LL.V(ip + ":index:" + index);
+        havaConnectSuccessed = true;
+        connetSuccessIndex = index;
 
         LoginTask loginTask = new LoginTask();
         loginTask.setOid(fzwno);
@@ -108,11 +126,11 @@ public class ManageService extends Service implements NettyClientListener {
     private void manageLoin(LoginTask loginTask) {
         if (nettyManager != null) {
             WjProtocol wjProtocol = new WjProtocol();
-            wjProtocol.setPlat(new byte[]{0x50,0x00});
-            wjProtocol.setMaincmd(new byte[]{0x00,0x00});
-            wjProtocol.setSubcmd(new byte[]{0x01,0x00});
+            wjProtocol.setPlat(new byte[]{0x50, 0x00});
+            wjProtocol.setMaincmd(new byte[]{0x00, 0x00});
+            wjProtocol.setSubcmd(new byte[]{0x01, 0x00});
             wjProtocol.setFormat("JS");
-            wjProtocol.setBack(new byte[]{0x00,0x00});
+            wjProtocol.setBack(new byte[]{0x00, 0x00});
 
             String jsonStr = JSONObject.toJSONString(loginTask);
             Log.v("ly", jsonStr);

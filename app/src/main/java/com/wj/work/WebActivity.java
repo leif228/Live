@@ -108,8 +108,9 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
 //        },1000*65);
     }
 
-    private void sendMsgToManageService(String ip, String port, String fzwno) {
+    private void sendMsgToManageService(String data, String ip, String port, String fzwno) {
         //向Service传递data
+        mIntent.putExtra(ManageService.COUNTER, data);
         mIntent.putExtra("ip", ip);
         mIntent.putExtra("port", port);
         mIntent.putExtra("fzwno", fzwno);
@@ -195,7 +196,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         loginEntity.setFzwno(fzwno);
         SpManager.getInstance().getLoginSp().putLoginInfoEntity(loginEntity);
 
-        sendMsgToManageService(ip, port, fzwno);
+        sendMsgToManageService("1",ip, port, fzwno);
 
     }
 
@@ -244,7 +245,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
             LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
             if (!"".equals(loginEntity.getIp())) {
                 LL.V("+++++++++++   wifi网络可用,连接manageservice:" + loginEntity.getIp());
-                sendMsgToManageService(loginEntity.getIp(), loginEntity.getPort(), loginEntity.getFzwno());
+                sendMsgToManageService("1",loginEntity.getIp(), loginEntity.getPort(), loginEntity.getFzwno());
             }
         } else {
             LL.V("-----------    网络不可用");
