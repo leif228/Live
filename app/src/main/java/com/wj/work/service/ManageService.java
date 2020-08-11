@@ -10,10 +10,14 @@ import androidx.annotation.Nullable;
 import com.alibaba.fastjson.JSONObject;
 import com.lib.kit.utils.LL;
 import com.littlegreens.netty.client.NettyManager;
+import com.littlegreens.netty.client.extra.ConnectTask;
 import com.littlegreens.netty.client.extra.LoginTask;
+import com.littlegreens.netty.client.extra.NetInfoTask;
 import com.littlegreens.netty.client.extra.WjProtocol;
 import com.littlegreens.netty.client.listener.NettyClientListener;
 import com.littlegreens.netty.client.status.ConnectState;
+import com.wj.work.db.SpManager;
+import com.wj.work.widget.entity.LoginEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,15 +26,15 @@ public class ManageService extends Service implements NettyClientListener {
     public static final String COUNTER = "data";
     public static final String ACTION_NAME = "com.wj.work.manageservice.COUNTER_ACTION";
 
-    private boolean havaConnectSuccessed = false;
-    int connetSuccessIndex = -1;//连接成功的下标
+    //    private boolean havaConnectSuccessed = false;
+//    int connetSuccessIndex = -1;//连接成功的下标
     private String data;
 
     NettyManager nettyManager;
     List<NettyManager> nettyManagers = new ArrayList<>();
     String fzwno = "";
-    String ip;
-    String port;
+//    String ip;
+//    String port;
 
     @Nullable
     @Override
@@ -42,6 +46,18 @@ public class ManageService extends Service implements NettyClientListener {
     public void onCreate() {
         super.onCreate();
         LL.V("ManageService onCreate");
+
+        LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
+        if (!"".equals(loginEntity.getIp())) {
+            ConnectTask connectTask = new ConnectTask();
+            connectTask.setIp(loginEntity.getIp());
+            connectTask.setPort(loginEntity.getPort());
+            connectTask.setFzwno(loginEntity.getFzwno());
+
+            fzwno = connectTask.getFzwno();
+            //重连
+            reConnectManage(connectTask);
+        }
     }
 
     @Override
@@ -51,17 +67,61 @@ public class ManageService extends Service implements NettyClientListener {
 
         LL.V("ManageService onStartCommand :" + data);
 
-        if ("1".equals(data)) {
-            ip = intent.getStringExtra("ip");
-            port = intent.getStringExtra("port");
-            fzwno = intent.getStringExtra("fzwno");
-            if (ip == null && port == null)
-                return START_STICKY;
-            //没有成功连接过的则重新连接，有成功连接过的，断线内部会自动重连
-            connectManage();
+//        if ("1".equals(data)) {
+//            ConnectTask connectTask = (ConnectTask) intent.getSerializableExtra("task");
+//            fzwno = connectTask.getFzwno();
+//            //重连
+//            reConnectManage(connectTask);
+//        } else
+        if ("2".equals(data)) {
+            ConnectTask connectTask = (ConnectTask) intent.getSerializableExtra("task");
+            fzwno = connectTask.getFzwno();
+            //新建连接
+            newConnectManage(connectTask);
         }
 
         return START_STICKY;
+    }
+
+    //新建连接
+    private void newConnectManage(ConnectTask connectTask) {
+        if (nettyManager != null) {
+            nettyManager.release();
+            nettyManager = null;
+            nettyManagers.clear();
+
+            LL.V("断开原连接再新建连接newConnectManage=" + ":ip=" + connectTask.getIp());
+            NettyManager nettyManager = new NettyManager(0, connectTask.getIp(), Integer.valueOf(connectTask.getPort()));
+            nettyManager.setNettyClientListener(this);
+            nettyManager.connect();
+
+            nettyManagers.add(nettyManager);
+        } else {
+            nettyManagers.clear();
+
+            LL.V("直接新建连接newConnectManage=" + ":ip=" + connectTask.getIp());
+            NettyManager nettyManager = new NettyManager(0, connectTask.getIp(), Integer.valueOf(connectTask.getPort()));
+            nettyManager.setNettyClientListener(this);
+            nettyManager.connect();
+
+            nettyManagers.add(nettyManager);
+        }
+    }
+
+    //重连
+    private void reConnectManage(ConnectTask connectTask) {
+        if (nettyManager != null) {
+//            nettyManager.attemptReConnect();
+        } else {
+            nettyManagers.clear();
+
+            LL.V("reConnectManage=" + ":ip=" + connectTask.getIp());
+            NettyManager nettyManager = new NettyManager(0, connectTask.getIp(), Integer.valueOf(connectTask.getPort()));
+            nettyManager.setNettyClientListener(this);
+            nettyManager.connect();
+
+            nettyManagers.add(nettyManager);
+        }
     }
 
     private void sendMsgToActivity(String data) {
@@ -72,21 +132,21 @@ public class ManageService extends Service implements NettyClientListener {
         sendBroadcast(mIntent);
     }
 
-    private void connectManage() {
-        if (nettyManager != null)
-            nettyManager.release();
-        nettyManagers.clear();
-        havaConnectSuccessed = false;
-        connetSuccessIndex = -1;
-
-        LL.V("connectManage");
-        LL.V("connectManage=" + ":ip=" + ip);
-        NettyManager nettyManager = new NettyManager(0, ip, Integer.valueOf(port));
-        nettyManager.setNettyClientListener(this);
-        nettyManager.connect();
-
-        nettyManagers.add(nettyManager);
-    }
+//    private void connectManage() {
+//        if (nettyManager != null)
+//            nettyManager.release();
+//        nettyManagers.clear();
+//        havaConnectSuccessed = false;
+//        connetSuccessIndex = -1;
+//
+//        LL.V("connectManage");
+//        LL.V("connectManage=" + ":ip=" + ip);
+//        NettyManager nettyManager = new NettyManager(0, ip, Integer.valueOf(port));
+//        nettyManager.setNettyClientListener(this);
+//        nettyManager.connect();
+//
+//        nettyManagers.add(nettyManager);
+//    }
 
     @Override
     public void onDestroy() {
@@ -101,21 +161,17 @@ public class ManageService extends Service implements NettyClientListener {
     @Override
     public void onClientStatusConnectChanged(int statusCode, int index) {
         if (statusCode == ConnectState.STATUS_CONNECT_ERROR) {
-            Log.v("ly", "onClientStatusConnectChanged:===" + index);
-            if (havaConnectSuccessed) {
-                NettyManager nettyManagerFire = nettyManagers.get(index);
-                nettyManagerFire.release();
-            }
-            if(index == connetSuccessIndex)
-                connectManage();
+//            Log.v("ly", "onClientStatusConnectChanged:===" + index);
+
+//            NettyManager nettyManagerFire = nettyManagers.get(index);
+//            nettyManagerFire.release();
+//            nettyManagerFire = null;
         }
     }
 
     @Override
     public void connectSuccess(String ip, int index) {
         LL.V(ip + ":index:" + index);
-        havaConnectSuccessed = true;
-        connetSuccessIndex = index;
 
         LoginTask loginTask = new LoginTask();
         loginTask.setOid(fzwno);

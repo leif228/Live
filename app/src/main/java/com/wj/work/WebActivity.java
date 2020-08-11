@@ -13,6 +13,7 @@ import android.webkit.JavascriptInterface;
 import com.lib.kit.utils.LL;
 import com.lib.kit.utils.StatusBarUtils;
 import com.littlegreens.netty.client.extra.BaseTask;
+import com.littlegreens.netty.client.extra.ConnectTask;
 import com.littlegreens.netty.client.extra.NetDevCompTask;
 import com.littlegreens.netty.client.extra.NetInfoTask;
 import com.tencent.smtt.sdk.WebSettings;
@@ -89,8 +90,8 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         //注册广播
         registerReceiver(manageReceiver, mintentFilter);
 
-//        sendMsgToNetService("connet");
-
+        startService(nIntent);
+        startService(mIntent);
     }
 
     private void sendMsgToNetService(String data, BaseTask baseTask) {
@@ -108,12 +109,10 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
 //        },1000*65);
     }
 
-    private void sendMsgToManageService(String data, String ip, String port, String fzwno) {
+    private void sendMsgToManageService(String data, BaseTask baseTask) {
         //向Service传递data
         mIntent.putExtra(ManageService.COUNTER, data);
-        mIntent.putExtra("ip", ip);
-        mIntent.putExtra("port", port);
-        mIntent.putExtra("fzwno", fzwno);
+        mIntent.putExtra("task",baseTask);
         startService(mIntent);
     }
 
@@ -196,7 +195,12 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         loginEntity.setFzwno(fzwno);
         SpManager.getInstance().getLoginSp().putLoginInfoEntity(loginEntity);
 
-        sendMsgToManageService("1",ip, port, fzwno);
+        ConnectTask connectTask =new ConnectTask();
+        connectTask.setIp(ip);
+        connectTask.setPort(port);
+        connectTask.setFzwno(fzwno);
+
+        sendMsgToManageService("2",connectTask);
 
     }
 
@@ -240,13 +244,18 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
             LL.V("-----------    网络可用");
             if (event.isWiFiAvailable()) {
                 LL.V("+++++++++++   wifi网络可用");
-                sendMsgToNetService("1",null);
+//                sendMsgToNetService("1",null);
             }
-            LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
-            if (!"".equals(loginEntity.getIp())) {
-                LL.V("+++++++++++   wifi网络可用,连接manageservice:" + loginEntity.getIp());
-                sendMsgToManageService("1",loginEntity.getIp(), loginEntity.getPort(), loginEntity.getFzwno());
-            }
+//            LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
+//            if (!"".equals(loginEntity.getIp())) {
+//                LL.V("+++++++++++   wifi网络可用,连接manageservice:" + loginEntity.getIp());
+//                ConnectTask connectTask =new ConnectTask();
+//                connectTask.setIp(loginEntity.getIp());
+//                connectTask.setPort(loginEntity.getPort());
+//                connectTask.setFzwno(loginEntity.getFzwno());
+//
+//                sendMsgToManageService("1",connectTask);
+//            }
         } else {
             LL.V("-----------    网络不可用");
         }
