@@ -21,11 +21,14 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class NetService extends Service implements NettyClientListener {
     private boolean connecting = false;
     private boolean havaConnectSuccessed = false;
     public static final String COUNTER = "data";
+    public static final long closeTimes = 30000l;
     public static final Integer port = 8555;
     public static final String ACTION_NAME = "com.wj.work.netservice.COUNTER_ACTION";
 
@@ -185,6 +188,7 @@ public class NetService extends Service implements NettyClientListener {
                         }
                         if (iplist != null && iplist.size() > 0) {
                             connectNet();
+                            noConnectIpSuccessCloseTask();
                         }
                     } catch (Exception e) {
                         LL.V("getIp:[error]" + e.getMessage());
@@ -194,6 +198,32 @@ public class NetService extends Service implements NettyClientListener {
                 }
             }).start();
         }
+    }
+
+    //定时任务（当没有扫描出目标ip，只扫描到其它ip时，关闭已经开启的连接任务）
+    private void noConnectIpSuccessCloseTask() {
+        LL.V("定时任务启动。。。");
+        TimerTask timerTask = new TimerTask() {
+
+            @Override
+            public void run() {
+
+                if (connecting) {
+                    int size = nettyManagers.size();
+                    LL.V("定时任务执行：nettySize=" + size);
+                    for (int i = 0; i < size; i++) {
+                        NettyManager nettyManagerFire = nettyManagers.get(i);
+                        nettyManagerFire.release();
+                    }
+                    nettyManagers.clear();
+                    nettyManager = null;
+                    connecting = false;
+                }
+                LL.V("定时任务执行结束。。。");
+            }
+        };
+        Timer timer = new Timer();
+        timer.schedule(timerTask,closeTimes);
     }
 
     @Override

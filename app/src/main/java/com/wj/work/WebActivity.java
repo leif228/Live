@@ -244,7 +244,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
             LL.V("-----------    网络可用");
             if (event.isWiFiAvailable()) {
                 LL.V("+++++++++++   wifi网络可用");
-//                sendMsgToNetService("1",null);
+                sendMsgToNetService("1",null);
             }
 //            LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
 //            if (!"".equals(loginEntity.getIp())) {
