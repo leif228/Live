@@ -20,7 +20,9 @@ import com.wj.work.db.SpManager;
 import com.wj.work.widget.entity.LoginEntity;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class ManageService extends Service implements NettyClientListener {
     public static final String COUNTER = "data";
@@ -36,6 +38,8 @@ public class ManageService extends Service implements NettyClientListener {
 //    String ip;
 //    String port;
 
+    Queue<WjProtocol> queue;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -46,6 +50,7 @@ public class ManageService extends Service implements NettyClientListener {
     public void onCreate() {
         super.onCreate();
         LL.V("ManageService onCreate");
+        queue = new LinkedList<WjProtocol>();
 
         LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
         if (!"".equals(loginEntity.getIp())) {
@@ -98,6 +103,7 @@ public class ManageService extends Service implements NettyClientListener {
             nettyManagers.add(nettyManager);
         } else {
             nettyManagers.clear();
+            nettyManager = null;
 
             LL.V("直接新建连接newConnectManage=" + ":ip=" + connectTask.getIp());
             NettyManager nettyManager = new NettyManager(0, connectTask.getIp(), Integer.valueOf(connectTask.getPort()));
@@ -114,6 +120,7 @@ public class ManageService extends Service implements NettyClientListener {
 //            nettyManager.attemptReConnect();
         } else {
             nettyManagers.clear();
+            nettyManager = null;
 
             LL.V("reConnectManage=" + ":ip=" + connectTask.getIp());
             NettyManager nettyManager = new NettyManager(0, connectTask.getIp(), Integer.valueOf(connectTask.getPort()));
@@ -177,26 +184,21 @@ public class ManageService extends Service implements NettyClientListener {
         loginTask.setOid(fzwno);
         nettyManager = nettyManagers.get(index);
         manageLoin(loginTask);
+        this.doTask();
     }
 
-    private void manageLoin(LoginTask loginTask) {
+    private void doTask() {
+        boolean flag = true;
+
         if (nettyManager != null) {
-            WjProtocol wjProtocol = new WjProtocol();
-            wjProtocol.setPlat(new byte[]{0x50, 0x00});
-            wjProtocol.setMaincmd(new byte[]{0x00, 0x00});
-            wjProtocol.setSubcmd(new byte[]{0x01, 0x00});
-            wjProtocol.setFormat("JS");
-            wjProtocol.setBack(new byte[]{0x00, 0x00});
 
-            String jsonStr = JSONObject.toJSONString(loginTask);
-            Log.v("ly", jsonStr);
-            byte[] objectBytes = jsonStr.getBytes();
-
-            int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
-            wjProtocol.setLen(wjProtocol.short2byte((short) len));
-            wjProtocol.setUserdata(objectBytes);
-
-            nettyManager.senMessage(wjProtocol);
+            while (flag) {
+                if (!queue.isEmpty()) {
+                    nettyManager.senMessage(queue.poll());
+                } else {
+                    flag = false;
+                }
+            }
         }
     }
 
@@ -204,4 +206,29 @@ public class ManageService extends Service implements NettyClientListener {
     public void nettyNetSearchBack() {
 
     }
+
+    //终端→服务 登录
+    private void manageLoin(LoginTask loginTask) {
+        WjProtocol wjProtocol = new WjProtocol();
+        wjProtocol.setPlat(new byte[]{0x50, 0x00});
+        wjProtocol.setMaincmd(new byte[]{0x00, 0x00});
+        wjProtocol.setSubcmd(new byte[]{0x01, 0x00});
+        wjProtocol.setFormat("JS");
+        wjProtocol.setBack(new byte[]{0x00, 0x00});
+
+        String jsonStr = JSONObject.toJSONString(loginTask);
+        Log.v("ly", jsonStr);
+        byte[] objectBytes = jsonStr.getBytes();
+
+        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
+        wjProtocol.setLen(wjProtocol.short2byte((short) len));
+        wjProtocol.setUserdata(objectBytes);
+
+        if (nettyManager != null) {
+            nettyManager.senMessage(wjProtocol);
+        } else {
+            queue.offer(wjProtocol);
+        }
+    }
+
 }

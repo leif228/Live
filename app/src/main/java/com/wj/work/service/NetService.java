@@ -10,7 +10,9 @@ import androidx.annotation.Nullable;
 import com.alibaba.fastjson.JSONObject;
 import com.lib.kit.utils.LL;
 import com.littlegreens.netty.client.NettyManager;
+import com.littlegreens.netty.client.extra.NetDevCompFileTask;
 import com.littlegreens.netty.client.extra.NetDevCompTask;
+import com.littlegreens.netty.client.extra.NetDoTaskTask;
 import com.littlegreens.netty.client.extra.NetInfoTask;
 import com.littlegreens.netty.client.extra.WjProtocol;
 import com.littlegreens.netty.client.listener.NettyClientListener;
@@ -57,6 +59,7 @@ public class NetService extends Service implements NettyClientListener {
     private void connectNet() {
         LL.V("connectNet");
         //清空列表
+        nettyManager = null;
         nettyManagers.clear();
         connetSuccessIndex = -1;
         havaConnectSuccessed = false;
@@ -98,73 +101,6 @@ public class NetService extends Service implements NettyClientListener {
         sendBroadcast(mIntent);
     }
 
-    private void toSearchNet() {
-
-        WjProtocol wjProtocol = new WjProtocol();
-
-        wjProtocol.setPlat(new byte[]{0x50, 0x00});
-        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
-        wjProtocol.setSubcmd(new byte[]{0x00, 0x00});
-        wjProtocol.setFormat("TX");
-        wjProtocol.setBack(new byte[]{0x00, 0x00});
-
-        int len = WjProtocol.MIN_DATA_LEN + 0;
-        wjProtocol.setLen(wjProtocol.short2byte((short) len));
-
-        if (nettyManager != null) {
-            nettyManager.senMessage(wjProtocol);
-        } else {
-            queue.offer(wjProtocol);
-        }
-    }
-
-    private void toDeviceComp(NetDevCompTask netDevCompTask) {
-
-        WjProtocol wjProtocol = new WjProtocol();
-        wjProtocol.setPlat(new byte[]{0x50, 0x00});
-        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
-        wjProtocol.setSubcmd(new byte[]{0x01, 0x00});
-        wjProtocol.setFormat("JS");
-        wjProtocol.setBack(new byte[]{0x00, 0x00});
-
-        String jsonStr = JSONObject.toJSONString(netDevCompTask);
-        Log.v("ly", jsonStr);
-        byte[] objectBytes = jsonStr.getBytes();
-
-        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
-        wjProtocol.setLen(wjProtocol.short2byte((short) len));
-        wjProtocol.setUserdata(objectBytes);
-
-        if (nettyManager != null) {
-            nettyManager.senMessage(wjProtocol);
-        } else {
-            queue.offer(wjProtocol);
-        }
-    }
-
-    private void toNetInfo(NetInfoTask netInfoTask) {
-
-        WjProtocol wjProtocol = new WjProtocol();
-        wjProtocol.setPlat(new byte[]{0x50, 0x00});
-        wjProtocol.setMaincmd(new byte[]{0x00, 0x00});
-        wjProtocol.setSubcmd(new byte[]{0x02, 0x00});
-        wjProtocol.setFormat("JS");
-        wjProtocol.setBack(new byte[]{0x00, 0x00});
-
-        String jsonStr = JSONObject.toJSONString(netInfoTask);
-        Log.v("ly", jsonStr);
-        byte[] objectBytes = jsonStr.getBytes();
-
-        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
-        wjProtocol.setLen(wjProtocol.short2byte((short) len));
-        wjProtocol.setUserdata(objectBytes);
-
-        if (nettyManager != null) {
-            nettyManager.senMessage(wjProtocol);
-        } else {
-            queue.offer(wjProtocol);
-        }
-    }
 
     private void getIpConnectNet() {
         if (!connecting) {
@@ -223,7 +159,7 @@ public class NetService extends Service implements NettyClientListener {
             }
         };
         Timer timer = new Timer();
-        timer.schedule(timerTask,closeTimes);
+        timer.schedule(timerTask, closeTimes);
     }
 
     @Override
@@ -282,5 +218,147 @@ public class NetService extends Service implements NettyClientListener {
     @Override
     public void nettyNetSearchBack() {
         LL.V("nettyNetSearchBack");
+    }
+
+
+    //手机→网关 搜索网关(目前遍历)
+    private void toSearchNet() {
+
+        WjProtocol wjProtocol = new WjProtocol();
+        wjProtocol.setPlat(new byte[]{0x50, 0x00});
+        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
+        wjProtocol.setSubcmd(new byte[]{0x00, 0x00});
+        wjProtocol.setFormat("TX");
+        wjProtocol.setBack(new byte[]{0x00, 0x00});
+
+        int len = WjProtocol.MIN_DATA_LEN + 0;
+        wjProtocol.setLen(wjProtocol.short2byte((short) len));
+
+        if (nettyManager != null) {
+            nettyManager.senMessage(wjProtocol);
+        } else {
+            queue.offer(wjProtocol);
+        }
+    }
+
+    //手机→网关 手机选择设备厂商后传递给网关信息
+    private void toDeviceComp(NetDevCompTask netDevCompTask) {
+
+        WjProtocol wjProtocol = new WjProtocol();
+        wjProtocol.setPlat(new byte[]{0x50, 0x00});
+        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
+        wjProtocol.setSubcmd(new byte[]{0x01, 0x00});
+        wjProtocol.setFormat("JS");
+        wjProtocol.setBack(new byte[]{0x00, 0x00});
+
+        String jsonStr = JSONObject.toJSONString(netDevCompTask);
+        Log.v("ly", jsonStr);
+        byte[] objectBytes = jsonStr.getBytes();
+
+        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
+        wjProtocol.setLen(wjProtocol.short2byte((short) len));
+        wjProtocol.setUserdata(objectBytes);
+
+        if (nettyManager != null) {
+            nettyManager.senMessage(wjProtocol);
+        } else {
+            queue.offer(wjProtocol);
+        }
+    }
+
+    //手机→网关 手机注册后传递给网关信息
+    private void toNetInfo(NetInfoTask netInfoTask) {
+        WjProtocol wjProtocol = new WjProtocol();
+        wjProtocol.setPlat(new byte[]{0x50, 0x00});
+        wjProtocol.setMaincmd(new byte[]{0x00, 0x00});
+        wjProtocol.setSubcmd(new byte[]{0x02, 0x00});
+        wjProtocol.setFormat("JS");
+        wjProtocol.setBack(new byte[]{0x00, 0x00});
+
+        String jsonStr = JSONObject.toJSONString(netInfoTask);
+        Log.v("ly", jsonStr);
+        byte[] objectBytes = jsonStr.getBytes();
+
+        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
+        wjProtocol.setLen(wjProtocol.short2byte((short) len));
+        wjProtocol.setUserdata(objectBytes);
+
+        if (nettyManager != null) {
+            nettyManager.senMessage(wjProtocol);
+        } else {
+            queue.offer(wjProtocol);
+        }
+    }
+
+    //手机→网关 认证完成，网关获取设备列表
+    private void toNetGetDevList(NetDevCompFileTask netDevCompFileTask) {
+        WjProtocol wjProtocol = new WjProtocol();
+        wjProtocol.setPlat(new byte[]{0x50, 0x00});
+        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
+        wjProtocol.setSubcmd(new byte[]{0x02, 0x00});
+        wjProtocol.setFormat("JS");
+        wjProtocol.setBack(new byte[]{0x00, 0x00});
+
+        String jsonStr = JSONObject.toJSONString(netDevCompFileTask);
+        Log.v("ly", jsonStr);
+        byte[] objectBytes = jsonStr.getBytes();
+
+        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
+        wjProtocol.setLen(wjProtocol.short2byte((short) len));
+        wjProtocol.setUserdata(objectBytes);
+
+        if (nettyManager != null) {
+            nettyManager.senMessage(wjProtocol);
+        } else {
+            queue.offer(wjProtocol);
+        }
+    }
+
+    //手机→网关 手机配置房间后传递给网关信息
+    private void toNetRoomInfo(NetDevCompTask netDevCompTask) {
+        WjProtocol wjProtocol = new WjProtocol();
+        wjProtocol.setPlat(new byte[]{0x50, 0x00});
+        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
+        wjProtocol.setSubcmd(new byte[]{0x03, 0x00});
+        wjProtocol.setFormat("JS");
+        wjProtocol.setBack(new byte[]{0x00, 0x00});
+
+        String jsonStr = JSONObject.toJSONString(netDevCompTask);
+        Log.v("ly", jsonStr);
+        byte[] objectBytes = jsonStr.getBytes();
+
+        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
+        wjProtocol.setLen(wjProtocol.short2byte((short) len));
+        wjProtocol.setUserdata(objectBytes);
+
+        if (nettyManager != null) {
+            nettyManager.senMessage(wjProtocol);
+        } else {
+            queue.offer(wjProtocol);
+        }
+    }
+
+    //手机→网关 要求网关执行一段任务：
+    private void toNetDoTask(NetDoTaskTask netDoTaskTask) {
+        WjProtocol wjProtocol = new WjProtocol();
+        wjProtocol.setPlat(new byte[]{0x50, 0x00});
+        wjProtocol.setMaincmd(new byte[]{0x00, 0x00});
+        wjProtocol.setSubcmd(new byte[]{0x03, 0x00});
+        wjProtocol.setFormat("JS");
+        wjProtocol.setBack(new byte[]{0x00, 0x00});
+
+        String jsonStr = JSONObject.toJSONString(netDoTaskTask);
+        Log.v("ly", jsonStr);
+        byte[] objectBytes = jsonStr.getBytes();
+
+        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
+        wjProtocol.setLen(wjProtocol.short2byte((short) len));
+        wjProtocol.setUserdata(objectBytes);
+
+        if (nettyManager != null) {
+            nettyManager.senMessage(wjProtocol);
+        } else {
+            queue.offer(wjProtocol);
+        }
     }
 }
