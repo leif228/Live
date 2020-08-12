@@ -1,15 +1,18 @@
 package com.littlegreens.netty.client.extra;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.io.Serializable;
 
 public class LoginTask extends BaseTask {
-    private String oid;
+    @JSONField(name="OID")
+    private String OID;
 
-    public String getOid() {
-        return oid;
+    public String getOID() {
+        return OID;
     }
 
-    public void setOid(String oid) {
-        this.oid = oid;
+    public void setOID(String OID) {
+        this.OID = OID;
     }
 }

@@ -1,7 +1,11 @@
 package com.littlegreens.netty.client.extra;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 public class NetDoTaskTask extends BaseTask {
+    @JSONField(name="PassNum")
     private String PassNum;
+    @JSONField(name="PRO")
     private String PRO;
 
     public String getPassNum() {

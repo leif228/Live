@@ -1,6 +1,9 @@
 package com.littlegreens.netty.client.extra;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 public class NetDevCompFileTask extends NetDevCompTask {
+    @JSONField(name="File")
     private String File;
 
     public String getFile() {

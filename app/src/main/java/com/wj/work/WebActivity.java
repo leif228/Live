@@ -205,10 +205,14 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     public void toNetInfo(String fzwno, String userName, String preip, String preport, String loginfzwno, String owerip, String owerport, String owerfzwno, String passWord) {
 
         LL.V("toNetInfo:" + fzwno);
-
+//OID,Name,Identity,PhoneNum,Address,OwnerAddress,ServerIP,ServerPort,ServerOID,OwnerServerIP,OwnerServerPort,OwnerServerOID,PassNum,
         NetInfoTask netInfoTask = new NetInfoTask();
         netInfoTask.setOID(fzwno);
         netInfoTask.setName(userName);
+        netInfoTask.setIdentity("");
+        netInfoTask.setPhoneNum("");
+        netInfoTask.setAddress("");
+        netInfoTask.setOwnerAddress("");
         netInfoTask.setServerIP(preip);
         netInfoTask.setServerPort(preport);
         netInfoTask.setServerOID(loginfzwno);

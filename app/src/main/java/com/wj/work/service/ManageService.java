@@ -182,7 +182,7 @@ public class ManageService extends Service implements NettyClientListener {
         LL.V(ip + ":index:" + index);
 
         LoginTask loginTask = new LoginTask();
-        loginTask.setOid(fzwno);
+        loginTask.setOID(fzwno);
         nettyManager = nettyManagers.get(index);
         manageLoin(loginTask);
         this.doTask();

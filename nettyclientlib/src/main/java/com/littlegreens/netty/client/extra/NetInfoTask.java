@@ -1,20 +1,35 @@
 package com.littlegreens.netty.client.extra;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.io.Serializable;
 
 public class NetInfoTask extends BaseTask {
+    @JSONField(name="OID")
     private String OID;
+    @JSONField(name="Name")
     private String Name;
+    @JSONField(name="Identity")
     private String Identity;
+    @JSONField(name="PhoneNum")
     private String PhoneNum;
+    @JSONField(name="Address")
     private String Address;
+    @JSONField(name="OwnerAddress")
     private String OwnerAddress;
+    @JSONField(name="ServerIP")
     private String ServerIP;
+    @JSONField(name="ServerPort")
     private String ServerPort;
+    @JSONField(name="ServerOID")
     private String ServerOID;
+    @JSONField(name="OwnerServerIP")
     private String OwnerServerIP;
+    @JSONField(name="OwnerServerPort")
     private String OwnerServerPort;
+    @JSONField(name="OwnerServerOID")
     private String OwnerServerOID;
+    @JSONField(name="PassNum")
     private String PassNum;
 
     public String getOID() {
