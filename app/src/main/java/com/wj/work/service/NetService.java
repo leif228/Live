@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import com.alibaba.fastjson.JSONObject;
 import com.lib.kit.utils.LL;
 import com.littlegreens.netty.client.NettyManager;
+import com.littlegreens.netty.client.extra.BaseTask;
 import com.littlegreens.netty.client.extra.NetDevCompFileTask;
 import com.littlegreens.netty.client.extra.NetDevCompTask;
 import com.littlegreens.netty.client.extra.NetDoTaskTask;
@@ -30,17 +31,20 @@ public class NetService extends Service implements NettyClientListener {
     private boolean connecting = false;
     private boolean havaConnectSuccessed = false;
     public static final String COUNTER = "data";
+    public static final String COUNTER_TYPE = "type";
+    public static final String COUNTER_ELSE = "else";
     public static final long closeTimes = 30000l;
     public static final Integer port = 8555;
     public static final String ACTION_NAME = "com.wj.work.netservice.COUNTER_ACTION";
 
-    private String data;
+    private String data_type;
     List<String> iplist;
     List<NettyManager> nettyManagers = new ArrayList<>();
     int connetSuccessIndex = -1;//连接成功的下标
 
     NettyManager nettyManager;
     Queue<WjProtocol> queue;
+    String ip;
 
     @Nullable
     @Override
@@ -76,28 +80,36 @@ public class NetService extends Service implements NettyClientListener {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //从Activity获取data
-        data = intent.getStringExtra(COUNTER);
+        data_type = intent.getStringExtra(COUNTER_TYPE);
 
-        LL.V("NetService onStartCommand: " + data);
+        LL.V("NetService onStartCommand: " + data_type);
 
-        if ("1".equals(data)) {
+        if ("1".equals(data_type)) {
             getIpConnectNet();
-        } else if ("2".equals(data)) {
-            NetInfoTask netInfoTask = (NetInfoTask) intent.getSerializableExtra("task");
+        } else if ("2".equals(data_type)) {
+            NetInfoTask netInfoTask = (NetInfoTask) intent.getSerializableExtra(COUNTER);
             toNetInfo(netInfoTask);
-        } else if ("3".equals(data)) {
-            NetDevCompTask netDevCompTask = (NetDevCompTask) intent.getSerializableExtra("task");
+        } else if ("3".equals(data_type)) {
+            NetDevCompTask netDevCompTask = (NetDevCompTask) intent.getSerializableExtra(COUNTER);
             toDeviceComp(netDevCompTask);
+        } else if ("4".equals(data_type)) {
+            NetDevCompTask netDevCompTask = (NetDevCompTask) intent.getSerializableExtra(COUNTER);
+            toNetRoomInfo(netDevCompTask);
+        }else if ("5".equals(data_type)) {
+            NetDevCompFileTask netDevCompFileTask = (NetDevCompFileTask) intent.getSerializableExtra(COUNTER);
+            toNetGetDevList(netDevCompFileTask);
         }
 
         return START_STICKY;
     }
 
-    private void sendMsgToActivity(String data) {
+    private void sendMsgToActivity(BaseTask baseTask, String type, String elses) {
         //向Activity传递data
         final Intent mIntent = new Intent();
         mIntent.setAction(ACTION_NAME);
-        mIntent.putExtra(COUNTER, data);
+        mIntent.putExtra(COUNTER, baseTask);
+        mIntent.putExtra(COUNTER_TYPE, type);
+        mIntent.putExtra(COUNTER_ELSE, elses);
         sendBroadcast(mIntent);
     }
 
@@ -192,6 +204,7 @@ public class NetService extends Service implements NettyClientListener {
     @Override
     public void connectSuccess(String ip, int index) {
         LL.V(ip + ":index:" + index);
+        this.ip = ip;
         connecting = false;
         connetSuccessIndex = index;
         havaConnectSuccessed = true;
@@ -218,6 +231,19 @@ public class NetService extends Service implements NettyClientListener {
     @Override
     public void nettyNetSearchBack() {
         LL.V("nettyNetSearchBack");
+    }
+
+    @Override
+    public void nettyNetGetDevListOver(String tx, JSONObject objParam) {
+        LL.V("nettyNetGetDevListOver:" + objParam);
+
+        if (objParam == null) {
+            return;
+        }
+
+        LL.V("nettyNetGetDevListOver:" + objParam.toJSONString());
+        NetDevCompFileTask netDevCompFileTask = JSONObject.toJavaObject(objParam, NetDevCompFileTask.class);
+        sendMsgToActivity(netDevCompFileTask, "1", ip);
     }
 
 

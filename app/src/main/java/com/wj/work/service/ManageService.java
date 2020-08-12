@@ -12,7 +12,6 @@ import com.lib.kit.utils.LL;
 import com.littlegreens.netty.client.NettyManager;
 import com.littlegreens.netty.client.extra.ConnectTask;
 import com.littlegreens.netty.client.extra.LoginTask;
-import com.littlegreens.netty.client.extra.NetInfoTask;
 import com.littlegreens.netty.client.extra.WjProtocol;
 import com.littlegreens.netty.client.listener.NettyClientListener;
 import com.littlegreens.netty.client.status.ConnectState;
@@ -27,10 +26,11 @@ import java.util.Queue;
 public class ManageService extends Service implements NettyClientListener {
     public static final String COUNTER = "data";
     public static final String ACTION_NAME = "com.wj.work.manageservice.COUNTER_ACTION";
+    public static final String COUNTER_TYPE = "type";
 
     //    private boolean havaConnectSuccessed = false;
 //    int connetSuccessIndex = -1;//连接成功的下标
-    private String data;
+    private String data_type;
 
     NettyManager nettyManager;
     List<NettyManager> nettyManagers = new ArrayList<>();
@@ -68,9 +68,9 @@ public class ManageService extends Service implements NettyClientListener {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //从Activity获取data
-        data = intent.getStringExtra(COUNTER);
+        data_type = intent.getStringExtra(COUNTER_TYPE);
 
-        LL.V("ManageService onStartCommand :" + data);
+        LL.V("ManageService onStartCommand :" + data_type);
 
 //        if ("1".equals(data)) {
 //            ConnectTask connectTask = (ConnectTask) intent.getSerializableExtra("task");
@@ -78,8 +78,8 @@ public class ManageService extends Service implements NettyClientListener {
 //            //重连
 //            reConnectManage(connectTask);
 //        } else
-        if ("2".equals(data)) {
-            ConnectTask connectTask = (ConnectTask) intent.getSerializableExtra("task");
+        if ("2".equals(data_type)) {
+            ConnectTask connectTask = (ConnectTask) intent.getSerializableExtra(COUNTER);
             fzwno = connectTask.getFzwno();
             //新建连接
             newConnectManage(connectTask);
@@ -131,11 +131,12 @@ public class ManageService extends Service implements NettyClientListener {
         }
     }
 
-    private void sendMsgToActivity(String data) {
+    private void sendMsgToActivity(String data,String type) {
         //向Activity传递data
         final Intent mIntent = new Intent();
         mIntent.setAction(ACTION_NAME);
         mIntent.putExtra(COUNTER, data);
+        mIntent.putExtra(COUNTER_TYPE, type);
         sendBroadcast(mIntent);
     }
 
@@ -204,6 +205,11 @@ public class ManageService extends Service implements NettyClientListener {
 
     @Override
     public void nettyNetSearchBack() {
+
+    }
+
+    @Override
+    public void nettyNetGetDevListOver(String tx, JSONObject objParam) {
 
     }
 

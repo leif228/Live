@@ -1,6 +1,8 @@
 package com.littlegreens.netty.client.listener;
 
 
+import com.alibaba.fastjson.JSONObject;
+
 /**
  * Created by littleGreens on 2018-11-10.
  * TCP状态变化监听
@@ -23,4 +25,6 @@ public interface NettyClientListener{
 
      void connectSuccess(String ip,int index);
      void nettyNetSearchBack();
+
+    void nettyNetGetDevListOver(String tx, JSONObject objParam);
 }

@@ -61,15 +61,16 @@ public class TaskHandler {
     }
 
     private void nettyNetTaskBacking(ChannelHandlerContext ctx, String tx, JSONObject objParam) {
-        Log.v(WjDecoderHandler.TAG, "网关返回任务进度:" + tx);
+        Log.v(WjDecoderHandler.TAG, "网关返回任务进度:" + objParam.toJSONString());
     }
 
     private void nettyNetGetDevListOver(ChannelHandlerContext ctx, String tx, JSONObject objParam) {
-        Log.v(WjDecoderHandler.TAG, "获取设备列表完成，页面打开配置页:" + tx);
+        Log.v(WjDecoderHandler.TAG, "获取设备列表完成，页面打开配置页:" + objParam.toJSONString());
+        nettyTcpClient.nettyNetGetDevListOver(tx,objParam);
     }
 
     private void nettyNetDownOver(ChannelHandlerContext ctx, String tx, JSONObject objParam) {
-        Log.v(WjDecoderHandler.TAG, "驱动下载完成:" + tx);
+        Log.v(WjDecoderHandler.TAG, "驱动下载完成:" + objParam.toJSONString());
     }
 
     private void nettyIdle(ChannelHandlerContext ctx, String tx) {

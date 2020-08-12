@@ -4,8 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Handler;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
@@ -14,6 +12,7 @@ import com.lib.kit.utils.LL;
 import com.lib.kit.utils.StatusBarUtils;
 import com.littlegreens.netty.client.extra.BaseTask;
 import com.littlegreens.netty.client.extra.ConnectTask;
+import com.littlegreens.netty.client.extra.NetDevCompFileTask;
 import com.littlegreens.netty.client.extra.NetDevCompTask;
 import com.littlegreens.netty.client.extra.NetInfoTask;
 import com.tencent.smtt.sdk.WebSettings;
@@ -26,14 +25,11 @@ import com.wj.work.service.ManageService;
 import com.wj.work.service.NetService;
 import com.wj.work.ui.contract.WebViewI;
 import com.wj.work.ui.presenter.WebPresenter;
-import com.wj.work.utils.ScanDeviceUtile;
 import com.wj.work.utils.WebViewJavaScriptFunction;
 import com.wj.work.widget.entity.LoginEntity;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.List;
 
 import butterknife.BindView;
 
@@ -45,8 +41,8 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     private static final String mHomeUrl = "http://192.168.3.60:8080/wujieweb/page/login/login.html";
 //    private static final String mHomeUrl = "http://www.baidu.com";
 
-    private String mData = "";
-    private String nData = "";
+    private String mDataType = "";
+    private String nDataType = "";
     private Intent nIntent;
     private Intent mIntent;
     private NetReceiver netReceiver;
@@ -94,10 +90,10 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         startService(mIntent);
     }
 
-    private void sendMsgToNetService(String data, BaseTask baseTask) {
+    private void sendMsgToNetService(String type, BaseTask baseTask) {
         //向Service传递data
-        nIntent.putExtra(NetService.COUNTER, data);
-        nIntent.putExtra("task",baseTask);
+        nIntent.putExtra(NetService.COUNTER_TYPE, type);
+        nIntent.putExtra(NetService.COUNTER,baseTask);
         startService(nIntent);
 
 //        new Handler().postDelayed(new Runnable() {
@@ -109,10 +105,10 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
 //        },1000*65);
     }
 
-    private void sendMsgToManageService(String data, BaseTask baseTask) {
+    private void sendMsgToManageService(String type, BaseTask baseTask) {
         //向Service传递data
-        mIntent.putExtra(ManageService.COUNTER, data);
-        mIntent.putExtra("task",baseTask);
+        mIntent.putExtra(ManageService.COUNTER_TYPE, type);
+        mIntent.putExtra(ManageService.COUNTER,baseTask);
         startService(mIntent);
     }
 
@@ -234,6 +230,29 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     }
 
     @Override
+    @JavascriptInterface
+    public void saveDevice() {
+        LL.V("saveDevice:===" );
+        NetDevCompTask netDevCompTask = new NetDevCompTask();
+        netDevCompTask.setCompanyName("lifeSmart");
+        netDevCompTask.setPRO("SetOk");
+
+        sendMsgToNetService("4",netDevCompTask );
+    }
+
+    @Override
+    @JavascriptInterface
+    public void authOver() {
+        LL.V("authOver:===" );
+        NetDevCompFileTask netDevCompFileTask = new NetDevCompFileTask();
+        netDevCompFileTask.setFile("");
+        netDevCompFileTask.setCompanyName("lifeSmart");
+        netDevCompFileTask.setPRO("Authority");
+
+        sendMsgToNetService("5",netDevCompFileTask );
+    }
+
+    @Override
     protected boolean isRegisterEventBus() {
         return true;
     }
@@ -268,8 +287,16 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                 @Override
                 public void run() {
                     //获取从Service中传来的data
-                    nData = intent.getStringExtra(NetService.COUNTER);
-                    //更新UI
+                    nDataType = intent.getStringExtra(NetService.COUNTER_TYPE);
+                    if("1".equals(nDataType)){
+                        NetDevCompFileTask data = (NetDevCompFileTask) intent.getSerializableExtra(NetService.COUNTER);
+                        String ip = intent.getStringExtra(NetService.COUNTER_ELSE);
+                        LL.V("ip:"+ip);
+                        //更新UI
+                        String url = "http://" + ip + ":8080/tcube_app/APP_code/APP_choose_device.php";
+                        LL.V("url:"+url);
+                        webView.loadUrl(url);
+                    }
                 }
             });
         }
@@ -282,7 +309,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                 @Override
                 public void run() {
                     //获取从Service中传来的data
-                    mData = intent.getStringExtra(ManageService.COUNTER);
+                    mDataType = intent.getStringExtra(ManageService.COUNTER_TYPE);
                     //更新UI
                 }
             });

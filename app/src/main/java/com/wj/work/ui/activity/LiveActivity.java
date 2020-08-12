@@ -10,6 +10,7 @@ import androidx.core.util.Consumer;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import com.alibaba.fastjson.JSONObject;
 import com.littlegreens.netty.client.extra.NettyConfig;
 import com.wj.work.DataTemp;
 import com.wj.work.R;
@@ -417,6 +418,11 @@ public class LiveActivity extends BaseMvpActivity<LivePresenter> implements Stre
 
     @Override
     public void nettyNetSearchBack() {
+
+    }
+
+    @Override
+    public void nettyNetGetDevListOver(String tx, JSONObject objParam) {
 
     }
 

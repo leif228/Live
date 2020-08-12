@@ -3,6 +3,7 @@ package com.littlegreens.netty.client;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSONObject;
 import com.littlegreens.netty.client.extra.TaskHandler;
 import com.littlegreens.netty.client.extra.WebSocketClientHandler;
 import com.littlegreens.netty.client.extra.WjDecoderHandler;
@@ -248,6 +249,10 @@ public class NettyTcpClient {
 
     public void nettyNetSearchBack() {
         listener.nettyNetSearchBack();
+    }
+
+    public void nettyNetGetDevListOver(String tx, JSONObject objParam) {
+        listener.nettyNetGetDevListOver(tx,objParam);
     }
 
     //创建NettyTcpClient
