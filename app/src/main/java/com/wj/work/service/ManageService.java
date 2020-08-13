@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 import com.alibaba.fastjson.JSONObject;
 import com.lib.kit.utils.LL;
 import com.littlegreens.netty.client.NettyManager;
-import com.littlegreens.netty.client.extra.ConnectTask;
+import com.littlegreens.netty.client.extra.ConnectTk;
 import com.littlegreens.netty.client.extra.LoginTask;
 import com.littlegreens.netty.client.extra.WjProtocol;
 import com.littlegreens.netty.client.listener.NettyClientListener;
@@ -54,14 +54,14 @@ public class ManageService extends Service implements NettyClientListener {
 
         LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
         if (!"".equals(loginEntity.getIp())) {
-            ConnectTask connectTask = new ConnectTask();
-            connectTask.setIp(loginEntity.getIp());
-            connectTask.setPort(loginEntity.getPort());
-            connectTask.setFzwno(loginEntity.getFzwno());
+            ConnectTk connectTk = new ConnectTk();
+            connectTk.setIp(loginEntity.getIp());
+            connectTk.setPort(loginEntity.getPort());
+            connectTk.setFzwno(loginEntity.getFzwno());
 
-            fzwno = connectTask.getFzwno();
+            fzwno = connectTk.getFzwno();
             //重连
-            reConnectManage(connectTask);
+            reConnectManage(connectTk);
         }
     }
 
@@ -79,24 +79,24 @@ public class ManageService extends Service implements NettyClientListener {
 //            reConnectManage(connectTask);
 //        } else
         if ("2".equals(data_type)) {
-            ConnectTask connectTask = (ConnectTask) intent.getSerializableExtra(COUNTER);
-            fzwno = connectTask.getFzwno();
+            ConnectTk connectTk = (ConnectTk) intent.getSerializableExtra(COUNTER);
+            fzwno = connectTk.getFzwno();
             //新建连接
-            newConnectManage(connectTask);
+            newConnectManage(connectTk);
         }
 
         return START_STICKY;
     }
 
     //新建连接
-    private void newConnectManage(ConnectTask connectTask) {
+    private void newConnectManage(ConnectTk connectTk) {
         if (nettyManager != null) {
             nettyManager.release();
             nettyManager = null;
             nettyManagers.clear();
 
-            LL.V("断开原连接再新建连接newConnectManage=" + ":ip=" + connectTask.getIp());
-            NettyManager nettyManager = new NettyManager(0, connectTask.getIp(), Integer.valueOf(connectTask.getPort()));
+            LL.V("断开原连接再新建连接newConnectManage=" + ":ip=" + connectTk.getIp());
+            NettyManager nettyManager = new NettyManager(0, connectTk.getIp(), Integer.valueOf(connectTk.getPort()));
             nettyManager.setNettyClientListener(this);
             nettyManager.connect();
 
@@ -105,8 +105,8 @@ public class ManageService extends Service implements NettyClientListener {
             nettyManagers.clear();
             nettyManager = null;
 
-            LL.V("直接新建连接newConnectManage=" + ":ip=" + connectTask.getIp());
-            NettyManager nettyManager = new NettyManager(0, connectTask.getIp(), Integer.valueOf(connectTask.getPort()));
+            LL.V("直接新建连接newConnectManage=" + ":ip=" + connectTk.getIp());
+            NettyManager nettyManager = new NettyManager(0, connectTk.getIp(), Integer.valueOf(connectTk.getPort()));
             nettyManager.setNettyClientListener(this);
             nettyManager.connect();
 
@@ -115,15 +115,15 @@ public class ManageService extends Service implements NettyClientListener {
     }
 
     //重连
-    private void reConnectManage(ConnectTask connectTask) {
+    private void reConnectManage(ConnectTk connectTk) {
         if (nettyManager != null) {
 //            nettyManager.attemptReConnect();
         } else {
             nettyManagers.clear();
             nettyManager = null;
 
-            LL.V("reConnectManage=" + ":ip=" + connectTask.getIp());
-            NettyManager nettyManager = new NettyManager(0, connectTask.getIp(), Integer.valueOf(connectTask.getPort()));
+            LL.V("reConnectManage=" + ":ip=" + connectTk.getIp());
+            NettyManager nettyManager = new NettyManager(0, connectTk.getIp(), Integer.valueOf(connectTk.getPort()));
             nettyManager.setNettyClientListener(this);
             nettyManager.connect();
 

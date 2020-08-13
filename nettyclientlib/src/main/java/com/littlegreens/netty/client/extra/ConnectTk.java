@@ -1,6 +1,6 @@
 package com.littlegreens.netty.client.extra;
 
-public class ConnectTask extends BaseTask {
+public class ConnectTk extends BaseTask {
     private String ip;
     private String port;
     private String fzwno;

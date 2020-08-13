@@ -11,7 +11,7 @@ import android.webkit.JavascriptInterface;
 import com.lib.kit.utils.LL;
 import com.lib.kit.utils.StatusBarUtils;
 import com.littlegreens.netty.client.extra.BaseTask;
-import com.littlegreens.netty.client.extra.ConnectTask;
+import com.littlegreens.netty.client.extra.ConnectTk;
 import com.littlegreens.netty.client.extra.NetDevCompFileTask;
 import com.littlegreens.netty.client.extra.NetDevCompTask;
 import com.littlegreens.netty.client.extra.NetInfoTask;
@@ -191,12 +191,12 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         loginEntity.setFzwno(fzwno);
         SpManager.getInstance().getLoginSp().putLoginInfoEntity(loginEntity);
 
-        ConnectTask connectTask =new ConnectTask();
-        connectTask.setIp(ip);
-        connectTask.setPort(port);
-        connectTask.setFzwno(fzwno);
+        ConnectTk connectTk =new ConnectTk();
+        connectTk.setIp(ip);
+        connectTk.setPort(port);
+        connectTk.setFzwno(fzwno);
 
-        sendMsgToManageService("2",connectTask);
+        sendMsgToManageService("2", connectTk);
 
     }
 
