@@ -34,7 +34,7 @@ public class NetService extends Service implements NettyClientListener {
     public static final String COUNTER_TYPE = "type";
     public static final String COUNTER_ELSE = "else";
     public static final long closeTimes = 30000l;
-    public static final Integer port = 8666;
+    public static final Integer port = 8555;
     public static final String ACTION_NAME = "com.wj.work.netservice.COUNTER_ACTION";
 
     private String data_type;

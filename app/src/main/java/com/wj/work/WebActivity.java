@@ -48,6 +48,8 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     private NetReceiver netReceiver;
     private ManageReceiver manageReceiver;
     private boolean bind = false;
+    
+    private String compName = "";
 
 
     @Override
@@ -227,8 +229,9 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     @Override
     @JavascriptInterface
     public void deviceComp(String name) {
+        this.compName = name;
         NetDevCompTask netDevCompTask = new NetDevCompTask();
-        netDevCompTask.setCompanyName(name);
+        netDevCompTask.setCompanyName(compName);
         netDevCompTask.setPRO("CompanyChoosed");
         sendMsgToNetService("3",netDevCompTask);
     }
@@ -238,7 +241,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     public void saveDevice() {
         LL.V("saveDevice:===" );
         NetDevCompTask netDevCompTask = new NetDevCompTask();
-        netDevCompTask.setCompanyName("lifeSmart");
+        netDevCompTask.setCompanyName(compName);
         netDevCompTask.setPRO("SetOk");
 
         sendMsgToNetService("4",netDevCompTask );
@@ -246,11 +249,11 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
 
     @Override
     @JavascriptInterface
-    public void authOver() {
+    public void authOver(String path) {
         LL.V("authOver:===" );
         NetDevCompFileTask netDevCompFileTask = new NetDevCompFileTask();
-        netDevCompFileTask.setFile("");
-        netDevCompFileTask.setCompanyName("lifeSmart");
+        netDevCompFileTask.setFile(path);
+        netDevCompFileTask.setCompanyName(compName);
         netDevCompFileTask.setPRO("Authority");
 
         sendMsgToNetService("5",netDevCompFileTask );

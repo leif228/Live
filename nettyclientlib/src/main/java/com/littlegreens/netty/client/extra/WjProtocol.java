@@ -7,15 +7,15 @@ import java.util.Arrays;
 
 public class WjProtocol {
     //最小的数据长度：开头标准位1字节
-    public static int MIN_DATA_LEN = 21;
+    public static final int MIN_DATA_LEN = 21;
     public static final int headerLength = 6;
     public static final int checkLength = 1;
     //数据解码协议的开始标志
-    public static String PROTOCOL_HEADER = "$TCUB&";
+    public static final String PROTOCOL_HEADER = "$TCUB&";
 
-    public static String FORMAT_TX = "TX";
-    public static String FORMAT_JS = "JS";
-    public static String FORMAT_AT = "AT";
+    public static final String FORMAT_TX = "TX";
+    public static final String FORMAT_JS = "JS";
+    public static final String FORMAT_AT = "AT";
 
     private String header = PROTOCOL_HEADER;//6
     private byte[] len;//2
@@ -184,7 +184,7 @@ public class WjProtocol {
             dataLength = protocol.getUserdata().length;
         }
 
-        int cslength = 21 - 6 - 1 + dataLength;
+        int cslength = WjProtocol.MIN_DATA_LEN - WjProtocol.headerLength - WjProtocol.checkLength + dataLength;
         byte[] arr = new byte[cslength];
 
         int index = 0;
