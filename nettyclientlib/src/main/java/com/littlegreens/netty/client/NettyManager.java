@@ -1,17 +1,9 @@
 package com.littlegreens.netty.client;
 
-import android.util.Log;
-
-import com.alibaba.fastjson.JSONObject;
-import com.littlegreens.netty.client.extra.LoginTask;
-import com.littlegreens.netty.client.extra.NetDevCompTask;
-import com.littlegreens.netty.client.extra.NetInfoTask;
 import com.littlegreens.netty.client.extra.NettyConfig;
 import com.littlegreens.netty.client.extra.WjProtocol;
 import com.littlegreens.netty.client.listener.MessageStateListener;
 import com.littlegreens.netty.client.listener.NettyClientListener;
-
-import java.util.Properties;
 
 /**
  * NettyManager

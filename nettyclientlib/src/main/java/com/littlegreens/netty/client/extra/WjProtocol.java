@@ -177,6 +177,24 @@ public class WjProtocol {
         return (int) b;
     }
 
+    public String IntToHexStringLimit2(int num) {
+
+        String hexString = Integer.toHexString(num);
+        switch (hexString.length()) {
+            case 1:
+                hexString = "0" + hexString;
+                break;
+            case 2:
+                hexString = hexString;
+                break;
+            default:
+                hexString = null;
+                break;
+        }
+
+        return hexString;
+    }
+
     public byte[] getCheckSumArray(WjProtocol protocol) {
 
         int dataLength = 0;

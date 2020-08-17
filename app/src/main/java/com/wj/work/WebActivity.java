@@ -10,11 +10,11 @@ import android.webkit.JavascriptInterface;
 
 import com.lib.kit.utils.LL;
 import com.lib.kit.utils.StatusBarUtils;
-import com.littlegreens.netty.client.extra.BaseTask;
-import com.littlegreens.netty.client.extra.ConnectTk;
-import com.littlegreens.netty.client.extra.NetDevCompFileTask;
-import com.littlegreens.netty.client.extra.NetDevCompTask;
-import com.littlegreens.netty.client.extra.NetInfoTask;
+import com.littlegreens.netty.client.extra.task.BaseTask;
+import com.littlegreens.netty.client.extra.task.ConnectTk;
+import com.littlegreens.netty.client.extra.task.NetDevCompFileTask;
+import com.littlegreens.netty.client.extra.task.NetDevCompTask;
+import com.littlegreens.netty.client.extra.task.NetInfoTask;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;

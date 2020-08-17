@@ -1,4 +1,6 @@
-package com.littlegreens.netty.client.extra;
+package com.littlegreens.netty.client.extra.task;
+
+import com.littlegreens.netty.client.extra.task.BaseTask;
 
 public class ConnectTk extends BaseTask {
     private String ip;

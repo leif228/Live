@@ -1,8 +1,6 @@
-package com.littlegreens.netty.client.extra;
+package com.littlegreens.netty.client.extra.task;
 
 import com.alibaba.fastjson.annotation.JSONField;
-
-import java.io.Serializable;
 
 public class LoginTask extends BaseTask {
     @JSONField(name = "OID")

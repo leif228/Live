@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.alibaba.fastjson.JSONObject;
 import com.littlegreens.netty.client.NettyTcpClient;
+import com.littlegreens.netty.client.extra.receive.Rec_task_i;
 
 import java.util.Arrays;
 
@@ -37,50 +38,67 @@ public class TaskHandler {
             }
         }
 
+        //通用处理
+        try {
+            String classPath = "com.littlegreens.netty.client.extra.receive";
+            String className = "Rec_" + wjProtocol.IntToHexStringLimit2(wjProtocol.getMaincmd()[0]) + wjProtocol.IntToHexStringLimit2(wjProtocol.getMaincmd()[1]) + "_"
+                    + wjProtocol.IntToHexStringLimit2(wjProtocol.getSubcmd()[0]) + wjProtocol.IntToHexStringLimit2(wjProtocol.getSubcmd()[1]);
+            className = classPath + "." + className;
+            Log.v(WjDecoderHandler.TAG, "className:" + className);
+            Class genClass = null;
+
+            genClass = Class.forName(className);
+            Rec_task_i rec_task_i = (Rec_task_i) genClass.newInstance();
+            rec_task_i.doTask(ctx, tx, objParam, nettyTcpClient);
+        } catch (Exception e) {
+            Log.e(WjDecoderHandler.TAG, "doProtocol_报错了:" + e.getMessage());
+        }
+
         //======业务处理======
-        if (Arrays.toString(new Byte[]{0x00, 0x00}).equals(Arrays.toString(wjProtocol.getMaincmd()))
-                && Arrays.toString(new Byte[]{0x00, 0x00}).equals(Arrays.toString(wjProtocol.getSubcmd()))) {//终端←服务 心跳
-            this.nettyIdle(ctx, tx);
-        }
-        if (Arrays.toString(new Byte[]{0x12, 0x00}).equals(Arrays.toString(wjProtocol.getMaincmd()))
-                && Arrays.toString(new Byte[]{0x00, 0x00}).equals(Arrays.toString(wjProtocol.getSubcmd()))) {//手机←网关 搜索返回
-            this.nettyNetSearchBack(ctx, tx);
-        }
-        if (Arrays.toString(new Byte[]{0x12, 0x00}).equals(Arrays.toString(wjProtocol.getMaincmd()))
-                && Arrays.toString(new Byte[]{0x01, 0x00}).equals(Arrays.toString(wjProtocol.getSubcmd()))) {//手机←网关 驱动下载完成
-            this.nettyNetDownOver(ctx, tx, objParam);
-        }
-        if (Arrays.toString(new Byte[]{0x12, 0x00}).equals(Arrays.toString(wjProtocol.getMaincmd()))
-                && Arrays.toString(new Byte[]{0x02, 0x00}).equals(Arrays.toString(wjProtocol.getSubcmd()))) {//手机←网关 获取设备列表完成，页面打开配置页
-            this.nettyNetGetDevListOver(ctx, tx, objParam);
-        }
-        if (Arrays.toString(new Byte[]{0x00, 0x00}).equals(Arrays.toString(wjProtocol.getMaincmd()))
-                && Arrays.toString(new Byte[]{0x03, 0x00}).equals(Arrays.toString(wjProtocol.getSubcmd()))) {//手机←网关 网关返回任务进度
-            this.nettyNetTaskBacking(ctx, tx, objParam);
-        }
+//        if (Arrays.toString(new Byte[]{0x00, 0x00}).equals(Arrays.toString(wjProtocol.getMaincmd()))
+//                && Arrays.toString(new Byte[]{0x00, 0x00}).equals(Arrays.toString(wjProtocol.getSubcmd()))) {//终端←服务 心跳
+//            this.nettyIdle(ctx, tx);
+//        }
+//        if (Arrays.toString(new Byte[]{0x12, 0x00}).equals(Arrays.toString(wjProtocol.getMaincmd()))
+//                && Arrays.toString(new Byte[]{0x00, 0x00}).equals(Arrays.toString(wjProtocol.getSubcmd()))) {//手机←网关 搜索返回
+//            this.nettyNetSearchBack(ctx, tx);
+//        }
+//        if (Arrays.toString(new Byte[]{0x12, 0x00}).equals(Arrays.toString(wjProtocol.getMaincmd()))
+//                && Arrays.toString(new Byte[]{0x01, 0x00}).equals(Arrays.toString(wjProtocol.getSubcmd()))) {//手机←网关 驱动下载完成
+//            this.nettyNetDownOver(ctx, tx, objParam);
+//        }
+//        if (Arrays.toString(new Byte[]{0x12, 0x00}).equals(Arrays.toString(wjProtocol.getMaincmd()))
+//                && Arrays.toString(new Byte[]{0x02, 0x00}).equals(Arrays.toString(wjProtocol.getSubcmd()))) {//手机←网关 获取设备列表完成，页面打开配置页
+//            this.nettyNetGetDevListOver(ctx, tx, objParam);
+//        }
+//        if (Arrays.toString(new Byte[]{0x00, 0x00}).equals(Arrays.toString(wjProtocol.getMaincmd()))
+//                && Arrays.toString(new Byte[]{0x03, 0x00}).equals(Arrays.toString(wjProtocol.getSubcmd()))) {//手机←网关 网关返回任务进度
+//            this.nettyNetTaskBacking(ctx, tx, objParam);
+//        }
+
     }
 
-    private void nettyNetTaskBacking(ChannelHandlerContext ctx, String tx, JSONObject objParam) {
-        Log.v(WjDecoderHandler.TAG, "网关返回任务进度:" + objParam.toJSONString());
-    }
-
-    private void nettyNetGetDevListOver(ChannelHandlerContext ctx, String tx, JSONObject objParam) {
-        Log.v(WjDecoderHandler.TAG, "获取设备列表完成，页面打开配置页:" + objParam.toJSONString());
-        nettyTcpClient.nettyNetGetDevListOver(tx,objParam);
-    }
-
-    private void nettyNetDownOver(ChannelHandlerContext ctx, String tx, JSONObject objParam) {
-        Log.v(WjDecoderHandler.TAG, "驱动下载完成:" + objParam.toJSONString());
-    }
-
-    private void nettyIdle(ChannelHandlerContext ctx, String tx) {
-        Log.v(WjDecoderHandler.TAG, "心跳:" + tx);
-    }
-
-    private void nettyNetSearchBack(ChannelHandlerContext ctx, String tx) {
-        Log.v(WjDecoderHandler.TAG, "搜索返回:" + tx);
-        nettyTcpClient.nettyNetSearchBack();
-    }
+//    private void nettyNetTaskBacking(ChannelHandlerContext ctx, String tx, JSONObject objParam) {
+//        Log.v(WjDecoderHandler.TAG, "网关返回任务进度:" + objParam.toJSONString());
+//    }
+//
+//    private void nettyNetGetDevListOver(ChannelHandlerContext ctx, String tx, JSONObject objParam) {
+//        Log.v(WjDecoderHandler.TAG, "获取设备列表完成，页面打开配置页:" + objParam.toJSONString());
+//        nettyTcpClient.nettyNetGetDevListOver(tx, objParam);
+//    }
+//
+//    private void nettyNetDownOver(ChannelHandlerContext ctx, String tx, JSONObject objParam) {
+//        Log.v(WjDecoderHandler.TAG, "驱动下载完成:" + objParam.toJSONString());
+//    }
+//
+//    private void nettyIdle(ChannelHandlerContext ctx, String tx) {
+//        Log.v(WjDecoderHandler.TAG, "心跳:" + tx);
+//    }
+//
+//    private void nettyNetSearchBack(ChannelHandlerContext ctx, String tx) {
+//        Log.v(WjDecoderHandler.TAG, "搜索返回:" + tx);
+//        nettyTcpClient.nettyNetSearchBack();
+//    }
 
 
     public void sendIdleData(ChannelHandlerContext ctx) {

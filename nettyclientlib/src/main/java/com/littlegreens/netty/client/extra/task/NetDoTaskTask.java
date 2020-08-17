@@ -1,4 +1,4 @@
-package com.littlegreens.netty.client.extra;
+package com.littlegreens.netty.client.extra.task;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
