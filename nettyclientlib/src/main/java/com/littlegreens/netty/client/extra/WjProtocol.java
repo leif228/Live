@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 public class WjProtocol {
     //最小的数据长度：开头标准位1字节
+    public static final String TAG = "ly";
     public static final int MIN_DATA_LEN = 21;
     public static final int headerLength = 6;
     public static final int checkLength = 1;

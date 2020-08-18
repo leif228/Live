@@ -10,6 +10,14 @@ import androidx.annotation.Nullable;
 import com.alibaba.fastjson.JSONObject;
 import com.lib.kit.utils.LL;
 import com.littlegreens.netty.client.NettyManager;
+import com.littlegreens.netty.client.extra.send.Sen_0000_0100;
+import com.littlegreens.netty.client.extra.send.Sen_0000_0200;
+import com.littlegreens.netty.client.extra.send.Sen_0000_0300;
+import com.littlegreens.netty.client.extra.send.Sen_1200_0000;
+import com.littlegreens.netty.client.extra.send.Sen_1200_0100;
+import com.littlegreens.netty.client.extra.send.Sen_1200_0200;
+import com.littlegreens.netty.client.extra.send.Sen_1200_0300;
+import com.littlegreens.netty.client.extra.send.Sen_factory;
 import com.littlegreens.netty.client.extra.task.BaseTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompFileTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompTask;
@@ -250,15 +258,19 @@ public class NetService extends Service implements NettyClientListener {
     //手机→网关 搜索网关(目前遍历)
     private void toSearchNet() {
 
-        WjProtocol wjProtocol = new WjProtocol();
-        wjProtocol.setPlat(new byte[]{0x50, 0x00});
-        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
-        wjProtocol.setSubcmd(new byte[]{0x00, 0x00});
-        wjProtocol.setFormat("TX");
-        wjProtocol.setBack(new byte[]{0x00, 0x00});
+//        WjProtocol wjProtocol = new WjProtocol();
+//        wjProtocol.setPlat(new byte[]{0x50, 0x00});
+//        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
+//        wjProtocol.setSubcmd(new byte[]{0x00, 0x00});
+//        wjProtocol.setFormat("TX");
+//        wjProtocol.setBack(new byte[]{0x00, 0x00});
+//
+//        int len = WjProtocol.MIN_DATA_LEN + 0;
+//        wjProtocol.setLen(wjProtocol.short2byte((short) len));
 
-        int len = WjProtocol.MIN_DATA_LEN + 0;
-        wjProtocol.setLen(wjProtocol.short2byte((short) len));
+        WjProtocol wjProtocol = Sen_factory.getInstance(Sen_1200_0000.main,Sen_1200_0000.sub,null);
+        if(wjProtocol == null)
+            return;
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
@@ -270,20 +282,24 @@ public class NetService extends Service implements NettyClientListener {
     //手机→网关 手机选择设备厂商后传递给网关信息
     private void toDeviceComp(NetDevCompTask netDevCompTask) {
 
-        WjProtocol wjProtocol = new WjProtocol();
-        wjProtocol.setPlat(new byte[]{0x50, 0x00});
-        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
-        wjProtocol.setSubcmd(new byte[]{0x01, 0x00});
-        wjProtocol.setFormat("JS");
-        wjProtocol.setBack(new byte[]{0x00, 0x00});
+//        WjProtocol wjProtocol = new WjProtocol();
+//        wjProtocol.setPlat(new byte[]{0x50, 0x00});
+//        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
+//        wjProtocol.setSubcmd(new byte[]{0x01, 0x00});
+//        wjProtocol.setFormat("JS");
+//        wjProtocol.setBack(new byte[]{0x00, 0x00});
+//
+//        String jsonStr = JSONObject.toJSONString(netDevCompTask);
+//        Log.v("ly", jsonStr);
+//        byte[] objectBytes = jsonStr.getBytes();
+//
+//        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
+//        wjProtocol.setLen(wjProtocol.short2byte((short) len));
+//        wjProtocol.setUserdata(objectBytes);
 
-        String jsonStr = JSONObject.toJSONString(netDevCompTask);
-        Log.v("ly", jsonStr);
-        byte[] objectBytes = jsonStr.getBytes();
-
-        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
-        wjProtocol.setLen(wjProtocol.short2byte((short) len));
-        wjProtocol.setUserdata(objectBytes);
+        WjProtocol wjProtocol = Sen_factory.getInstance(Sen_1200_0100.main, Sen_1200_0100.sub,netDevCompTask);
+        if(wjProtocol == null)
+            return;
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
@@ -294,20 +310,24 @@ public class NetService extends Service implements NettyClientListener {
 
     //手机→网关 手机注册后传递给网关信息
     private void toNetInfo(NetInfoTask netInfoTask) {
-        WjProtocol wjProtocol = new WjProtocol();
-        wjProtocol.setPlat(new byte[]{0x50, 0x00});
-        wjProtocol.setMaincmd(new byte[]{0x00, 0x00});
-        wjProtocol.setSubcmd(new byte[]{0x02, 0x00});
-        wjProtocol.setFormat("JS");
-        wjProtocol.setBack(new byte[]{0x00, 0x00});
+//        WjProtocol wjProtocol = new WjProtocol();
+//        wjProtocol.setPlat(new byte[]{0x50, 0x00});
+//        wjProtocol.setMaincmd(new byte[]{0x00, 0x00});
+//        wjProtocol.setSubcmd(new byte[]{0x02, 0x00});
+//        wjProtocol.setFormat("JS");
+//        wjProtocol.setBack(new byte[]{0x00, 0x00});
+//
+//        String jsonStr = JSONObject.toJSONString(netInfoTask);
+//        Log.v("ly", jsonStr);
+//        byte[] objectBytes = jsonStr.getBytes();
+//
+//        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
+//        wjProtocol.setLen(wjProtocol.short2byte((short) len));
+//        wjProtocol.setUserdata(objectBytes);
 
-        String jsonStr = JSONObject.toJSONString(netInfoTask);
-        Log.v("ly", jsonStr);
-        byte[] objectBytes = jsonStr.getBytes();
-
-        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
-        wjProtocol.setLen(wjProtocol.short2byte((short) len));
-        wjProtocol.setUserdata(objectBytes);
+        WjProtocol wjProtocol = Sen_factory.getInstance(Sen_0000_0200.main, Sen_0000_0200.sub,netInfoTask);
+        if(wjProtocol == null)
+            return;
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
@@ -318,20 +338,24 @@ public class NetService extends Service implements NettyClientListener {
 
     //手机→网关 认证完成，网关获取设备列表
     private void toNetGetDevList(NetDevCompFileTask netDevCompFileTask) {
-        WjProtocol wjProtocol = new WjProtocol();
-        wjProtocol.setPlat(new byte[]{0x50, 0x00});
-        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
-        wjProtocol.setSubcmd(new byte[]{0x02, 0x00});
-        wjProtocol.setFormat("JS");
-        wjProtocol.setBack(new byte[]{0x00, 0x00});
+//        WjProtocol wjProtocol = new WjProtocol();
+//        wjProtocol.setPlat(new byte[]{0x50, 0x00});
+//        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
+//        wjProtocol.setSubcmd(new byte[]{0x02, 0x00});
+//        wjProtocol.setFormat("JS");
+//        wjProtocol.setBack(new byte[]{0x00, 0x00});
+//
+//        String jsonStr = JSONObject.toJSONString(netDevCompFileTask);
+//        Log.v("ly", jsonStr);
+//        byte[] objectBytes = jsonStr.getBytes();
+//
+//        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
+//        wjProtocol.setLen(wjProtocol.short2byte((short) len));
+//        wjProtocol.setUserdata(objectBytes);
 
-        String jsonStr = JSONObject.toJSONString(netDevCompFileTask);
-        Log.v("ly", jsonStr);
-        byte[] objectBytes = jsonStr.getBytes();
-
-        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
-        wjProtocol.setLen(wjProtocol.short2byte((short) len));
-        wjProtocol.setUserdata(objectBytes);
+        WjProtocol wjProtocol = Sen_factory.getInstance(Sen_1200_0200.main, Sen_1200_0200.sub,netDevCompFileTask);
+        if(wjProtocol == null)
+            return;
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
@@ -342,20 +366,24 @@ public class NetService extends Service implements NettyClientListener {
 
     //手机→网关 手机配置房间后传递给网关信息
     private void toNetRoomInfo(NetDevCompTask netDevCompTask) {
-        WjProtocol wjProtocol = new WjProtocol();
-        wjProtocol.setPlat(new byte[]{0x50, 0x00});
-        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
-        wjProtocol.setSubcmd(new byte[]{0x03, 0x00});
-        wjProtocol.setFormat("JS");
-        wjProtocol.setBack(new byte[]{0x00, 0x00});
+//        WjProtocol wjProtocol = new WjProtocol();
+//        wjProtocol.setPlat(new byte[]{0x50, 0x00});
+//        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
+//        wjProtocol.setSubcmd(new byte[]{0x03, 0x00});
+//        wjProtocol.setFormat("JS");
+//        wjProtocol.setBack(new byte[]{0x00, 0x00});
+//
+//        String jsonStr = JSONObject.toJSONString(netDevCompTask);
+//        Log.v("ly", jsonStr);
+//        byte[] objectBytes = jsonStr.getBytes();
+//
+//        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
+//        wjProtocol.setLen(wjProtocol.short2byte((short) len));
+//        wjProtocol.setUserdata(objectBytes);
 
-        String jsonStr = JSONObject.toJSONString(netDevCompTask);
-        Log.v("ly", jsonStr);
-        byte[] objectBytes = jsonStr.getBytes();
-
-        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
-        wjProtocol.setLen(wjProtocol.short2byte((short) len));
-        wjProtocol.setUserdata(objectBytes);
+        WjProtocol wjProtocol = Sen_factory.getInstance(Sen_1200_0300.main, Sen_1200_0300.sub,netDevCompTask);
+        if(wjProtocol == null)
+            return;
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
@@ -366,20 +394,24 @@ public class NetService extends Service implements NettyClientListener {
 
     //手机→网关 要求网关执行一段任务：
     private void toNetDoTask(NetDoTaskTask netDoTaskTask) {
-        WjProtocol wjProtocol = new WjProtocol();
-        wjProtocol.setPlat(new byte[]{0x50, 0x00});
-        wjProtocol.setMaincmd(new byte[]{0x00, 0x00});
-        wjProtocol.setSubcmd(new byte[]{0x03, 0x00});
-        wjProtocol.setFormat("JS");
-        wjProtocol.setBack(new byte[]{0x00, 0x00});
+//        WjProtocol wjProtocol = new WjProtocol();
+//        wjProtocol.setPlat(new byte[]{0x50, 0x00});
+//        wjProtocol.setMaincmd(new byte[]{0x00, 0x00});
+//        wjProtocol.setSubcmd(new byte[]{0x03, 0x00});
+//        wjProtocol.setFormat("JS");
+//        wjProtocol.setBack(new byte[]{0x00, 0x00});
+//
+//        String jsonStr = JSONObject.toJSONString(netDoTaskTask);
+//        Log.v("ly", jsonStr);
+//        byte[] objectBytes = jsonStr.getBytes();
+//
+//        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
+//        wjProtocol.setLen(wjProtocol.short2byte((short) len));
+//        wjProtocol.setUserdata(objectBytes);
 
-        String jsonStr = JSONObject.toJSONString(netDoTaskTask);
-        Log.v("ly", jsonStr);
-        byte[] objectBytes = jsonStr.getBytes();
-
-        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
-        wjProtocol.setLen(wjProtocol.short2byte((short) len));
-        wjProtocol.setUserdata(objectBytes);
+        WjProtocol wjProtocol = Sen_factory.getInstance(Sen_0000_0300.main, Sen_0000_0300.sub,netDoTaskTask);
+        if(wjProtocol == null)
+            return;
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);

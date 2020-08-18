@@ -10,7 +10,9 @@ import androidx.annotation.Nullable;
 import com.alibaba.fastjson.JSONObject;
 import com.lib.kit.utils.LL;
 import com.littlegreens.netty.client.NettyManager;
-import com.littlegreens.netty.client.extra.task.ConnectTk;
+import com.littlegreens.netty.client.extra.send.Sen_0000_0100;
+import com.littlegreens.netty.client.extra.send.Sen_factory;
+import com.littlegreens.netty.client.extra.task.Connect;
 import com.littlegreens.netty.client.extra.task.LoginTask;
 import com.littlegreens.netty.client.extra.WjProtocol;
 import com.littlegreens.netty.client.listener.NettyClientListener;
@@ -54,14 +56,14 @@ public class ManageService extends Service implements NettyClientListener {
 
         LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
         if (!"".equals(loginEntity.getIp())) {
-            ConnectTk connectTk = new ConnectTk();
-            connectTk.setIp(loginEntity.getIp());
-            connectTk.setPort(loginEntity.getPort());
-            connectTk.setFzwno(loginEntity.getFzwno());
+            Connect connect = new Connect();
+            connect.setIp(loginEntity.getIp());
+            connect.setPort(loginEntity.getPort());
+            connect.setFzwno(loginEntity.getFzwno());
 
-            fzwno = connectTk.getFzwno();
+            fzwno = connect.getFzwno();
             //重连
-            reConnectManage(connectTk);
+            reConnectManage(connect);
         }
     }
 
@@ -79,24 +81,24 @@ public class ManageService extends Service implements NettyClientListener {
 //            reConnectManage(connectTask);
 //        } else
         if ("2".equals(data_type)) {
-            ConnectTk connectTk = (ConnectTk) intent.getSerializableExtra(COUNTER);
-            fzwno = connectTk.getFzwno();
+            Connect connect = (Connect) intent.getSerializableExtra(COUNTER);
+            fzwno = connect.getFzwno();
             //新建连接
-            newConnectManage(connectTk);
+            newConnectManage(connect);
         }
 
         return START_STICKY;
     }
 
     //新建连接
-    private void newConnectManage(ConnectTk connectTk) {
+    private void newConnectManage(Connect connect) {
         if (nettyManager != null) {
             nettyManager.release();
             nettyManager = null;
             nettyManagers.clear();
 
-            LL.V("断开原连接再新建连接newConnectManage=" + ":ip=" + connectTk.getIp());
-            NettyManager nettyManager = new NettyManager(0, connectTk.getIp(), Integer.valueOf(connectTk.getPort()));
+            LL.V("断开原连接再新建连接newConnectManage=" + ":ip=" + connect.getIp());
+            NettyManager nettyManager = new NettyManager(0, connect.getIp(), Integer.valueOf(connect.getPort()));
             nettyManager.setNettyClientListener(this);
             nettyManager.connect();
 
@@ -105,8 +107,8 @@ public class ManageService extends Service implements NettyClientListener {
             nettyManagers.clear();
             nettyManager = null;
 
-            LL.V("直接新建连接newConnectManage=" + ":ip=" + connectTk.getIp());
-            NettyManager nettyManager = new NettyManager(0, connectTk.getIp(), Integer.valueOf(connectTk.getPort()));
+            LL.V("直接新建连接newConnectManage=" + ":ip=" + connect.getIp());
+            NettyManager nettyManager = new NettyManager(0, connect.getIp(), Integer.valueOf(connect.getPort()));
             nettyManager.setNettyClientListener(this);
             nettyManager.connect();
 
@@ -115,15 +117,15 @@ public class ManageService extends Service implements NettyClientListener {
     }
 
     //重连
-    private void reConnectManage(ConnectTk connectTk) {
+    private void reConnectManage(Connect connect) {
         if (nettyManager != null) {
 //            nettyManager.attemptReConnect();
         } else {
             nettyManagers.clear();
             nettyManager = null;
 
-            LL.V("reConnectManage=" + ":ip=" + connectTk.getIp());
-            NettyManager nettyManager = new NettyManager(0, connectTk.getIp(), Integer.valueOf(connectTk.getPort()));
+            LL.V("reConnectManage=" + ":ip=" + connect.getIp());
+            NettyManager nettyManager = new NettyManager(0, connect.getIp(), Integer.valueOf(connect.getPort()));
             nettyManager.setNettyClientListener(this);
             nettyManager.connect();
 
@@ -215,20 +217,24 @@ public class ManageService extends Service implements NettyClientListener {
 
     //终端→服务 登录
     private void manageLoin(LoginTask loginTask) {
-        WjProtocol wjProtocol = new WjProtocol();
-        wjProtocol.setPlat(new byte[]{0x50, 0x00});
-        wjProtocol.setMaincmd(new byte[]{0x00, 0x00});
-        wjProtocol.setSubcmd(new byte[]{0x01, 0x00});
-        wjProtocol.setFormat("JS");
-        wjProtocol.setBack(new byte[]{0x00, 0x00});
+//        WjProtocol wjProtocol = new WjProtocol();
+//        wjProtocol.setPlat(new byte[]{0x50, 0x00});
+//        wjProtocol.setMaincmd(new byte[]{0x00, 0x00});
+//        wjProtocol.setSubcmd(new byte[]{0x01, 0x00});
+//        wjProtocol.setFormat("JS");
+//        wjProtocol.setBack(new byte[]{0x00, 0x00});
+//
+//        String jsonStr = JSONObject.toJSONString(loginTask);
+//        Log.v("ly", jsonStr);
+//        byte[] objectBytes = jsonStr.getBytes();
+//
+//        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
+//        wjProtocol.setLen(wjProtocol.short2byte((short) len));
+//        wjProtocol.setUserdata(objectBytes);
 
-        String jsonStr = JSONObject.toJSONString(loginTask);
-        Log.v("ly", jsonStr);
-        byte[] objectBytes = jsonStr.getBytes();
-
-        int len = WjProtocol.MIN_DATA_LEN + objectBytes.length;
-        wjProtocol.setLen(wjProtocol.short2byte((short) len));
-        wjProtocol.setUserdata(objectBytes);
+        WjProtocol wjProtocol = Sen_factory.getInstance(Sen_0000_0100.main,Sen_0000_0100.sub,loginTask);
+        if(wjProtocol == null)
+            return;
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);

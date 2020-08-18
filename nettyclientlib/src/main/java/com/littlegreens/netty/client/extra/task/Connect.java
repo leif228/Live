@@ -2,7 +2,7 @@ package com.littlegreens.netty.client.extra.task;
 
 import com.littlegreens.netty.client.extra.task.BaseTask;
 
-public class ConnectTk extends BaseTask {
+public class Connect extends BaseTask {
     private String ip;
     private String port;
     private String fzwno;

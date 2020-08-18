@@ -5,6 +5,9 @@ import android.util.Log;
 import com.alibaba.fastjson.JSONObject;
 import com.littlegreens.netty.client.NettyTcpClient;
 import com.littlegreens.netty.client.extra.receive.Rec_task_i;
+import com.littlegreens.netty.client.extra.send.Sen_0000_0000;
+import com.littlegreens.netty.client.extra.send.Sen_0000_0300;
+import com.littlegreens.netty.client.extra.send.Sen_factory;
 
 import java.util.Arrays;
 
@@ -45,13 +48,11 @@ public class TaskHandler {
                     + wjProtocol.IntToHexStringLimit2(wjProtocol.getSubcmd()[0]) + wjProtocol.IntToHexStringLimit2(wjProtocol.getSubcmd()[1]);
             className = classPath + "." + className;
             Log.v(WjDecoderHandler.TAG, "className:" + className);
-            Class genClass = null;
-
-            genClass = Class.forName(className);
+            Class genClass = Class.forName(className);
             Rec_task_i rec_task_i = (Rec_task_i) genClass.newInstance();
             rec_task_i.doTask(ctx, tx, objParam, nettyTcpClient);
         } catch (Exception e) {
-            Log.e(WjDecoderHandler.TAG, "doProtocol_报错了:" + e.getMessage());
+            Log.e(WjDecoderHandler.TAG, "TaskHandler.doProtocol_报错了:" + e.getMessage());
         }
 
         //======业务处理======
@@ -102,15 +103,19 @@ public class TaskHandler {
 
 
     public void sendIdleData(ChannelHandlerContext ctx) {
-        WjProtocol wjProtocol = new WjProtocol();
-        wjProtocol.setPlat(new byte[]{0x50, 0x00});
-        wjProtocol.setMaincmd(new byte[]{0x00, 0x00});
-        wjProtocol.setSubcmd(new byte[]{0x00, 0x00});
-        wjProtocol.setFormat("TX");
-        wjProtocol.setBack(new byte[]{0x00, 0x00});
+//        WjProtocol wjProtocol = new WjProtocol();
+//        wjProtocol.setPlat(new byte[]{0x50, 0x00});
+//        wjProtocol.setMaincmd(new byte[]{0x00, 0x00});
+//        wjProtocol.setSubcmd(new byte[]{0x00, 0x00});
+//        wjProtocol.setFormat("TX");
+//        wjProtocol.setBack(new byte[]{0x00, 0x00});
+//
+//        int len = WjProtocol.MIN_DATA_LEN + 0;
+//        wjProtocol.setLen(wjProtocol.short2byte((short) len));
 
-        int len = WjProtocol.MIN_DATA_LEN + 0;
-        wjProtocol.setLen(wjProtocol.short2byte((short) len));
+        WjProtocol wjProtocol = Sen_factory.getInstance(Sen_0000_0000.main, Sen_0000_0000.sub,null);
+        if(wjProtocol == null)
+            return;
 
         ctx.write(wjProtocol);
 
