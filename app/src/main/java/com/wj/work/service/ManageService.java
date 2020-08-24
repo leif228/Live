@@ -95,6 +95,13 @@ public class ManageService extends Service implements NettyClientListener {
         if (nettyManager != null) {
             nettyManager.release();
             nettyManager = null;
+            if(!nettyManagers.isEmpty()){
+                int size = nettyManagers.size();
+                for (int i = 0; i < size; i++) {
+                    NettyManager nettyManagerFire = nettyManagers.get(i);
+                    nettyManagerFire.release();
+                }
+            }
             nettyManagers.clear();
 
             LL.V("断开原连接再新建连接newConnectManage=" + ":ip=" + connect.getIp());
@@ -104,6 +111,13 @@ public class ManageService extends Service implements NettyClientListener {
 
             nettyManagers.add(nettyManager);
         } else {
+            if(!nettyManagers.isEmpty()){
+                int size = nettyManagers.size();
+                for (int i = 0; i < size; i++) {
+                    NettyManager nettyManagerFire = nettyManagers.get(i);
+                    nettyManagerFire.release();
+                }
+            }
             nettyManagers.clear();
             nettyManager = null;
 
