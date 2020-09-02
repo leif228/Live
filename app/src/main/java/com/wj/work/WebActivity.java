@@ -38,7 +38,8 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     @BindView(R.id.wv_webview)
     WebView webView;
 
-    private static final String mHomeUrl = "http://192.168.3.60:8080/wujieweb/page/login/login.html";
+//    private static final String mHomeUrl = "http://192.168.3.86:8848/wujieweb/page/login/login.html";
+    private static final String mHomeUrl = "http://192.168.4.16:8080/wujieweb/page/login/login.html";
 //    private static final String mHomeUrl = "http://www.baidu.com";
 
     private String mDataType = "";
@@ -127,22 +128,28 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         WebSettings webSetting = webView.getSettings();
         webSetting.setJavaScriptEnabled(true);
         webSetting.setJavaScriptCanOpenWindowsAutomatically(true);
-        webSetting.setAllowFileAccess(true);
         webSetting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
         webSetting.setSupportZoom(true);
         webSetting.setBuiltInZoomControls(true);
         webSetting.setUseWideViewPort(true);
         webSetting.setSupportMultipleWindows(true);
         // webSetting.setLoadWithOverviewMode(true);
-        webSetting.setAppCacheEnabled(false);
+//        webSetting.setAppCacheEnabled(false);
         // webSetting.setDatabaseEnabled(true);
         webSetting.setDomStorageEnabled(true);
         webSetting.setGeolocationEnabled(true);
-        webSetting.setAppCacheMaxSize(Long.MAX_VALUE);
+//        webSetting.setAppCacheMaxSize(Long.MAX_VALUE);
         // webSetting.setPageCacheCapacity(IX5WebSettings.DEFAULT_CACHE_CAPACITY);
         webSetting.setPluginState(WebSettings.PluginState.ON_DEMAND);
         // webSetting.setRenderPriority(WebSettings.RenderPriority.HIGH);
         webSetting.setCacheMode(WebSettings.LOAD_NO_CACHE);
+
+        //android 中 webview 怎么用 localStorage?
+        webSetting.setAppCacheMaxSize(1024*1024*8);
+        String appCachePath = getApplicationContext().getCacheDir().getAbsolutePath();
+        webSetting.setAppCachePath(appCachePath);
+        webSetting.setAllowFileAccess(true);
+        webSetting.setAppCacheEnabled(true);
 
         // 通过addJavascriptInterface()将Java对象映射到JS对象
         //参数1：Javascript对象名
@@ -257,6 +264,13 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         netDevCompFileTask.setPRO("Authority");
 
         sendMsgToNetService("5",netDevCompFileTask );
+    }
+
+    @Override
+    @JavascriptInterface
+    public String getMobileFzwno() {
+        LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
+        return loginEntity.getFzwno();
     }
 
     @Override

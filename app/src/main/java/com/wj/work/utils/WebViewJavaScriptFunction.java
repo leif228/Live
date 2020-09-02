@@ -7,6 +7,7 @@ public interface WebViewJavaScriptFunction {
 	public void deviceComp(String name);
 	public void saveDevice();
 	public void authOver(String path);
+	public String getMobileFzwno();
 
 
 }
