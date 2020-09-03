@@ -5,6 +5,7 @@ import android.util.Log;
 import com.alibaba.fastjson.JSONObject;
 import com.littlegreens.netty.client.extra.WjProtocol;
 import com.littlegreens.netty.client.extra.task.BaseTask;
+import com.littlegreens.netty.client.extra.task.NetDevCompFileTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompTask;
 
 public class Sen_1200_0100 implements Sen_i{
@@ -23,9 +24,10 @@ public class Sen_1200_0100 implements Sen_i{
         int len = 0;
         byte[] objectBytes = null;
         if(baseTask != null){
-            NetDevCompTask netDevCompTask = (NetDevCompTask) baseTask;
+//            NetDevCompTask netDevCompTask = (NetDevCompTask) baseTask;
+            NetDevCompFileTask netDevCompFileTask = (NetDevCompFileTask) baseTask;
 
-            String jsonStr = JSONObject.toJSONString(netDevCompTask);
+            String jsonStr = JSONObject.toJSONString(netDevCompFileTask);
             Log.v(WjProtocol.TAG, jsonStr);
             objectBytes = jsonStr.getBytes();
 

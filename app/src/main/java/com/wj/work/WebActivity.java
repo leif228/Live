@@ -38,7 +38,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     @BindView(R.id.wv_webview)
     WebView webView;
 
-//    private static final String mHomeUrl = "http://192.168.3.86:8848/wujieweb/page/login/login.html";
+//    private static final String mHomeUrl = "http://192.168.4.17:8848/wujieweb/page/login/login.html";
     private static final String mHomeUrl = "http://192.168.4.16:8080/wujieweb/page/login/login.html";
 //    private static final String mHomeUrl = "http://www.baidu.com";
 
@@ -235,11 +235,12 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
 
     @Override
     @JavascriptInterface
-    public void deviceComp(String name) {
+    public void deviceComp(String name,String path) {
         this.compName = name;
-        NetDevCompTask netDevCompTask = new NetDevCompTask();
+        NetDevCompFileTask netDevCompTask = new NetDevCompFileTask();
         netDevCompTask.setCompanyName(compName);
         netDevCompTask.setPRO("CompanyChoosed");
+        netDevCompTask.setFile(path);
         sendMsgToNetService("3",netDevCompTask);
     }
 

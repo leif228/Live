@@ -98,7 +98,7 @@ public class NetService extends Service implements NettyClientListener {
             NetInfoTask netInfoTask = (NetInfoTask) intent.getSerializableExtra(COUNTER);
             toNetInfo(netInfoTask);
         } else if ("3".equals(data_type)) {
-            NetDevCompTask netDevCompTask = (NetDevCompTask) intent.getSerializableExtra(COUNTER);
+            NetDevCompFileTask netDevCompTask = (NetDevCompFileTask) intent.getSerializableExtra(COUNTER);
             toDeviceComp(netDevCompTask);
         } else if ("4".equals(data_type)) {
             NetDevCompTask netDevCompTask = (NetDevCompTask) intent.getSerializableExtra(COUNTER);
@@ -280,7 +280,7 @@ public class NetService extends Service implements NettyClientListener {
     }
 
     //手机→网关 手机选择设备厂商后传递给网关信息
-    private void toDeviceComp(NetDevCompTask netDevCompTask) {
+    private void toDeviceComp(NetDevCompFileTask netDevCompTask) {
 
 //        WjProtocol wjProtocol = new WjProtocol();
 //        wjProtocol.setPlat(new byte[]{0x50, 0x00});
