@@ -427,6 +427,11 @@ public class LiveActivity extends BaseMvpActivity<LivePresenter> implements Stre
     }
 
     @Override
+    public void nettyNetFileDownOver(String tx, JSONObject objParam) {
+
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         mNettyManager.release();

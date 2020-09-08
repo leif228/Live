@@ -254,6 +254,12 @@ public class NetService extends Service implements NettyClientListener {
         sendMsgToActivity(netDevCompFileTask, "1", ip);
     }
 
+    @Override
+    public void nettyNetFileDownOver(String tx, JSONObject objParam) {
+        LL.V("nettyNetFileDownOver:" + objParam.toJSONString());
+        sendMsgToActivity(null, "2", ip);
+    }
+
 
     //手机→网关 搜索网关(目前遍历)
     private void toSearchNet() {

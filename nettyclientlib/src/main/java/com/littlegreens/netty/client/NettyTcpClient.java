@@ -255,6 +255,10 @@ public class NettyTcpClient {
         listener.nettyNetGetDevListOver(tx,objParam);
     }
 
+    public void nettyNetFileDownOver(String tx, JSONObject objParam) {
+        listener.nettyNetFileDownOver(tx,objParam);
+    }
+
     //创建NettyTcpClient
     public static class Builder {
         // 远程链接地址

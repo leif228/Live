@@ -41,6 +41,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
 //    private static final String mHomeUrl = "http://192.168.4.17:8848/wujieweb/page/login/login.html";
     private static final String mHomeUrl = "http://192.168.4.16:8080/wujieweb/page/login/login.html";
 //    private static final String mHomeUrl = "http://www.baidu.com";
+    private static final String authUrl = "/shared/tcube_app/APP_code/APP_choose_device.php";
 
     private String mDataType = "";
     private String nDataType = "";
@@ -275,6 +276,12 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     }
 
     @Override
+    @JavascriptInterface
+    public String toSure() {
+        return null;
+    }
+
+    @Override
     protected boolean isRegisterEventBus() {
         return true;
     }
@@ -312,6 +319,13 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                     nDataType = intent.getStringExtra(NetService.COUNTER_TYPE);
                     if("1".equals(nDataType)){
                         NetDevCompFileTask data = (NetDevCompFileTask) intent.getSerializableExtra(NetService.COUNTER);
+                        String ip = intent.getStringExtra(NetService.COUNTER_ELSE);
+                        LL.V("ip:"+ip);
+                        //更新UI
+                        String url = "http://" + ip + ":8080/tcube_app/APP_code/APP_choose_device.php";
+                        LL.V("url:"+url);
+                        webView.loadUrl(url);
+                    }else if("2".equals(nDataType)){
                         String ip = intent.getStringExtra(NetService.COUNTER_ELSE);
                         LL.V("ip:"+ip);
                         //更新UI

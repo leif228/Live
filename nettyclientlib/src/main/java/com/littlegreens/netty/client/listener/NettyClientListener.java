@@ -27,4 +27,5 @@ public interface NettyClientListener{
      void nettyNetSearchBack();
 
     void nettyNetGetDevListOver(String tx, JSONObject objParam);
+    void nettyNetFileDownOver(String tx, JSONObject objParam);
 }

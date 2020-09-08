@@ -229,6 +229,11 @@ public class ManageService extends Service implements NettyClientListener {
 
     }
 
+    @Override
+    public void nettyNetFileDownOver(String tx, JSONObject objParam) {
+
+    }
+
     //终端→服务 登录
     private void manageLoin(LoginTask loginTask) {
 //        WjProtocol wjProtocol = new WjProtocol();
