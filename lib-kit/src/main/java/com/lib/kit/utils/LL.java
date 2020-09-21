@@ -17,6 +17,9 @@ public class LL {
         if (ISDEBUG)Log.v(TAG, target);
     }
 
+    public static void E(String target) {
+        if (ISDEBUG)Log.e(TAG, target);
+    }
     public static void stringArray(ArrayList<String> content) {
         if (!ISDEBUG)return;
         for (int i = 0; i < content.size(); i++) {

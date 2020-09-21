@@ -259,6 +259,10 @@ public class NettyTcpClient {
         listener.nettyNetFileDownOver(tx,objParam);
     }
 
+    public void atTask(String tx, JSONObject objParam) {
+        listener.atTask(tx,objParam);
+    }
+
     //创建NettyTcpClient
     public static class Builder {
         // 远程链接地址

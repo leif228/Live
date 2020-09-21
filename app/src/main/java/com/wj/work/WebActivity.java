@@ -1,5 +1,6 @@
 package com.wj.work;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -7,11 +8,14 @@ import android.content.IntentFilter;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
+import android.widget.Toast;
 
 import com.lib.kit.utils.LL;
 import com.lib.kit.utils.StatusBarUtils;
 import com.littlegreens.netty.client.extra.task.BaseTask;
 import com.littlegreens.netty.client.extra.task.Connect;
+import com.littlegreens.netty.client.extra.task.ManageChatMsgAtParam;
+import com.littlegreens.netty.client.extra.task.ManageChatMsgTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompFileTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompTask;
 import com.littlegreens.netty.client.extra.task.NetInfoTask;
@@ -38,9 +42,10 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     @BindView(R.id.wv_webview)
     WebView webView;
 
-//    private static final String mHomeUrl = "http://192.168.4.17:8848/wujieweb/page/login/login.html";
+    //    private static final String mHomeUrl = "http://192.168.4.17:8848/wujieweb/page/login/login.html";
     private static final String mHomeUrl = "http://192.168.4.16:8080/wujieweb/page/login/login.html";
-//    private static final String mHomeUrl = "http://www.baidu.com";
+    private static final String mChatUrl = "http://192.168.4.16:8080/wujieweb/page/login/chat.html";
+    //    private static final String mHomeUrl = "http://www.baidu.com";
     private static final String authUrl = "/shared/tcube_app/APP_code/APP_choose_device.php";
 
     private String mDataType = "";
@@ -50,8 +55,9 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     private NetReceiver netReceiver;
     private ManageReceiver manageReceiver;
     private boolean bind = false;
-    
+
     private String compName = "";
+    private ManageChatMsgAtParam chatMsgData;
 
 
     @Override
@@ -97,7 +103,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     private void sendMsgToNetService(String type, BaseTask baseTask) {
         //向Service传递data
         nIntent.putExtra(NetService.COUNTER_TYPE, type);
-        nIntent.putExtra(NetService.COUNTER,baseTask);
+        nIntent.putExtra(NetService.COUNTER, baseTask);
         startService(nIntent);
 
 //        new Handler().postDelayed(new Runnable() {
@@ -112,7 +118,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     private void sendMsgToManageService(String type, BaseTask baseTask) {
         //向Service传递data
         mIntent.putExtra(ManageService.COUNTER_TYPE, type);
-        mIntent.putExtra(ManageService.COUNTER,baseTask);
+        mIntent.putExtra(ManageService.COUNTER, baseTask);
         startService(mIntent);
     }
 
@@ -146,7 +152,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         webSetting.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         //android 中 webview 怎么用 localStorage?
-        webSetting.setAppCacheMaxSize(1024*1024*8);
+        webSetting.setAppCacheMaxSize(1024 * 1024 * 8);
         String appCachePath = getApplicationContext().getCacheDir().getAbsolutePath();
         webSetting.setAppCachePath(appCachePath);
         webSetting.setAllowFileAccess(true);
@@ -201,7 +207,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         loginEntity.setFzwno(fzwno);
         SpManager.getInstance().getLoginSp().putLoginInfoEntity(loginEntity);
 
-        Connect connect =new Connect();
+        Connect connect = new Connect();
         connect.setIp(ip);
         connect.setPort(port);
         connect.setFzwno(fzwno);
@@ -231,41 +237,41 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         netInfoTask.setOwnerServerOID(owerfzwno);
         netInfoTask.setPassNum(passWord);
 
-        sendMsgToNetService("2",netInfoTask );
+        sendMsgToNetService("2", netInfoTask);
     }
 
     @Override
     @JavascriptInterface
-    public void deviceComp(String name,String path) {
+    public void deviceComp(String name, String path) {
         this.compName = name;
         NetDevCompFileTask netDevCompTask = new NetDevCompFileTask();
         netDevCompTask.setCompanyName(compName);
         netDevCompTask.setPRO("CompanyChoosed");
         netDevCompTask.setFile(path);
-        sendMsgToNetService("3",netDevCompTask);
+        sendMsgToNetService("3", netDevCompTask);
     }
 
     @Override
     @JavascriptInterface
     public void saveDevice() {
-        LL.V("saveDevice:===" );
+        LL.V("saveDevice:===");
         NetDevCompTask netDevCompTask = new NetDevCompTask();
         netDevCompTask.setCompanyName(compName);
         netDevCompTask.setPRO("SetOk");
 
-        sendMsgToNetService("4",netDevCompTask );
+        sendMsgToNetService("4", netDevCompTask);
     }
 
     @Override
     @JavascriptInterface
     public void authOver(String path) {
-        LL.V("authOver:===" );
+        LL.V("authOver:path=" + path);
         NetDevCompFileTask netDevCompFileTask = new NetDevCompFileTask();
         netDevCompFileTask.setFile(path);
         netDevCompFileTask.setCompanyName(compName);
         netDevCompFileTask.setPRO("Authority");
 
-        sendMsgToNetService("5",netDevCompFileTask );
+        sendMsgToNetService("5", netDevCompFileTask);
     }
 
     @Override
@@ -277,8 +283,34 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
 
     @Override
     @JavascriptInterface
+    public String getEventNo() {
+        if (chatMsgData != null)
+            return chatMsgData.getEventNo();
+        else
+            return "";
+    }
+
+    @Override
+    @JavascriptInterface
     public String toSure() {
         return null;
+    }
+
+    @Override
+    @JavascriptInterface
+    public String sendChatMsg(String eventNo, String msg) {
+        LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
+        if (!loginEntity.getFzwno().equals("")) {
+            return "失败，没有注册fzwno！";
+        }
+        ManageChatMsgTask manageChatMsgTask = new ManageChatMsgTask();
+        manageChatMsgTask.setOid(loginEntity.getFzwno());
+        manageChatMsgTask.setEventNo(eventNo);
+        manageChatMsgTask.setMsg(msg);
+        manageChatMsgTask.setMsgType("txt");//消息类型:txt;img;voice;video
+        sendMsgToManageService("3", manageChatMsgTask);
+
+        return "0";
     }
 
     @Override
@@ -292,7 +324,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
             LL.V("-----------    网络可用");
             if (event.isWiFiAvailable()) {
                 LL.V("+++++++++++   wifi网络可用");
-                sendMsgToNetService("1",null);
+                sendMsgToNetService("1", null);
             }
 //            LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
 //            if (!"".equals(loginEntity.getIp())) {
@@ -313,25 +345,32 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         @Override
         public void onReceive(Context context, final Intent intent) {
             runOnUiThread(new Runnable() {
+                @SuppressLint("ShowToast")
                 @Override
                 public void run() {
                     //获取从Service中传来的data
                     nDataType = intent.getStringExtra(NetService.COUNTER_TYPE);
-                    if("1".equals(nDataType)){
+                    if ("1".equals(nDataType)) {
                         NetDevCompFileTask data = (NetDevCompFileTask) intent.getSerializableExtra(NetService.COUNTER);
                         String ip = intent.getStringExtra(NetService.COUNTER_ELSE);
-                        LL.V("ip:"+ip);
+                        LL.V("ip:" + ip);
                         //更新UI
                         String url = "http://" + ip + ":8080/tcube_app/APP_code/APP_choose_device.php";
-                        LL.V("url:"+url);
+                        LL.V("url:" + url);
                         webView.loadUrl(url);
-                    }else if("2".equals(nDataType)){
+                    } else if ("2".equals(nDataType)) {
                         String ip = intent.getStringExtra(NetService.COUNTER_ELSE);
-                        LL.V("ip:"+ip);
+                        LL.V("ip:" + ip);
+
                         //更新UI
                         String url = "http://" + ip + ":8080/tcube_app/APP_code/APP_choose_device.php";
-                        LL.V("url:"+url);
+                        LL.V("url:" + url);
                         webView.loadUrl(url);
+                    } else if (NetService.TOAST.equals(nDataType)) {
+                        String toast = intent.getStringExtra(NetService.COUNTER_ELSE);
+                        LL.V("toast:" + toast);
+
+                        Toast.makeText(WebActivity.this, toast, Toast.LENGTH_LONG).show();
                     }
                 }
             });
@@ -347,6 +386,18 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                     //获取从Service中传来的data
                     mDataType = intent.getStringExtra(ManageService.COUNTER_TYPE);
                     //更新UI
+                    if (ManageService.TOAST.equals(mDataType)) {
+                        String toast = intent.getStringExtra(ManageService.COUNTER_ELSE);
+                        LL.V("toast:" + toast);
+
+                        Toast.makeText(WebActivity.this, toast, Toast.LENGTH_LONG).show();
+                    } else if ("chatMsg".equals(mDataType)) {
+                        ManageChatMsgAtParam data = (ManageChatMsgAtParam) intent.getSerializableExtra(ManageService.COUNTER);
+
+                        LL.V("ManageChatMsgAtParam:eventNo=" + data.getEventNo());
+                        WebActivity.this.chatMsgData = data;
+                        webView.loadUrl(mChatUrl);
+                    }
                 }
             });
         }

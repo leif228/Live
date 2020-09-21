@@ -28,4 +28,6 @@ public interface NettyClientListener{
 
     void nettyNetGetDevListOver(String tx, JSONObject objParam);
     void nettyNetFileDownOver(String tx, JSONObject objParam);
+
+    void atTask(String tx, JSONObject objParam);
 }

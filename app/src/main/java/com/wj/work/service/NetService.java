@@ -41,6 +41,7 @@ public class NetService extends Service implements NettyClientListener {
     public static final String COUNTER = "data";
     public static final String COUNTER_TYPE = "type";
     public static final String COUNTER_ELSE = "else";
+    public static final String TOAST = "toast";
     public static final long closeTimes = 30000l;
     public static final Integer port = 8666;
     public static final String ACTION_NAME = "com.wj.work.netservice.COUNTER_ACTION";
@@ -143,11 +144,15 @@ public class NetService extends Service implements NettyClientListener {
                             }
                         }
                         if (iplist != null && iplist.size() > 0) {
+
+                            NetService.this.sendMsgToActivity(null,TOAST,"扫描到局域网ips");
                             connectNet();
                             noConnectIpSuccessCloseTask();
                         }
                     } catch (Exception e) {
                         LL.V("getIp:[error]" + e.getMessage());
+
+                        NetService.this.sendMsgToActivity(null,TOAST,"扫描局域网ips报错，关闭wifi重新再试！！");
                         connecting = false;
                         e.printStackTrace();
                     }
@@ -217,6 +222,7 @@ public class NetService extends Service implements NettyClientListener {
         connetSuccessIndex = index;
         havaConnectSuccessed = true;
         nettyManager = nettyManagers.get(index);
+        this.sendMsgToActivity(null,TOAST,"连接到网关ip成功");
         toSearchNet();
         this.doTask();
     }
@@ -260,6 +266,11 @@ public class NetService extends Service implements NettyClientListener {
         sendMsgToActivity(null, "2", ip);
     }
 
+    @Override
+    public void atTask(String tx, JSONObject objParam) {
+
+    }
+
 
     //手机→网关 搜索网关(目前遍历)
     private void toSearchNet() {
@@ -280,6 +291,7 @@ public class NetService extends Service implements NettyClientListener {
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
+            this.sendMsgToActivity(null,TOAST,"发送搜索网关命令成功");
         } else {
             queue.offer(wjProtocol);
         }
@@ -309,6 +321,7 @@ public class NetService extends Service implements NettyClientListener {
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
+            this.sendMsgToActivity(null,TOAST,"选择设备厂商后传递给网关信息成功");
         } else {
             queue.offer(wjProtocol);
         }
@@ -337,6 +350,7 @@ public class NetService extends Service implements NettyClientListener {
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
+            this.sendMsgToActivity(null,TOAST,"注册后传递给网关信息成功");
         } else {
             queue.offer(wjProtocol);
         }
@@ -365,6 +379,7 @@ public class NetService extends Service implements NettyClientListener {
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
+            this.sendMsgToActivity(null,TOAST,"认证完成，网关获取设备列表成功");
         } else {
             queue.offer(wjProtocol);
         }
@@ -393,6 +408,7 @@ public class NetService extends Service implements NettyClientListener {
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
+            this.sendMsgToActivity(null,TOAST,"手机配置房间后传递给网关信息成功");
         } else {
             queue.offer(wjProtocol);
         }
@@ -421,6 +437,7 @@ public class NetService extends Service implements NettyClientListener {
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
+            this.sendMsgToActivity(null,TOAST,"要求网关执行一段任务成功");
         } else {
             queue.offer(wjProtocol);
         }

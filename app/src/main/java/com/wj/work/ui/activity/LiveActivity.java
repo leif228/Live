@@ -432,6 +432,11 @@ public class LiveActivity extends BaseMvpActivity<LivePresenter> implements Stre
     }
 
     @Override
+    public void atTask(String tx, JSONObject objParam) {
+
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         mNettyManager.release();
