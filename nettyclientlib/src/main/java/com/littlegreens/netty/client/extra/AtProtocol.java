@@ -62,7 +62,7 @@ public class AtProtocol {
                 String param = tx.substring(index, index + len);
 
                 Log.v(WjDecoderHandler.TAG, "解码后的param为：" + param);
-                atProtocol.setPort(param);
+                atProtocol.setPara(param);
                 index += param.length();
                 String strend = tx.substring(index, index + END.length());//取出帧尾
 

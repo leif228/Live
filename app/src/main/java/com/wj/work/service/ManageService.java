@@ -256,8 +256,11 @@ public class ManageService extends Service implements NettyClientListener {
             LL.V("收到at消息：" + tx);
             AtProtocol atProtocol = AtProtocol.doAtTask(tx);
             if("E001".equals(atProtocol.getBusinessNum()) && "0001".equals(atProtocol.getCommand())){
+                LL.V("收到atjson消息Para=" + atProtocol.getPara());
                 JSONObject objParamAt = JSONObject.parseObject(atProtocol.getPara());
+//                LL.V("收到atjson消息eventNo=" + objParamAt.getString("event_no"));
                 ManageChatMsgAtParam manageChatMsgAtParam = (ManageChatMsgAtParam) JSONObject.toJavaObject(objParamAt, ManageChatMsgAtParam.class);
+//                LL.V("收到at消息eventNo=" + manageChatMsgAtParam.getEventNo());
 
                 this.sendMsgToActivity(manageChatMsgAtParam,"chatMsg","");
             }else {

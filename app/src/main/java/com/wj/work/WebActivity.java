@@ -57,7 +57,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     private boolean bind = false;
 
     private String compName = "";
-    private ManageChatMsgAtParam chatMsgData;
+//    private ManageChatMsgAtParam chatMsgData;
 
 
     @Override
@@ -281,14 +281,14 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         return loginEntity.getFzwno();
     }
 
-    @Override
-    @JavascriptInterface
-    public String getEventNo() {
-        if (chatMsgData != null)
-            return chatMsgData.getEventNo();
-        else
-            return "";
-    }
+//    @Override
+//    @JavascriptInterface
+//    public String getEventNo() {
+//        if (chatMsgData != null)
+//            return chatMsgData.getEventNo();
+//        else
+//            return "";
+//    }
 
     @Override
     @JavascriptInterface
@@ -300,7 +300,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     @JavascriptInterface
     public String sendChatMsg(String eventNo, String msg) {
         LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
-        if (!loginEntity.getFzwno().equals("")) {
+        if (loginEntity.getFzwno().equals("")) {
             return "失败，没有注册fzwno！";
         }
         ManageChatMsgTask manageChatMsgTask = new ManageChatMsgTask();
@@ -395,8 +395,9 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                         ManageChatMsgAtParam data = (ManageChatMsgAtParam) intent.getSerializableExtra(ManageService.COUNTER);
 
                         LL.V("ManageChatMsgAtParam:eventNo=" + data.getEventNo());
-                        WebActivity.this.chatMsgData = data;
+//                        WebActivity.this.chatMsgData = data;
                         webView.loadUrl(mChatUrl);
+                        webView.loadUrl("javascript:flushChat("+data.getEventNo()+")");
                     }
                 }
             });

@@ -8,7 +8,7 @@ public interface WebViewJavaScriptFunction {
 	public void saveDevice();
 	public void authOver(String path);
 	public String getMobileFzwno();
-	public String getEventNo();
+//	public String getEventNo();
 	public String toSure();
 	public String sendChatMsg(String eventNo,String msg);
 
