@@ -9,6 +9,7 @@ import com.littlegreens.netty.client.extra.send.Sen_0000_0000;
 import com.littlegreens.netty.client.extra.send.Sen_0000_0300;
 import com.littlegreens.netty.client.extra.send.Sen_factory;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -20,24 +21,24 @@ public class TaskHandler {
         this.nettyTcpClient = nettyTcpClient;
     }
 
-    public void doProtocol(ChannelHandlerContext ctx, WjProtocol wjProtocol) {
+    public void doProtocol(ChannelHandlerContext ctx, WjProtocol wjProtocol) throws UnsupportedEncodingException {
         JSONObject objParam = null;
         String tx = null;
 
         if (WjProtocol.FORMAT_TX.equals(wjProtocol.getFormat())) {
             if (wjProtocol.getUserdata() != null) {
-                String dataStr = new String(wjProtocol.getUserdata());
+                String dataStr = new String(wjProtocol.getUserdata(),"UTF-8");
                 tx = dataStr;
             }
         } else if (WjProtocol.FORMAT_JS.equals(wjProtocol.getFormat())) {
             if (wjProtocol.getUserdata() != null) {
-                String jsonStr = new String(wjProtocol.getUserdata());
+                String jsonStr = new String(wjProtocol.getUserdata(),"UTF-8");
                 Log.v(WjDecoderHandler.TAG, "tcp收到的jsonStr:" + jsonStr);
                 objParam = JSONObject.parseObject(jsonStr);
             }
         } else if (WjProtocol.FORMAT_AT.equals(wjProtocol.getFormat())) {
             if (wjProtocol.getUserdata() != null) {
-                tx = new String(wjProtocol.getUserdata());
+                tx = new String(wjProtocol.getUserdata(),"UTF-8");
             }
         }
 

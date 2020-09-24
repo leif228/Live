@@ -8,12 +8,14 @@ import com.littlegreens.netty.client.extra.task.BaseTask;
 import com.littlegreens.netty.client.extra.task.LoginTask;
 import com.littlegreens.netty.client.extra.task.NetInfoTask;
 
+import java.io.UnsupportedEncodingException;
+
 public class Sen_0000_0200 implements Sen_i{
     public static final byte[] main = new byte[]{0x00, 0x00};
     public static final byte[] sub = new byte[]{0x02, 0x00};
 
     @Override
-    public WjProtocol generateWj(BaseTask baseTask) {
+    public WjProtocol generateWj(BaseTask baseTask) throws UnsupportedEncodingException {
         WjProtocol wjProtocol = new WjProtocol();
         wjProtocol.setPlat(new byte[]{0x50, 0x00});
         wjProtocol.setMaincmd(main);
@@ -28,7 +30,7 @@ public class Sen_0000_0200 implements Sen_i{
 
             String jsonStr = JSONObject.toJSONString(netInfoTask);
             Log.v(WjProtocol.TAG, jsonStr);
-            objectBytes = jsonStr.getBytes();
+            objectBytes = jsonStr.getBytes("UTF-8");
 
             len = objectBytes.length;
         }

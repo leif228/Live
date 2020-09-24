@@ -1,18 +1,16 @@
 package com.littlegreens.netty.client.extra.send;
 
-import android.util.Log;
-
-import com.alibaba.fastjson.JSONObject;
 import com.littlegreens.netty.client.extra.WjProtocol;
 import com.littlegreens.netty.client.extra.task.BaseTask;
-import com.littlegreens.netty.client.extra.task.NetInfoTask;
+
+import java.io.UnsupportedEncodingException;
 
 public class Sen_0000_0000 implements Sen_i{
     public static final byte[] main = new byte[]{0x00, 0x00};
     public static final byte[] sub = new byte[]{0x00, 0x00};
 
     @Override
-    public WjProtocol generateWj(BaseTask baseTask) {
+    public WjProtocol generateWj(BaseTask baseTask) throws UnsupportedEncodingException {
         WjProtocol wjProtocol = new WjProtocol();
         wjProtocol.setPlat(new byte[]{0x50, 0x00});
         wjProtocol.setMaincmd(main);

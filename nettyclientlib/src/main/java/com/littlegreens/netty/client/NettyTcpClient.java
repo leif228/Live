@@ -80,7 +80,7 @@ public class NettyTcpClient {
             @Override
             protected void initChannel(Channel ch) throws Exception {
                ChannelPipeline p = ch.pipeline();
-                        p.addLast(new IdleStateHandler(0, 0, 30));
+                        p.addLast(new IdleStateHandler(0, 30, 0));
                         p.addLast(new WjEncoderHandler());
                         p.addLast(new WjDecoderHandler(new TaskHandler(NettyTcpClient.this), NettyTcpClient.this));//解码器，接收消息时候用
             }

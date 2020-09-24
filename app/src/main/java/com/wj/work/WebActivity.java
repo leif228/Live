@@ -57,8 +57,8 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     private boolean bind = false;
 
     private String compName = "";
-//    private ManageChatMsgAtParam chatMsgData;
-
+    private ManageChatMsgAtParam chatMsgData;
+    private boolean fromTcp = false;
 
     @Override
     protected int getLayoutResId() {
@@ -172,6 +172,19 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
 
                 return true;
 
+            }
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                LL.V("onPageFinished.url="+url);
+                if(url.equals(mChatUrl)&&fromTcp){
+                    if(chatMsgData != null){
+                        LL.V(chatMsgData.getEventNo());
+                        webView.loadUrl("javascript:flushChat('"+chatMsgData.getEventNo()+"')");
+                        chatMsgData = null;
+                    }
+                    fromTcp = false;
+                }
             }
 
         });
@@ -395,9 +408,10 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                         ManageChatMsgAtParam data = (ManageChatMsgAtParam) intent.getSerializableExtra(ManageService.COUNTER);
 
                         LL.V("ManageChatMsgAtParam:eventNo=" + data.getEventNo());
-//                        WebActivity.this.chatMsgData = data;
+                        WebActivity.this.chatMsgData = data;
+                        WebActivity.this.fromTcp = true;
                         webView.loadUrl(mChatUrl);
-                        webView.loadUrl("javascript:flushChat("+data.getEventNo()+")");
+//                        webView.loadUrl("javascript:flushChat('"+data.getEventNo()+"')");
                     }
                 }
             });

@@ -52,8 +52,8 @@ public class WjDecoderHandler extends ByteToMessageDecoder {
                 int subHeaderLen = len - 8;
                 //数据可读长度必须要大于len，因为结尾还有一字节的解释标志位
                 int rr = in.readableBytes();
-                if (subHeaderLen < in.readableBytes()) {
-                    Log.v(TAG,String.format("数据长度不够，数据协议len长度为：%1$d,数据包实际可读内容为：%2$d正在等待处理拆包……", len, in.readableBytes()));
+                if (subHeaderLen > rr) {
+                    Log.v(TAG,String.format("数据长度不够，数据协议len长度为：%1$d,数据包实际可读内容为：%2$d正在等待处理拆包……", len, rr));
                     in.resetReaderIndex();
                     /*
                      **结束解码，这种情况说明数据没有到齐，在父类ByteToMessageDecoder的callDecode中会对out和in进行判断
@@ -113,7 +113,7 @@ public class WjDecoderHandler extends ByteToMessageDecoder {
                 taskHandler.doProtocol(ctx, wjProtocol);
             } else {
                 Log.v(TAG,"开头不对，可能不是期待的客服端发送的数，将自动略过这一个字节");
-                return;
+//                return;
             }
         } else {
             Log.v(TAG,"数据长度不符合要求，期待最小长度是：" + WjProtocol.MIN_DATA_LEN + " 字节");
@@ -144,7 +144,7 @@ public class WjDecoderHandler extends ByteToMessageDecoder {
             IdleStateEvent e = (IdleStateEvent) evt;
 
             //检测 是否 这段时间没有和服务器联系
-            if (e.state() == IdleState.ALL_IDLE) {
+            if (e.state() == IdleState.WRITER_IDLE) {
                 //检测心跳
 //                checkIdle(ctx);
                 taskHandler.sendIdleData(ctx);
