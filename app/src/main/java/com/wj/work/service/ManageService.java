@@ -99,9 +99,32 @@ public class ManageService extends Service implements NettyClientListener {
 
             ManageChatMsgTask manageChatMsgTask = (ManageChatMsgTask) intent.getSerializableExtra(COUNTER);
             sendChatMsg(manageChatMsgTask);
+        } else if ("4".equals(data_type)) {
+
+            ManageChatMsgTask manageChatMsgTask = (ManageChatMsgTask) intent.getSerializableExtra(COUNTER);
+            toGenEvent(manageChatMsgTask);
         }
 
         return START_STICKY;
+    }
+
+    private void toGenEvent(ManageChatMsgTask manageChatMsgTask) {
+        LL.V("事件产生json：" + manageChatMsgTask.getOid());
+
+        String at = this.genAt("N", manageChatMsgTask.getOid(), "0500", "A001", "0001", "0001", manageChatMsgTask.getOid());
+        AtTask atTask = new AtTask();
+        atTask.setAt(at);
+
+        WjProtocol wjProtocol = Sen_factory.getInstance(Sen_1000_0000.main, Sen_1000_0000.sub, atTask);
+        if (wjProtocol == null)
+            return;
+
+        if (nettyManager != null) {
+            nettyManager.senMessage(wjProtocol);
+            this.sendMsgToActivity(null, TOAST, "发送事件产生消息成功");
+        } else {
+            queue.offer(wjProtocol);
+        }
     }
 
     //新建连接

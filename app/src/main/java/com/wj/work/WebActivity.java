@@ -327,6 +327,22 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     }
 
     @Override
+    @JavascriptInterface
+    public void toGenEvent() {
+        LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
+        if (loginEntity.getFzwno().equals("")) {
+            Toast.makeText(WebActivity.this, "没有注册fzwno！", Toast.LENGTH_LONG).show();
+            return;
+        }
+        ManageChatMsgTask manageChatMsgTask = new ManageChatMsgTask();
+        manageChatMsgTask.setOid(loginEntity.getFzwno());
+        manageChatMsgTask.setEventNo("");
+        manageChatMsgTask.setMsg("手机事件产生了 ");
+        manageChatMsgTask.setMsgType("txt");//消息类型:txt;img;voice;video
+        sendMsgToManageService("4", manageChatMsgTask);
+    }
+
+    @Override
     protected boolean isRegisterEventBus() {
         return true;
     }

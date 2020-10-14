@@ -11,6 +11,7 @@ public interface WebViewJavaScriptFunction {
 //	public String getEventNo();
 	public String toSure();
 	public String sendChatMsg(String eventNo,String msg);
+	public void toGenEvent();
 
 
 }
