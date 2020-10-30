@@ -103,9 +103,53 @@ public class ManageService extends Service implements NettyClientListener {
 
             ManageChatMsgTask manageChatMsgTask = (ManageChatMsgTask) intent.getSerializableExtra(COUNTER);
             toGenEvent(manageChatMsgTask);
+        } else if ("5".equals(data_type)) {
+
+            toLightOn();
+        }else if ("6".equals(data_type)) {
+
+            toLightOff();
         }
 
         return START_STICKY;
+    }
+
+    private void toLightOff() {
+        LL.V("关灯事件" );
+
+        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF0006000000#*";
+        AtTask atTask = new AtTask();
+        atTask.setAt(at);
+
+        WjProtocol wjProtocol = Sen_factory.getInstance(Sen_1000_0000.main, Sen_1000_0000.sub, atTask);
+        if (wjProtocol == null)
+            return;
+
+        if (nettyManager != null) {
+            nettyManager.senMessage(wjProtocol);
+            this.sendMsgToActivity(null, TOAST, "发送关灯事件成功");
+        } else {
+            queue.offer(wjProtocol);
+        }
+    }
+
+    private void toLightOn() {
+        LL.V("开灯事件" );
+
+        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF0006FFFFFF#*";
+        AtTask atTask = new AtTask();
+        atTask.setAt(at);
+
+        WjProtocol wjProtocol = Sen_factory.getInstance(Sen_1000_0000.main, Sen_1000_0000.sub, atTask);
+        if (wjProtocol == null)
+            return;
+
+        if (nettyManager != null) {
+            nettyManager.senMessage(wjProtocol);
+            this.sendMsgToActivity(null, TOAST, "发送开灯事件成功");
+        } else {
+            queue.offer(wjProtocol);
+        }
     }
 
     private void toGenEvent(ManageChatMsgTask manageChatMsgTask) {
@@ -278,21 +322,21 @@ public class ManageService extends Service implements NettyClientListener {
         try {
             LL.V("收到at消息：" + tx);
             AtProtocol atProtocol = AtProtocol.doAtTask(tx);
-            if("E001".equals(atProtocol.getBusinessNum()) && "0001".equals(atProtocol.getCommand())){
+            if ("E001".equals(atProtocol.getBusinessNum()) && "0001".equals(atProtocol.getCommand())) {
                 LL.V("收到atjson消息Para=" + atProtocol.getPara());
                 JSONObject objParamAt = JSONObject.parseObject(atProtocol.getPara());
 //                LL.V("收到atjson消息eventNo=" + objParamAt.getString("event_no"));
                 ManageChatMsgAtParam manageChatMsgAtParam = (ManageChatMsgAtParam) JSONObject.toJavaObject(objParamAt, ManageChatMsgAtParam.class);
 //                LL.V("收到at消息eventNo=" + manageChatMsgAtParam.getEventNo());
 
-                this.sendMsgToActivity(manageChatMsgAtParam,"chatMsg","");
-            }else {
+                this.sendMsgToActivity(manageChatMsgAtParam, "chatMsg", "");
+            } else {
 
-                LL.E("收到at业务暂时还不能处理！buss="+atProtocol.getBusinessNum()+",cmd="+atProtocol.getCommand());
-                this.sendMsgToActivity(null,TOAST,"收到at业务暂时还不能处理！buss="+atProtocol.getBusinessNum()+",cmd="+atProtocol.getCommand());
+                LL.E("收到at业务暂时还不能处理！buss=" + atProtocol.getBusinessNum() + ",cmd=" + atProtocol.getCommand());
+                this.sendMsgToActivity(null, TOAST, "收到at业务暂时还不能处理！buss=" + atProtocol.getBusinessNum() + ",cmd=" + atProtocol.getCommand());
             }
-        }catch (Exception e){
-            LL.E("处理at业务出错了！"+e.getMessage());
+        } catch (Exception e) {
+            LL.E("处理at业务出错了！" + e.getMessage());
         }
     }
 

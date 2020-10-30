@@ -314,7 +314,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     public String sendChatMsg(String eventNo, String msg) {
         LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
         if (loginEntity.getFzwno().equals("")) {
-            return "失败，没有注册fzwno！";
+            return "失败，没有注册手机fzwno！";
         }
         ManageChatMsgTask manageChatMsgTask = new ManageChatMsgTask();
         manageChatMsgTask.setOid(loginEntity.getFzwno());
@@ -331,7 +331,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     public void toGenEvent() {
         LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
         if (loginEntity.getFzwno().equals("")) {
-            Toast.makeText(WebActivity.this, "没有注册fzwno！", Toast.LENGTH_LONG).show();
+            Toast.makeText(WebActivity.this, "没有注册手机fzwno！", Toast.LENGTH_LONG).show();
             return;
         }
         ManageChatMsgTask manageChatMsgTask = new ManageChatMsgTask();
@@ -340,6 +340,28 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         manageChatMsgTask.setMsg("手机事件产生了 ");
         manageChatMsgTask.setMsgType("txt");//消息类型:txt;img;voice;video
         sendMsgToManageService("4", manageChatMsgTask);
+    }
+
+    @Override
+    @JavascriptInterface
+    public void toLightOn() {
+        LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
+        if (loginEntity.getFzwno().equals("")) {
+            Toast.makeText(WebActivity.this, "没有注册手机fzwno！", Toast.LENGTH_LONG).show();
+            return;
+        }
+        sendMsgToManageService("5", null);
+    }
+
+    @Override
+    @JavascriptInterface
+    public void toLightOff() {
+        LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
+        if (loginEntity.getFzwno().equals("")) {
+            Toast.makeText(WebActivity.this, "没有注册手机fzwno！", Toast.LENGTH_LONG).show();
+            return;
+        }
+        sendMsgToManageService("6", null);
     }
 
     @Override
