@@ -14,6 +14,7 @@ public interface WebViewJavaScriptFunction {
 	public void toGenEvent();
 	public void toLightOn();
 	public void toLightOff();
+	public void toSearchNet();
 
 
 }

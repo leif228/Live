@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import com.alibaba.fastjson.JSONObject;
 import com.lib.kit.utils.LL;
 import com.littlegreens.netty.client.NettyManager;
-import com.littlegreens.netty.client.extra.WjProtocol;
 import com.littlegreens.netty.client.extra.send.Sen_0000_0200;
 import com.littlegreens.netty.client.extra.send.Sen_0000_0300;
 import com.littlegreens.netty.client.extra.send.Sen_1200_0000;
@@ -23,12 +22,9 @@ import com.littlegreens.netty.client.extra.task.NetDevCompFileTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompTask;
 import com.littlegreens.netty.client.extra.task.NetDoTaskTask;
 import com.littlegreens.netty.client.extra.task.NetInfoTask;
-import com.littlegreens.netty.client.extra.task.NetSearchNetDto;
-import com.littlegreens.netty.client.extra.task.NetSearchNetDtos;
-import com.littlegreens.netty.client.extra.task.NetSearchNetTask;
+import com.littlegreens.netty.client.extra.WjProtocol;
 import com.littlegreens.netty.client.listener.NettyClientListener;
 import com.littlegreens.netty.client.status.ConnectState;
-import com.wj.work.utils.BroadCastToCenter;
 import com.wj.work.utils.ScanDeviceUtile;
 
 import java.util.ArrayList;
@@ -38,7 +34,7 @@ import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class NetService extends Service implements NettyClientListener {
+public class NetService2 extends Service implements NettyClientListener {
     private boolean connecting = false;
     private boolean havaConnectSuccessed = false;
     public static final String COUNTER = "data";
@@ -46,12 +42,8 @@ public class NetService extends Service implements NettyClientListener {
     public static final String COUNTER_ELSE = "else";
     public static final String TOAST = "toast";
     public static final long closeTimes = 30000l;
-    public static final Integer udpport = 8666;
-    public static final Integer tcpport = 8777;
+    public static final Integer port = 8666;
     public static final String ACTION_NAME = "com.wj.work.netservice.COUNTER_ACTION";
-    Timer timer = new Timer();
-
-    List<NetSearchNetDto> netSearchNetDtos = new ArrayList<>();
 
     private String data_type;
     List<String> iplist;
@@ -61,9 +53,6 @@ public class NetService extends Service implements NettyClientListener {
     NettyManager nettyManager;
     Queue<WjProtocol> queue;
     String ip;
-
-    String localIp;
-    private boolean isSearching = false;
 
     @Nullable
     @Override
@@ -76,35 +65,24 @@ public class NetService extends Service implements NettyClientListener {
         super.onCreate();
         LL.V("NetService onCreate");
         queue = new LinkedList<WjProtocol>();
-//        getIpConnectNet();
-//        sendBroadCastToCenter();
-//        udpDiscardSServer();
-//        sendBroadCastToCenter(new NetSearchNetTask());
+        getIpConnectNet();
     }
 
-    private void connectNet(String netIp) {
+    private void connectNet() {
         LL.V("connectNet");
         //清空列表
         nettyManager = null;
         nettyManagers.clear();
         connetSuccessIndex = -1;
         havaConnectSuccessed = false;
+        for (int i = 0; i < iplist.size(); i++) {
+            LL.V("connectNet=" + i + ":ip=" + iplist.get(i));
+            NettyManager nettyManager = new NettyManager(i, iplist.get(i), port);
+            nettyManager.setNettyClientListener(this);
+            nettyManager.connect();
 
-//        for (int i = 0; i < iplist.size(); i++) {
-//            LL.V("connectNet=" + i + ":ip=" + iplist.get(i));
-//            NettyManager nettyManager = new NettyManager(i, iplist.get(i), udpport);
-//            nettyManager.setNettyClientListener(this);
-//            nettyManager.connect();
-//
-//            nettyManagers.add(nettyManager);
-//        }
-
-        LL.V("connectNet=" + ":ip=" + netIp);
-        NettyManager nettyManager = new NettyManager(0, netIp, tcpport);
-        nettyManager.setNettyClientListener(this);
-        nettyManager.connect();
-
-        nettyManagers.add(nettyManager);
+            nettyManagers.add(nettyManager);
+        }
     }
 
     @Override
@@ -115,8 +93,7 @@ public class NetService extends Service implements NettyClientListener {
         LL.V("NetService onStartCommand: " + data_type);
 
         if ("1".equals(data_type)) {
-//            getIpConnectNet();
-            sendBroadCastToCenter(new NetSearchNetTask());
+            getIpConnectNet();
         } else if ("2".equals(data_type)) {
             NetInfoTask netInfoTask = (NetInfoTask) intent.getSerializableExtra(COUNTER);
             toNetInfo(netInfoTask);
@@ -129,35 +106,11 @@ public class NetService extends Service implements NettyClientListener {
         } else if ("5".equals(data_type)) {
             NetDevCompFileTask netDevCompFileTask = (NetDevCompFileTask) intent.getSerializableExtra(COUNTER);
             toNetGetDevList(netDevCompFileTask);
-        }else if ("6".equals(data_type)) {
-            sendBroadCastToCenter(new NetSearchNetTask());
         }
 
         return START_STICKY;
     }
 
-    private void sendBroadCastToCenter(NetSearchNetTask netSearchNetTask) {
-        if(!isSearching){
-            isSearching = true;
-            BroadCastToCenter broadCastToCenter = new BroadCastToCenter(netSearchNetTask);
-            broadCastToCenter.start();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    netSearchNetDtos = broadCastToCenter.getNetSearchNetDtos();
-                    broadCastToCenter.stopStay();
-                    isSearching = false;
-                    backNets();
-                }
-            },1000l);
-        }
-    }
-
-    private void backNets(){
-        NetSearchNetDtos netSearchNetDtoList = new NetSearchNetDtos();
-        netSearchNetDtoList.setNetSearchNetDtos(netSearchNetDtos);
-        sendMsgToActivity(netSearchNetDtoList, "3", "");
-    }
 
     private void sendMsgToActivity(BaseTask baseTask, String type, String elses) {
         //向Activity传递data
@@ -192,14 +145,14 @@ public class NetService extends Service implements NettyClientListener {
                         }
                         if (iplist != null && iplist.size() > 0) {
 
-                            NetService.this.sendMsgToActivity(null, TOAST, "扫描到局域网ips");
-                            connectNet("");
+                            NetService2.this.sendMsgToActivity(null, TOAST, "扫描到局域网ips");
+                            connectNet();
                             noConnectIpSuccessCloseTask();
                         }
                     } catch (Exception e) {
                         LL.V("getIp:[error]" + e.getMessage());
 
-                        NetService.this.sendMsgToActivity(null, TOAST, "扫描局域网ips报错，关闭wifi重新再试！！");
+                        NetService2.this.sendMsgToActivity(null, TOAST, "扫描局域网ips报错，关闭wifi重新再试！！");
                         connecting = false;
                         e.printStackTrace();
                     }
@@ -256,7 +209,7 @@ public class NetService extends Service implements NettyClientListener {
             //全部都失败则重新扫描ip
             if (connetSuccessIndex == index) {
                 connecting = false;
-                sendBroadCastToCenter(new NetSearchNetTask());
+                getIpConnectNet();
             }
         }
     }
@@ -269,9 +222,9 @@ public class NetService extends Service implements NettyClientListener {
         connetSuccessIndex = index;
         havaConnectSuccessed = true;
         nettyManager = nettyManagers.get(index);
-        this.sendMsgToActivity(null, TOAST, "tcp连接到网关ip成功");
-//        toSearchNet();
-//        this.doTask();
+        this.sendMsgToActivity(null, TOAST, "连接到网关ip成功");
+        toSearchNet();
+        this.doTask();
     }
 
     private void doTask() {

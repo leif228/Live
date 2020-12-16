@@ -19,6 +19,7 @@ import com.littlegreens.netty.client.extra.task.ManageChatMsgTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompFileTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompTask;
 import com.littlegreens.netty.client.extra.task.NetInfoTask;
+import com.littlegreens.netty.client.extra.task.NetSearchNetDtos;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
@@ -365,6 +366,12 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     }
 
     @Override
+    @JavascriptInterface
+    public void toSearchNet() {
+        sendMsgToNetService("6", null);
+    }
+
+    @Override
     protected boolean isRegisterEventBus() {
         return true;
     }
@@ -422,6 +429,11 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                         LL.V("toast:" + toast);
 
                         Toast.makeText(WebActivity.this, toast, Toast.LENGTH_LONG).show();
+                    } else if ("3".equals(nDataType)) {
+                        NetSearchNetDtos data = (NetSearchNetDtos) intent.getSerializableExtra(NetService.COUNTER);
+                        LL.V("toast:" + data.getNetSearchNetDtos().size());
+
+//                        Toast.makeText(WebActivity.this, toast, Toast.LENGTH_LONG).show();
                     }
                 }
             });

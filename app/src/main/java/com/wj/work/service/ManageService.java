@@ -117,7 +117,8 @@ public class ManageService extends Service implements NettyClientListener {
     private void toLightOff() {
         LL.V("关灯事件" );
 
-        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF0006000000#*";
+//        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF0006000000#*";
+        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"000000\"}#*";
         AtTask atTask = new AtTask();
         atTask.setAt(at);
 
@@ -136,7 +137,8 @@ public class ManageService extends Service implements NettyClientListener {
     private void toLightOn() {
         LL.V("开灯事件" );
 
-        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF0006FFFFFF#*";
+//        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF0006FFFFFF#*";
+        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"FFFFFF\"}#*";
         AtTask atTask = new AtTask();
         atTask.setAt(at);
 
