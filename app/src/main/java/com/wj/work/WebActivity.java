@@ -10,6 +10,7 @@ import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONObject;
 import com.lib.kit.utils.LL;
 import com.lib.kit.utils.StatusBarUtils;
 import com.littlegreens.netty.client.extra.task.BaseTask;
@@ -101,10 +102,11 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         startService(mIntent);
     }
 
-    private void sendMsgToNetService(String type, BaseTask baseTask) {
+    private void sendMsgToNetService(String type, BaseTask baseTask,String elses) {
         //向Service传递data
         nIntent.putExtra(NetService.COUNTER_TYPE, type);
         nIntent.putExtra(NetService.COUNTER, baseTask);
+        nIntent.putExtra(NetService.COUNTER_ELSE, elses);
         startService(nIntent);
 
 //        new Handler().postDelayed(new Runnable() {
@@ -251,7 +253,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         netInfoTask.setOwnerServerOID(owerfzwno);
         netInfoTask.setPassNum(passWord);
 
-        sendMsgToNetService("2", netInfoTask);
+        sendMsgToNetService("2", netInfoTask,"");
     }
 
     @Override
@@ -262,7 +264,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         netDevCompTask.setCompanyName(compName);
         netDevCompTask.setPRO("CompanyChoosed");
         netDevCompTask.setFile(path);
-        sendMsgToNetService("3", netDevCompTask);
+        sendMsgToNetService("3", netDevCompTask,"");
     }
 
     @Override
@@ -273,7 +275,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         netDevCompTask.setCompanyName(compName);
         netDevCompTask.setPRO("SetOk");
 
-        sendMsgToNetService("4", netDevCompTask);
+        sendMsgToNetService("4", netDevCompTask,"");
     }
 
     @Override
@@ -285,7 +287,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         netDevCompFileTask.setCompanyName(compName);
         netDevCompFileTask.setPRO("Authority");
 
-        sendMsgToNetService("5", netDevCompFileTask);
+        sendMsgToNetService("5", netDevCompFileTask,"");
     }
 
     @Override
@@ -368,7 +370,13 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     @Override
     @JavascriptInterface
     public void toSearchNet() {
-        sendMsgToNetService("6", null);
+        sendMsgToNetService("6", null,"");
+    }
+
+    @Override
+    @JavascriptInterface
+    public void toNetTcp(String ip) {
+        sendMsgToNetService("7", null,ip);
     }
 
     @Override
@@ -382,7 +390,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
             LL.V("-----------    网络可用");
             if (event.isWiFiAvailable()) {
                 LL.V("+++++++++++   wifi网络可用");
-                sendMsgToNetService("1", null);
+                sendMsgToNetService("1", null,"");
             }
 //            LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
 //            if (!"".equals(loginEntity.getIp())) {
@@ -431,8 +439,10 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                         Toast.makeText(WebActivity.this, toast, Toast.LENGTH_LONG).show();
                     } else if ("3".equals(nDataType)) {
                         NetSearchNetDtos data = (NetSearchNetDtos) intent.getSerializableExtra(NetService.COUNTER);
-                        LL.V("toast:" + data.getNetSearchNetDtos().size());
+                        String json = JSONObject.toJSONString(data);
+                        LL.V("json:" + json);
 
+                        webView.loadUrl("javascript:nets('"+json+"')");
 //                        Toast.makeText(WebActivity.this, toast, Toast.LENGTH_LONG).show();
                     }
                 }
