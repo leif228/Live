@@ -193,6 +193,56 @@ public class WjProtocol {
         return hexString;
     }
 
+    public byte[] getAllArray(WjProtocol protocol) {
+        int dataLength = 0;
+        if (protocol.getUserdata() != null) {
+            dataLength = protocol.getUserdata().length;
+        }
+
+        int cslength = WjProtocol.MIN_DATA_LEN  + dataLength;
+        byte[] arr = new byte[cslength];
+
+        int index = 0;
+        System.arraycopy(protocol.getHeader().getBytes(), 0, arr, index, protocol.getHeader().getBytes().length);
+
+        index += protocol.getHeader().getBytes().length;
+        System.arraycopy(protocol.getLen(), 0, arr, index, protocol.getLen().length);
+
+        index += protocol.getLen().length;
+        arr[index] = protocol.getVer();
+
+        index += 1;
+        arr[index] = protocol.getEncrypt();
+
+        index += 1;
+        System.arraycopy(protocol.getPlat(), 0, arr, index, protocol.getPlat().length);
+
+        index += protocol.getPlat().length;
+        System.arraycopy(protocol.getMaincmd(), 0, arr, index, protocol.getMaincmd().length);
+
+        index += protocol.getMaincmd().length;
+        System.arraycopy(protocol.getSubcmd(), 0, arr, index, protocol.getSubcmd().length);
+
+        index += protocol.getSubcmd().length;
+        System.arraycopy(protocol.getFormat().getBytes(), 0, arr, index, protocol.getFormat().getBytes().length);
+
+        index += protocol.getFormat().getBytes().length;
+        System.arraycopy(protocol.getBack(), 0, arr, index, protocol.getBack().length);
+
+        if (protocol.getUserdata() != null) {
+            index += protocol.getBack().length;
+            System.arraycopy(protocol.getUserdata(), 0, arr, index, protocol.getUserdata().length);
+
+            index += protocol.getUserdata().length;
+            arr[index] = protocol.getCheckSum(protocol);
+        }else {
+            index += protocol.getBack().length;
+            arr[index] = protocol.getCheckSum(protocol);
+        }
+
+        return arr;
+    }
+
     public byte[] getCheckSumArray(WjProtocol protocol) {
 
         int dataLength = 0;

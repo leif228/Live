@@ -42,7 +42,7 @@ public class NetService extends Service implements NettyClientListener {
     public static final String COUNTER_TYPE = "type";
     public static final String COUNTER_ELSE = "else";
     public static final String TOAST = "toast";
-    public static final Integer tcpport = 8777;
+    public static final Integer tcpport = 8666;
     public static final String ACTION_NAME = "com.wj.work.netservice.COUNTER_ACTION";
     Timer timer = new Timer();
 
@@ -81,7 +81,6 @@ public class NetService extends Service implements NettyClientListener {
             nettyManager = null;
         }
 
-        LL.V("connectNet=" + ":ip=" + netIp);
         nettyManager = new NettyManager(0, netIp, tcpport);
         nettyManager.setNettyClientListener(this);
         nettyManager.connect();
@@ -96,7 +95,7 @@ public class NetService extends Service implements NettyClientListener {
 
         if ("1".equals(data_type)) {
 //            getIpConnectNet();
-            sendBroadCastToCenter(new NetSearchNetTask());
+//            sendBroadCastToCenter(new NetSearchNetTask());
         } else if ("2".equals(data_type)) {
             NetInfoTask netInfoTask = (NetInfoTask) intent.getSerializableExtra(COUNTER);
             toNetInfo(netInfoTask);
@@ -132,7 +131,7 @@ public class NetService extends Service implements NettyClientListener {
                     isSearching = false;
                     backNets();
                 }
-            }, 1000l);
+            }, 3000l);
         }
     }
 

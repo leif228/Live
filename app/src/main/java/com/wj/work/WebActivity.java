@@ -20,6 +20,7 @@ import com.littlegreens.netty.client.extra.task.ManageChatMsgTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompFileTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompTask;
 import com.littlegreens.netty.client.extra.task.NetInfoTask;
+import com.littlegreens.netty.client.extra.task.NetSearchNetDto;
 import com.littlegreens.netty.client.extra.task.NetSearchNetDtos;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
@@ -37,6 +38,8 @@ import com.wj.work.widget.entity.LoginEntity;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.List;
+
 import butterknife.BindView;
 
 public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebViewI, WebViewJavaScriptFunction {
@@ -44,9 +47,10 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     @BindView(R.id.wv_webview)
     WebView webView;
 
-    //    private static final String mHomeUrl = "http://192.168.4.17:8848/wujieweb/page/login/login.html";
-    private static final String mHomeUrl = "http://192.168.4.16:8080/wujieweb/page/login/login.html";
-    private static final String mChatUrl = "http://192.168.4.16:8080/wujieweb/page/login/chat.html";
+    //        private static final String mHomeUrl = "http://192.168.4.17:8848/wujieweb/page/login/login.html";
+    private static final String mHomeUrl = "http://192.168.4.15:8080/wujieweb/page/login/login.html";
+    private static final String mChatUrl = "http://192.168.4.15:8080/wujieweb/page/login/chat.html";
+    private static final String mIndexUrl = "http://192.168.4.15:8080/wujieweb/page/login/index.html";
     //    private static final String mHomeUrl = "http://www.baidu.com";
     private static final String authUrl = "/shared/tcube_app/APP_code/APP_choose_device.php";
 
@@ -61,6 +65,8 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     private String compName = "";
     private ManageChatMsgAtParam chatMsgData;
     private boolean fromTcp = false;
+    private String netSearchNetDtos = "[]";
+
 
     @Override
     protected int getLayoutResId() {
@@ -102,7 +108,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         startService(mIntent);
     }
 
-    private void sendMsgToNetService(String type, BaseTask baseTask,String elses) {
+    private void sendMsgToNetService(String type, BaseTask baseTask, String elses) {
         //向Service传递data
         nIntent.putExtra(NetService.COUNTER_TYPE, type);
         nIntent.putExtra(NetService.COUNTER, baseTask);
@@ -176,18 +182,24 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                 return true;
 
             }
+
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                LL.V("onPageFinished.url="+url);
-                if(url.equals(mChatUrl)&&fromTcp){
-                    if(chatMsgData != null){
+                LL.V("onPageFinished.url=" + url);
+                if (url.equals(mChatUrl) && fromTcp) {
+                    if (chatMsgData != null) {
                         LL.V(chatMsgData.getEventNo());
-                        webView.loadUrl("javascript:flushChat('"+chatMsgData.getEventNo()+"')");
+                        webView.loadUrl("javascript:flushChat('" + chatMsgData.getEventNo() + "')");
                         chatMsgData = null;
                     }
                     fromTcp = false;
                 }
+//                else if (url.equals(mIndexUrl)) {
+//                    LL.V("netSearchNetDtos=" + netSearchNetDtos);
+//                    webView.loadUrl("javascript:nets('"+netSearchNetDtos+"')");
+//                    netSearchNetDtos = "[]";
+//                }
             }
 
         });
@@ -253,7 +265,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         netInfoTask.setOwnerServerOID(owerfzwno);
         netInfoTask.setPassNum(passWord);
 
-        sendMsgToNetService("2", netInfoTask,"");
+        sendMsgToNetService("2", netInfoTask, "");
     }
 
     @Override
@@ -264,7 +276,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         netDevCompTask.setCompanyName(compName);
         netDevCompTask.setPRO("CompanyChoosed");
         netDevCompTask.setFile(path);
-        sendMsgToNetService("3", netDevCompTask,"");
+        sendMsgToNetService("3", netDevCompTask, "");
     }
 
     @Override
@@ -275,7 +287,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         netDevCompTask.setCompanyName(compName);
         netDevCompTask.setPRO("SetOk");
 
-        sendMsgToNetService("4", netDevCompTask,"");
+        sendMsgToNetService("4", netDevCompTask, "");
     }
 
     @Override
@@ -287,7 +299,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         netDevCompFileTask.setCompanyName(compName);
         netDevCompFileTask.setPRO("Authority");
 
-        sendMsgToNetService("5", netDevCompFileTask,"");
+        sendMsgToNetService("5", netDevCompFileTask, "");
     }
 
     @Override
@@ -370,13 +382,13 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     @Override
     @JavascriptInterface
     public void toSearchNet() {
-        sendMsgToNetService("6", null,"");
+        sendMsgToNetService("6", null, "");
     }
 
     @Override
     @JavascriptInterface
     public void toNetTcp(String ip) {
-        sendMsgToNetService("7", null,ip);
+        sendMsgToNetService("7", null, ip);
     }
 
     @Override
@@ -390,7 +402,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
             LL.V("-----------    网络可用");
             if (event.isWiFiAvailable()) {
                 LL.V("+++++++++++   wifi网络可用");
-                sendMsgToNetService("1", null,"");
+                sendMsgToNetService("1", null, "");
             }
 //            LoginEntity loginEntity = SpManager.getInstance().getLoginSp().getLoginInfoEntity();
 //            if (!"".equals(loginEntity.getIp())) {
@@ -439,10 +451,11 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                         Toast.makeText(WebActivity.this, toast, Toast.LENGTH_LONG).show();
                     } else if ("3".equals(nDataType)) {
                         NetSearchNetDtos data = (NetSearchNetDtos) intent.getSerializableExtra(NetService.COUNTER);
-                        String json = JSONObject.toJSONString(data);
-                        LL.V("json:" + json);
-
-                        webView.loadUrl("javascript:nets('"+json+"')");
+                        List<NetSearchNetDto> netSearchNetDtoList = data.getNetSearchNetDtos();
+                        netSearchNetDtos = JSONObject.toJSONString(netSearchNetDtoList);
+                        LL.V("json:" + netSearchNetDtos);
+//                        webView.loadUrl(mIndexUrl);
+                        webView.loadUrl("javascript:nets('"+netSearchNetDtos+"')");
 //                        Toast.makeText(WebActivity.this, toast, Toast.LENGTH_LONG).show();
                     }
                 }
