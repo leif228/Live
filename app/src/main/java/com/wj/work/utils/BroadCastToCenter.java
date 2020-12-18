@@ -108,29 +108,33 @@ public class BroadCastToCenter extends Thread {
             DatagramPacket packetrc = new DatagramPacket(buffer, buffer.length);
             while (true) {
                 theSocket.receive(packetrc);
+                try{
 //                String src = new String(packetrc.getData(), 0, packetrc.getLength(), "UTF-8");
-                LL.V("local_address : " + packetrc.getAddress() + ", port : " + packetrc.getPort() + ", content.length : " + packetrc.getData().length);
-                LL.V("收到数组打印："+ Arrays.toString(packetrc.getData()));
+                    LL.V("local_address : " + packetrc.getAddress() + ", port : " + packetrc.getPort() + ", content.length : " + packetrc.getData().length);
+                    LL.V("收到数组打印："+ Arrays.toString(packetrc.getData()));
 
-                byte[] recBytes = packetrc.getData();
+                    byte[] recBytes = packetrc.getData();
 //                byte[] headerbyte = Arrays.copyOfRange(recBytes,0,6);
-                byte[] lenShortbyte = Arrays.copyOfRange(recBytes,6,8);
-                int len = wjProtocol.byte2shortSmall(lenShortbyte);
-                LL.V("数据解码的长度：" + len);
+                    byte[] lenShortbyte = Arrays.copyOfRange(recBytes,6,8);
+                    int len = wjProtocol.byte2shortSmall(lenShortbyte);
+                    LL.V("数据解码的长度：" + len);
 
-                int dataLen = len - WjProtocol.MIN_DATA_LEN;
-                if (dataLen > 0) {
-                    byte[] userData = Arrays.copyOfRange(recBytes,20,20+dataLen);
-                    String dataStr = new String(userData,"UTF-8");
-                    LL.V("收到的jsonStr:" + dataStr);
+                    int dataLen = len - WjProtocol.MIN_DATA_LEN;
+                    if (dataLen > 0) {
+                        byte[] userData = Arrays.copyOfRange(recBytes,20,20+dataLen);
+                        String dataStr = new String(userData,"UTF-8");
+                        LL.V("收到的jsonStr:" + dataStr);
 
-                    NetSearchNetDto netSearchNetDto = new NetSearchNetDto();
-                    netSearchNetDto.setIp(packetrc.getAddress().getHostAddress());
-                    JSONObject objParam = JSONObject.parseObject(dataStr);
-                    NetSearchNetTask netSearchNetTask = JSONObject.toJavaObject(objParam, NetSearchNetTask.class);
-                    netSearchNetDto.setNetSearchNetTask(netSearchNetTask);
+                        NetSearchNetDto netSearchNetDto = new NetSearchNetDto();
+                        netSearchNetDto.setIp(packetrc.getAddress().getHostAddress());
+                        JSONObject objParam = JSONObject.parseObject(dataStr);
+                        NetSearchNetTask netSearchNetTask = JSONObject.toJavaObject(objParam, NetSearchNetTask.class);
+                        netSearchNetDto.setNetSearchNetTask(netSearchNetTask);
 
-                    netSearchNetDtos.add(netSearchNetDto);
+                        netSearchNetDtos.add(netSearchNetDto);
+                    }
+                }catch (Exception e){
+                    LL.V("rec Exception=" + e.getMessage());
                 }
 
             }
