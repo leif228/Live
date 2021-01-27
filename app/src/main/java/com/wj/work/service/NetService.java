@@ -17,8 +17,10 @@ import com.littlegreens.netty.client.extra.send.Sen_1200_0000;
 import com.littlegreens.netty.client.extra.send.Sen_1200_0100;
 import com.littlegreens.netty.client.extra.send.Sen_1200_0200;
 import com.littlegreens.netty.client.extra.send.Sen_1200_0300;
+import com.littlegreens.netty.client.extra.send.Sen_1200_0400;
 import com.littlegreens.netty.client.extra.send.Sen_factory;
 import com.littlegreens.netty.client.extra.task.BaseTask;
+import com.littlegreens.netty.client.extra.task.NetConfigTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompFileTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompTask;
 import com.littlegreens.netty.client.extra.task.NetDoTaskTask;
@@ -113,6 +115,9 @@ public class NetService extends Service implements NettyClientListener {
         } else if ("7".equals(data_type)) {
             String ip = intent.getStringExtra(COUNTER_ELSE);
             connectNet(ip);
+        } else if ("8".equals(data_type)) {
+            NetConfigTask netDevCompTask = (NetConfigTask) intent.getSerializableExtra(COUNTER);
+            toConfigNet(netDevCompTask);
         }
 
         return START_STICKY;
@@ -166,7 +171,7 @@ public class NetService extends Service implements NettyClientListener {
         if (statusCode == ConnectState.STATUS_CONNECT_ERROR) {
             Log.v("ly", "onClientStatusConnectChanged:===" + index);
 
-            this.sendMsgToActivity(null, TOAST, "tcp连接到网关失败:ip=" + ip);
+//            this.sendMsgToActivity(null, TOAST, "tcp连接到网关失败:ip=" + ip);
         }
     }
 
@@ -393,4 +398,19 @@ public class NetService extends Service implements NettyClientListener {
             queue.offer(wjProtocol);
         }
     }
+
+    //手机→网关 手机配置网关
+    private void toConfigNet(NetConfigTask netDevCompTask) {
+        WjProtocol wjProtocol = Sen_factory.getInstance(Sen_1200_0400.main, Sen_1200_0400.sub, netDevCompTask);
+        if (wjProtocol == null)
+            return;
+
+        if (nettyManager != null) {
+            nettyManager.senMessage(wjProtocol);
+            this.sendMsgToActivity(null, TOAST, "手机配置网关任务成功");
+        } else {
+            queue.offer(wjProtocol);
+        }
+    }
+
 }

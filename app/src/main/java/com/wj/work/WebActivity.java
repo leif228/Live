@@ -17,6 +17,7 @@ import com.littlegreens.netty.client.extra.task.BaseTask;
 import com.littlegreens.netty.client.extra.task.Connect;
 import com.littlegreens.netty.client.extra.task.ManageChatMsgAtParam;
 import com.littlegreens.netty.client.extra.task.ManageChatMsgTask;
+import com.littlegreens.netty.client.extra.task.NetConfigTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompFileTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompTask;
 import com.littlegreens.netty.client.extra.task.NetInfoTask;
@@ -392,6 +393,17 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     }
 
     @Override
+    @JavascriptInterface
+    public void toConfigNet(String ntype, String addr) {
+
+        LL.V("-----------    ntype=" + ntype + ",addr=" + addr);
+        NetConfigTask netConfigTask = new NetConfigTask();
+        netConfigTask.setDevtype(ntype);
+        netConfigTask.setInaeraaddr(addr);
+        sendMsgToNetService("8", netConfigTask, "");
+    }
+
+    @Override
     protected boolean isRegisterEventBus() {
         return true;
     }
@@ -455,7 +467,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                         netSearchNetDtos = JSONObject.toJSONString(netSearchNetDtoList);
                         LL.V("json:" + netSearchNetDtos);
 //                        webView.loadUrl(mIndexUrl);
-                        webView.loadUrl("javascript:nets('"+netSearchNetDtos+"')");
+                        webView.loadUrl("javascript:nets('" + netSearchNetDtos + "')");
 //                        Toast.makeText(WebActivity.this, toast, Toast.LENGTH_LONG).show();
                     }
                 }

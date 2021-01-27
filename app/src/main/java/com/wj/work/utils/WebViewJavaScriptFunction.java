@@ -16,6 +16,7 @@ public interface WebViewJavaScriptFunction {
 	public void toLightOff();
 	public void toSearchNet();
 	public void toNetTcp(String ip);
+	public void toConfigNet(String ntype,String addr);
 
 
 }

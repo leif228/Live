@@ -53,7 +53,7 @@ public class WjDecoderHandler extends ByteToMessageDecoder {
                 //数据可读长度必须要大于len，因为结尾还有一字节的解释标志位
                 int rr = in.readableBytes();
                 if (subHeaderLen > rr) {
-                    Log.v(TAG,String.format("数据长度不够，数据协议len长度为：%1$d,数据包实际可读内容为：%2$d正在等待处理拆包……", len, rr));
+                    Log.e(TAG,String.format("数据长度不够，数据协议len长度为：%1$d,数据包实际可读内容为：%2$d正在等待处理拆包……", len, rr));
                     in.resetReaderIndex();
                     /*
                      **结束解码，这种情况说明数据没有到齐，在父类ByteToMessageDecoder的callDecode中会对out和in进行判断
@@ -102,21 +102,21 @@ public class WjDecoderHandler extends ByteToMessageDecoder {
                 byte checkSumChar = in.readByte();//##1
                 wjProtocol.setCheckSum(checkSumChar);
 
-                Log.e(TAG, "数组打印："+Arrays.toString(wjProtocol.getCheckSumArray(wjProtocol)));
+                Log.e(TAG, "数组打印："+Arrays.toString(wjProtocol.getAllArray(wjProtocol)));
 
                 boolean check = wjProtocol.checkXOR(wjProtocol.getCheckSumArray(wjProtocol),checkSumChar);
                 if(!check){
-                    Log.v(TAG,"数据异或校验不对");
+                    Log.e(TAG,"数据异或校验不对");
                     return;
                 }
 
                 taskHandler.doProtocol(ctx, wjProtocol);
             } else {
-                Log.v(TAG,"开头不对，可能不是期待的客服端发送的数，将自动略过这一个字节");
+                Log.e(TAG,"开头不对，可能不是期待的客服端发送的数，将自动略过这一个字节");
 //                return;
             }
         } else {
-            Log.v(TAG,"数据长度不符合要求，期待最小长度是：" + WjProtocol.MIN_DATA_LEN + " 字节");
+            Log.e(TAG,"数据长度不符合要求，期待最小长度是：" + WjProtocol.MIN_DATA_LEN + " 字节");
             return;
         }
 
@@ -129,7 +129,7 @@ public class WjDecoderHandler extends ByteToMessageDecoder {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
             throws Exception {
 
-        Log.v(TAG,"DecoderHandler# # 连接  Netty 出错..."+ctx.channel().remoteAddress());
+        Log.e(TAG,"DecoderHandler# # 连接  Netty 出错..."+ctx.channel().remoteAddress());
 //        cause.printStackTrace();
         //关闭连接
 //        closeConnection(ctx);
@@ -177,7 +177,7 @@ public class WjDecoderHandler extends ByteToMessageDecoder {
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
 
-        Log.v(TAG,String.format("DecoderHandler# # connet out... : %s", ctx.channel().remoteAddress()));
+        Log.e(TAG,String.format("DecoderHandler# # connet out... : %s", ctx.channel().remoteAddress()));
         nettyTcpClient.attemptReConnect();
 //        TcpClient.doConnect();
 //        Channel incoming = ctx.channel();
