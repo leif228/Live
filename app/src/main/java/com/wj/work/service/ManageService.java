@@ -21,6 +21,7 @@ import com.littlegreens.netty.client.extra.task.LoginTask;
 import com.littlegreens.netty.client.extra.WjProtocol;
 import com.littlegreens.netty.client.extra.task.ManageChatMsgAtParam;
 import com.littlegreens.netty.client.extra.task.ManageChatMsgTask;
+import com.littlegreens.netty.client.extra.task.ManageLightTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompFileTask;
 import com.littlegreens.netty.client.listener.NettyClientListener;
 import com.littlegreens.netty.client.status.ConnectState;
@@ -105,20 +106,21 @@ public class ManageService extends Service implements NettyClientListener {
             toGenEvent(manageChatMsgTask);
         } else if ("5".equals(data_type)) {
 
-            toLightOn();
+            ManageLightTask manageLightTask = (ManageLightTask) intent.getSerializableExtra(COUNTER);
+            toLightOn(manageLightTask.getAt());
         }else if ("6".equals(data_type)) {
 
-            toLightOff();
+            ManageLightTask manageLightTask = (ManageLightTask) intent.getSerializableExtra(COUNTER);
+            toLightOff(manageLightTask.getAt());
         }
 
         return START_STICKY;
     }
 
-    private void toLightOff() {
+    private void toLightOff(String at) {
         LL.V("关灯事件" );
 
-//        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF0006000000#*";
-        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"000000\"}#*";
+//        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"000000\"}#*";
         AtTask atTask = new AtTask();
         atTask.setAt(at);
 
@@ -134,11 +136,10 @@ public class ManageService extends Service implements NettyClientListener {
         }
     }
 
-    private void toLightOn() {
+    private void toLightOn(String at) {
         LL.V("开灯事件" );
 
-//        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF0006FFFFFF#*";
-        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"FFFFFF\"}#*";
+//        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"FFFFFF\"}#*";
         AtTask atTask = new AtTask();
         atTask.setAt(at);
 

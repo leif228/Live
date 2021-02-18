@@ -17,6 +17,7 @@ import com.littlegreens.netty.client.extra.task.BaseTask;
 import com.littlegreens.netty.client.extra.task.Connect;
 import com.littlegreens.netty.client.extra.task.ManageChatMsgAtParam;
 import com.littlegreens.netty.client.extra.task.ManageChatMsgTask;
+import com.littlegreens.netty.client.extra.task.ManageLightTask;
 import com.littlegreens.netty.client.extra.task.NetConfigTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompFileTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompTask;
@@ -366,7 +367,12 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
             Toast.makeText(WebActivity.this, "没有注册手机fzwno！", Toast.LENGTH_LONG).show();
             return;
         }
-        sendMsgToManageService("5", null);
+//       String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"FFFFFF\"}#*";
+       String at = "AT@N"+loginEntity.getFzwno()+"100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"FFFFFF\"}#*";
+        Toast.makeText(WebActivity.this, "at="+at, Toast.LENGTH_LONG).show();
+        ManageLightTask manageLightTask = new ManageLightTask();
+        manageLightTask.setAt(at);
+        sendMsgToManageService("5", manageLightTask);
     }
 
     @Override
@@ -377,7 +383,12 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
             Toast.makeText(WebActivity.this, "没有注册手机fzwno！", Toast.LENGTH_LONG).show();
             return;
         }
-        sendMsgToManageService("6", null);
+//        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"000000\"}#*";
+        String at = "AT@N"+loginEntity.getFzwno()+"100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"000000\"}#*";
+        Toast.makeText(WebActivity.this, "at="+at, Toast.LENGTH_LONG).show();
+        ManageLightTask manageLightTask = new ManageLightTask();
+        manageLightTask.setAt(at);
+        sendMsgToManageService("6", manageLightTask);
     }
 
     @Override
