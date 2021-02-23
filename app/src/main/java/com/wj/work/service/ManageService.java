@@ -112,9 +112,31 @@ public class ManageService extends Service implements NettyClientListener {
 
             ManageLightTask manageLightTask = (ManageLightTask) intent.getSerializableExtra(COUNTER);
             toLightOff(manageLightTask.getAt());
+        }else if ("7".equals(data_type)) {
+
+            ManageLightTask manageLightTask = (ManageLightTask) intent.getSerializableExtra(COUNTER);
+            toAt(manageLightTask.getAt());
         }
 
         return START_STICKY;
+    }
+
+    private void toAt(String at) {
+        LL.V("at事件" );
+
+        AtTask atTask = new AtTask();
+        atTask.setAt(at);
+
+        WjProtocol wjProtocol = Sen_factory.getInstance(Sen_1000_0000.main, Sen_1000_0000.sub, atTask);
+        if (wjProtocol == null)
+            return;
+
+        if (nettyManager != null) {
+            nettyManager.senMessage(wjProtocol);
+            this.sendMsgToActivity(null, TOAST, "发送at事件成功");
+        } else {
+            queue.offer(wjProtocol);
+        }
     }
 
     private void toLightOff(String at) {

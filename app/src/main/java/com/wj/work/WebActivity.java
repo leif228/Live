@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSONObject;
 import com.lib.kit.utils.LL;
 import com.lib.kit.utils.StatusBarUtils;
+import com.littlegreens.netty.client.extra.AtProtocol;
 import com.littlegreens.netty.client.extra.task.BaseTask;
 import com.littlegreens.netty.client.extra.task.Connect;
 import com.littlegreens.netty.client.extra.task.ManageChatMsgAtParam;
@@ -50,7 +51,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     WebView webView;
 
     //        private static final String mHomeUrl = "http://192.168.4.17:8848/wujieweb/page/login/login.html";
-    private static final String mHomeUrl = "http://192.168.4.15:8080/wujieweb/page/login/login.html";
+    private static final String mHomeUrl = "http://192.168.4.86:8080/wujieweb/page/login/login.html";
     private static final String mChatUrl = "http://192.168.4.15:8080/wujieweb/page/login/chat.html";
     private static final String mIndexUrl = "http://192.168.4.15:8080/wujieweb/page/login/index.html";
     //    private static final String mHomeUrl = "http://www.baidu.com";
@@ -368,11 +369,40 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
             return;
         }
 //       String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"FFFFFF\"}#*";
-       String at = "AT@N"+loginEntity.getFzwno()+"100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"FFFFFF\"}#*";
-        Toast.makeText(WebActivity.this, "at="+at, Toast.LENGTH_LONG).show();
+        String at = "AT@N" + loginEntity.getFzwno() + "100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"FFFFFF\"}#*";
+        LL.V("at=" + at);
         ManageLightTask manageLightTask = new ManageLightTask();
         manageLightTask.setAt(at);
         sendMsgToManageService("5", manageLightTask);
+    }
+
+    @Override
+    @JavascriptInterface
+    public void toAt(String at) {
+        LL.V("toAt=" + at);
+
+        try {
+            ManageLightTask manageLightTask = new ManageLightTask();
+            manageLightTask.setAt(at);
+            sendMsgToManageService("7", manageLightTask);
+        } catch (Exception e) {
+            LL.E("处理at业务出错了！" + e.getMessage());
+            Toast.makeText(WebActivity.this, "处理at业务出错了！" + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    @JavascriptInterface
+    public void toAtNet(String at) {
+        LL.V("toAtNet=" + at);
+
+        try {
+            AtProtocol atProtocol = AtProtocol.doAtTask(at);
+            sendMsgToNetService("9", null, at);
+        } catch (Exception e) {
+            LL.E("处理atNet业务出错了！" + e.getMessage());
+            Toast.makeText(WebActivity.this, "处理atNet业务出错了！" + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -384,8 +414,8 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
             return;
         }
 //        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"000000\"}#*";
-        String at = "AT@N"+loginEntity.getFzwno()+"100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"000000\"}#*";
-        Toast.makeText(WebActivity.this, "at="+at, Toast.LENGTH_LONG).show();
+        String at = "AT@N" + loginEntity.getFzwno() + "100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"000000\"}#*";
+        LL.V("at=" + at);
         ManageLightTask manageLightTask = new ManageLightTask();
         manageLightTask.setAt(at);
         sendMsgToManageService("6", manageLightTask);

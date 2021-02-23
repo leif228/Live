@@ -13,12 +13,14 @@ import com.littlegreens.netty.client.NettyManager;
 import com.littlegreens.netty.client.extra.WjProtocol;
 import com.littlegreens.netty.client.extra.send.Sen_0000_0200;
 import com.littlegreens.netty.client.extra.send.Sen_0000_0300;
+import com.littlegreens.netty.client.extra.send.Sen_1000_0200;
 import com.littlegreens.netty.client.extra.send.Sen_1200_0000;
 import com.littlegreens.netty.client.extra.send.Sen_1200_0100;
 import com.littlegreens.netty.client.extra.send.Sen_1200_0200;
 import com.littlegreens.netty.client.extra.send.Sen_1200_0300;
 import com.littlegreens.netty.client.extra.send.Sen_1200_0400;
 import com.littlegreens.netty.client.extra.send.Sen_factory;
+import com.littlegreens.netty.client.extra.task.AtTask;
 import com.littlegreens.netty.client.extra.task.BaseTask;
 import com.littlegreens.netty.client.extra.task.NetConfigTask;
 import com.littlegreens.netty.client.extra.task.NetDevCompFileTask;
@@ -118,6 +120,9 @@ public class NetService extends Service implements NettyClientListener {
         } else if ("8".equals(data_type)) {
             NetConfigTask netDevCompTask = (NetConfigTask) intent.getSerializableExtra(COUNTER);
             toConfigNet(netDevCompTask);
+        }else if ("9".equals(data_type)) {
+            String at = intent.getStringExtra(COUNTER_ELSE);
+            toAt(at);
         }
 
         return START_STICKY;
@@ -224,9 +229,26 @@ public class NetService extends Service implements NettyClientListener {
 
     @Override
     public void atTask(String tx, JSONObject objParam) {
+        LL.V("atTask:" + tx);
 
+        this.sendMsgToActivity(null, TOAST, "收到网关:at=" + tx);
     }
 
+    //手机←→网关 业务
+    private void toAt(String at) {
+        AtTask atTask = new AtTask();
+        atTask.setAt(at);
+        WjProtocol wjProtocol = Sen_factory.getInstance(Sen_1000_0200.main, Sen_1000_0200.sub, atTask);
+        if (wjProtocol == null)
+            return;
+
+        if (nettyManager != null) {
+            nettyManager.senMessage(wjProtocol);
+            this.sendMsgToActivity(null, TOAST, "发送at命令成功");
+        } else {
+            queue.offer(wjProtocol);
+        }
+    }
 
     //手机→网关 搜索网关(目前遍历)
     private void toSearchNet() {

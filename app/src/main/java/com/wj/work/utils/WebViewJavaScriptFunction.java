@@ -7,11 +7,13 @@ public interface WebViewJavaScriptFunction {
 	public void deviceComp(String name,String path);
 	public void saveDevice();
 	public void authOver(String path);
-	public String getMobileFzwno();
-//	public String getEventNo();
+	//	public String getEventNo();
 	public String toSure();
 	public String sendChatMsg(String eventNo,String msg);
 	public void toGenEvent();
+	public String getMobileFzwno();
+	public void toAt(String at);
+	public void toAtNet(String at);
 	public void toLightOn();
 	public void toLightOff();
 	public void toSearchNet();
