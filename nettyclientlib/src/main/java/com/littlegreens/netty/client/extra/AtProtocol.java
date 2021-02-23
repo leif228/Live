@@ -54,17 +54,24 @@ public class AtProtocol {
                 Log.v(WjDecoderHandler.TAG, "解码后的cmd为：" + cmd);
                 atProtocol.setCommand(cmd);
                 index += cmd.length();
-                String paramLen = tx.substring(index, index + 4);
-                Log.v(WjDecoderHandler.TAG, "解码后的paramLen为：" + paramLen);
-                int len = HexStringToInt(paramLen);
-                Log.v(WjDecoderHandler.TAG, "len：" + len);
-                index += paramLen.length();
-                String param = tx.substring(index, index + len);
 
-                Log.v(WjDecoderHandler.TAG, "解码后的param为：" + param);
-                atProtocol.setPara(param);
-                index += param.length();
-                String strend = tx.substring(index, index + END.length());//取出帧尾
+                String tempEnd = tx.substring(index);
+
+                if(END.equals(tempEnd)){
+                    String strend = tx.substring(index, index + END.length());//取出帧尾
+                }else{
+                    String paramLen = tx.substring(index, index + 4);
+                    Log.v(WjDecoderHandler.TAG, "解码后的paramLen为：" + paramLen);
+                    int len = HexStringToInt(paramLen);
+                    Log.v(WjDecoderHandler.TAG, "len：" + len);
+                    index += paramLen.length();
+                    String param = tx.substring(index, index + len);
+                    Log.v(WjDecoderHandler.TAG, "解码后的param为：" + param);
+                    atProtocol.setPara(param);
+                    index += param.length();
+
+                    String strend = tx.substring(index, index + END.length());//取出帧尾
+                }
 
                 return atProtocol;
             } else {
@@ -164,6 +171,10 @@ public class AtProtocol {
     }
 
     public static void main(String[] args) {
-
+        try {
+            doAtTask("AT@Nchn0L0a002020091100011000000000E00200010500A001000100010027chn0L0a00202009110001100000000011110102#*");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
