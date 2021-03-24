@@ -243,7 +243,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         connect.setPort(port);
         connect.setFzwno(fzwno);
 
-        sendMsgToManageService("2", connect);
+        sendMsgToManageService(WebViewWebSocketFuctionEnum.toTcp.name(), connect);
 
     }
 
@@ -268,7 +268,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         netInfoTask.setOwnerServerOID(owerfzwno);
         netInfoTask.setPassNum(passWord);
 
-        sendMsgToNetService("2", netInfoTask, "");
+        sendMsgToNetService(WebViewWebSocketFuctionEnum.toNetInfo.name(), netInfoTask, "");
     }
 
     @Override
@@ -279,7 +279,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         netDevCompTask.setCompanyName(compName);
         netDevCompTask.setPRO("CompanyChoosed");
         netDevCompTask.setFile(path);
-        sendMsgToNetService("3", netDevCompTask, "");
+        sendMsgToNetService(WebViewWebSocketFuctionEnum.deviceComp.name(), netDevCompTask, "");
     }
 
     @Override
@@ -290,7 +290,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         netDevCompTask.setCompanyName(compName);
         netDevCompTask.setPRO("SetOk");
 
-        sendMsgToNetService("4", netDevCompTask, "");
+        sendMsgToNetService(WebViewWebSocketFuctionEnum.saveDevice.name(), netDevCompTask, "");
     }
 
     @Override
@@ -302,7 +302,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         netDevCompFileTask.setCompanyName(compName);
         netDevCompFileTask.setPRO("Authority");
 
-        sendMsgToNetService("5", netDevCompFileTask, "");
+        sendMsgToNetService(WebViewWebSocketFuctionEnum.authOver.name(), netDevCompFileTask, "");
     }
 
     @Override
@@ -339,7 +339,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         manageChatMsgTask.setEventNo(eventNo);
         manageChatMsgTask.setMsg(msg);
         manageChatMsgTask.setMsgType("txt");//消息类型:txt;img;voice;video
-        sendMsgToManageService("3", manageChatMsgTask);
+        sendMsgToManageService(WebViewWebSocketFuctionEnum.sendChatMsg.name(), manageChatMsgTask);
 
         return "0";
     }
@@ -357,7 +357,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         manageChatMsgTask.setEventNo("");
         manageChatMsgTask.setMsg("手机事件产生了 ");
         manageChatMsgTask.setMsgType("txt");//消息类型:txt;img;voice;video
-        sendMsgToManageService("4", manageChatMsgTask);
+        sendMsgToManageService(WebViewWebSocketFuctionEnum.toGenEvent.name(), manageChatMsgTask);
     }
 
     @Override
@@ -373,7 +373,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         LL.V("at=" + at);
         ManageLightTask manageLightTask = new ManageLightTask();
         manageLightTask.setAt(at);
-        sendMsgToManageService("5", manageLightTask);
+        sendMsgToManageService(WebViewWebSocketFuctionEnum.toLightOn.name(), manageLightTask);
     }
 
     @Override
@@ -384,7 +384,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         try {
             ManageLightTask manageLightTask = new ManageLightTask();
             manageLightTask.setAt(at);
-            sendMsgToManageService("7", manageLightTask);
+            sendMsgToManageService(WebViewWebSocketFuctionEnum.toAt.name(), manageLightTask);
         } catch (Exception e) {
             LL.E("处理at业务出错了！" + e.getMessage());
             Toast.makeText(WebActivity.this, "处理at业务出错了！" + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -398,7 +398,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
 
         try {
             AtProtocol atProtocol = AtProtocol.doAtTask(at);
-            sendMsgToNetService("9", null, at);
+            sendMsgToNetService(WebViewWebSocketFuctionEnum.toAtNet.name(), null, at);
         } catch (Exception e) {
             LL.E("处理atNet业务出错了！" + e.getMessage());
             Toast.makeText(WebActivity.this, "处理atNet业务出错了！" + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -418,19 +418,19 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         LL.V("at=" + at);
         ManageLightTask manageLightTask = new ManageLightTask();
         manageLightTask.setAt(at);
-        sendMsgToManageService("6", manageLightTask);
+        sendMsgToManageService(WebViewWebSocketFuctionEnum.toLightOff.name(), manageLightTask);
     }
 
     @Override
     @JavascriptInterface
     public void toSearchNet() {
-        sendMsgToNetService("6", null, "");
+        sendMsgToNetService(WebViewWebSocketFuctionEnum.toSearchNet.name(), null, "");
     }
 
     @Override
     @JavascriptInterface
     public void toNetTcp(String ip) {
-        sendMsgToNetService("7", null, ip);
+        sendMsgToNetService(WebViewWebSocketFuctionEnum.toNetTcp.name(), null, ip);
     }
 
     @Override
@@ -441,7 +441,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         NetConfigTask netConfigTask = new NetConfigTask();
         netConfigTask.setDevtype(ntype);
         netConfigTask.setInaeraaddr(addr);
-        sendMsgToNetService("8", netConfigTask, "");
+        sendMsgToNetService(WebViewWebSocketFuctionEnum.toConfigNet.name(), netConfigTask, "");
     }
 
     @Override
@@ -481,7 +481,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                 public void run() {
                     //获取从Service中传来的data
                     nDataType = intent.getStringExtra(NetService.COUNTER_TYPE);
-                    if ("1".equals(nDataType)) {
+                    if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.nettyNetGetDevListOver.name().equals(nDataType)) {
                         NetDevCompFileTask data = (NetDevCompFileTask) intent.getSerializableExtra(NetService.COUNTER);
                         String ip = intent.getStringExtra(NetService.COUNTER_ELSE);
                         LL.V("ip:" + ip);
@@ -489,7 +489,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                         String url = "http://" + ip + ":8080/tcube_app/APP_code/APP_choose_device.php";
                         LL.V("url:" + url);
                         webView.loadUrl(url);
-                    } else if ("2".equals(nDataType)) {
+                    } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.nettyNetFileDownOver.name().equals(nDataType)) {
                         String ip = intent.getStringExtra(NetService.COUNTER_ELSE);
                         LL.V("ip:" + ip);
 
@@ -502,7 +502,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                         LL.V("toast:" + toast);
 
                         Toast.makeText(WebActivity.this, toast, Toast.LENGTH_LONG).show();
-                    } else if ("3".equals(nDataType)) {
+                    } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.backNets.name().equals(nDataType)) {
                         NetSearchNetDtos data = (NetSearchNetDtos) intent.getSerializableExtra(NetService.COUNTER);
                         List<NetSearchNetDto> netSearchNetDtoList = data.getNetSearchNetDtos();
                         netSearchNetDtos = JSONObject.toJSONString(netSearchNetDtoList);

@@ -3,7 +3,6 @@ package com.wj.work.service;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -22,10 +21,10 @@ import com.littlegreens.netty.client.extra.WjProtocol;
 import com.littlegreens.netty.client.extra.task.ManageChatMsgAtParam;
 import com.littlegreens.netty.client.extra.task.ManageChatMsgTask;
 import com.littlegreens.netty.client.extra.task.ManageLightTask;
-import com.littlegreens.netty.client.extra.task.NetDevCompFileTask;
 import com.littlegreens.netty.client.listener.NettyClientListener;
 import com.littlegreens.netty.client.status.ConnectState;
 import com.wj.work.db.SpManager;
+import com.wj.work.utils.WebViewJavaScriptFunction;
 import com.wj.work.widget.entity.LoginEntity;
 
 import java.util.ArrayList;
@@ -91,28 +90,28 @@ public class ManageService extends Service implements NettyClientListener {
 //            //重连
 //            reConnectManage(connectTask);
 //        } else
-        if ("2".equals(data_type)) {
+        if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toTcp.name().equals(data_type)) {
             Connect connect = (Connect) intent.getSerializableExtra(COUNTER);
             fzwno = connect.getFzwno();
             //新建连接
-            newConnectManage(connect);
-        } else if ("3".equals(data_type)) {
+            toTcp(connect);
+        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.sendChatMsg.name().equals(data_type)) {
 
             ManageChatMsgTask manageChatMsgTask = (ManageChatMsgTask) intent.getSerializableExtra(COUNTER);
             sendChatMsg(manageChatMsgTask);
-        } else if ("4".equals(data_type)) {
+        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toGenEvent.name().equals(data_type)) {
 
             ManageChatMsgTask manageChatMsgTask = (ManageChatMsgTask) intent.getSerializableExtra(COUNTER);
             toGenEvent(manageChatMsgTask);
-        } else if ("5".equals(data_type)) {
+        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toLightOn.name().equals(data_type)) {
 
             ManageLightTask manageLightTask = (ManageLightTask) intent.getSerializableExtra(COUNTER);
             toLightOn(manageLightTask.getAt());
-        }else if ("6".equals(data_type)) {
+        }else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toLightOff.name().equals(data_type)) {
 
             ManageLightTask manageLightTask = (ManageLightTask) intent.getSerializableExtra(COUNTER);
             toLightOff(manageLightTask.getAt());
-        }else if ("7".equals(data_type)) {
+        }else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toAt.name().equals(data_type)) {
 
             ManageLightTask manageLightTask = (ManageLightTask) intent.getSerializableExtra(COUNTER);
             toAt(manageLightTask.getAt());
@@ -197,7 +196,7 @@ public class ManageService extends Service implements NettyClientListener {
     }
 
     //新建连接
-    private void newConnectManage(Connect connect) {
+    private void toTcp(Connect connect) {
         if (nettyManager != null) {
             nettyManager.release();
             nettyManager = null;

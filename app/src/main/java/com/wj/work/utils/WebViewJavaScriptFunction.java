@@ -20,5 +20,28 @@ public interface WebViewJavaScriptFunction {
 	public void toNetTcp(String ip);
 	public void toConfigNet(String ntype,String addr);
 
+	public enum WebViewWebSocketFuctionEnum {
+		toHeart,
+		toTcp,
+		toNetInfo,
+		deviceComp,
+		saveDevice,
+		authOver,
+		//	  String getEventNo();
+		toSure,
+		sendChatMsg,
+		toGenEvent,
+		getMobileFzwno,
+		toAt,
+		toAtNet,
+		toLightOn,
+		toLightOff,
+		toSearchNet,
+		toNetTcp,
+		toConfigNet,
 
+		nettyNetFileDownOver,
+		nettyNetGetDevListOver,
+		backNets;
+	}
 }

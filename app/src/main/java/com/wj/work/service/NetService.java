@@ -33,6 +33,7 @@ import com.littlegreens.netty.client.extra.task.NetSearchNetTask;
 import com.littlegreens.netty.client.listener.NettyClientListener;
 import com.littlegreens.netty.client.status.ConnectState;
 import com.wj.work.utils.BroadCastToCenter;
+import com.wj.work.utils.WebViewJavaScriptFunction;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -77,7 +78,7 @@ public class NetService extends Service implements NettyClientListener {
 //        sendBroadCastToCenter(new NetSearchNetTask());
     }
 
-    private void connectNet(String netIp) {
+    private void toNetTcp(String netIp) {
         LL.V("connectNet  ip=" + netIp);
         this.ip = netIp;
         if (nettyManager != null) {
@@ -100,35 +101,35 @@ public class NetService extends Service implements NettyClientListener {
         if ("1".equals(data_type)) {
 //            getIpConnectNet();
 //            sendBroadCastToCenter(new NetSearchNetTask());
-        } else if ("2".equals(data_type)) {
+        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toNetInfo.name().equals(data_type)) {
             NetInfoTask netInfoTask = (NetInfoTask) intent.getSerializableExtra(COUNTER);
             toNetInfo(netInfoTask);
-        } else if ("3".equals(data_type)) {
+        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.deviceComp.name().equals(data_type)) {
             NetDevCompFileTask netDevCompTask = (NetDevCompFileTask) intent.getSerializableExtra(COUNTER);
-            toDeviceComp(netDevCompTask);
-        } else if ("4".equals(data_type)) {
+            deviceComp(netDevCompTask);
+        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.saveDevice.name().equals(data_type)) {
             NetDevCompTask netDevCompTask = (NetDevCompTask) intent.getSerializableExtra(COUNTER);
-            toNetRoomInfo(netDevCompTask);
-        } else if ("5".equals(data_type)) {
+            saveDevice(netDevCompTask);
+        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.authOver.name().equals(data_type)) {
             NetDevCompFileTask netDevCompFileTask = (NetDevCompFileTask) intent.getSerializableExtra(COUNTER);
-            toNetGetDevList(netDevCompFileTask);
-        } else if ("6".equals(data_type)) {
-            sendBroadCastToCenter(new NetSearchNetTask());
-        } else if ("7".equals(data_type)) {
+            authOver(netDevCompFileTask);
+        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toSearchNet.name().equals(data_type)) {
+            toSearchNet(new NetSearchNetTask());
+        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toNetTcp.name().equals(data_type)) {
             String ip = intent.getStringExtra(COUNTER_ELSE);
-            connectNet(ip);
-        } else if ("8".equals(data_type)) {
+            toNetTcp(ip);
+        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toConfigNet.name().equals(data_type)) {
             NetConfigTask netDevCompTask = (NetConfigTask) intent.getSerializableExtra(COUNTER);
             toConfigNet(netDevCompTask);
-        }else if ("9".equals(data_type)) {
+        }else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toAtNet.name().equals(data_type)) {
             String at = intent.getStringExtra(COUNTER_ELSE);
-            toAt(at);
+            toAtNet(at);
         }
 
         return START_STICKY;
     }
 
-    private void sendBroadCastToCenter(NetSearchNetTask netSearchNetTask) {
+    private void toSearchNet(NetSearchNetTask netSearchNetTask) {
         if (!isSearching) {
             isSearching = true;
             BroadCastToCenter broadCastToCenter = new BroadCastToCenter(netSearchNetTask);
@@ -148,7 +149,8 @@ public class NetService extends Service implements NettyClientListener {
     private void backNets() {
         NetSearchNetDtos netSearchNetDtoList = new NetSearchNetDtos();
         netSearchNetDtoList.setNetSearchNetDtos(netSearchNetDtos);
-        sendMsgToActivity(netSearchNetDtoList, "3", "");
+
+        sendMsgToActivity(netSearchNetDtoList, WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.backNets.name(), "");
     }
 
     private void sendMsgToActivity(BaseTask baseTask, String type, String elses) {
@@ -218,13 +220,13 @@ public class NetService extends Service implements NettyClientListener {
 
         LL.V("nettyNetGetDevListOver:" + objParam.toJSONString());
         NetDevCompFileTask netDevCompFileTask = JSONObject.toJavaObject(objParam, NetDevCompFileTask.class);
-        sendMsgToActivity(netDevCompFileTask, "1", ip);
+        sendMsgToActivity(netDevCompFileTask, WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.nettyNetGetDevListOver.name(), ip);
     }
 
     @Override
     public void nettyNetFileDownOver(String tx, JSONObject objParam) {
         LL.V("nettyNetFileDownOver:" + objParam.toJSONString());
-        sendMsgToActivity(null, "2", ip);
+        sendMsgToActivity(null, WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.nettyNetFileDownOver.name(), ip);
     }
 
     @Override
@@ -235,7 +237,7 @@ public class NetService extends Service implements NettyClientListener {
     }
 
     //手机←→网关 业务
-    private void toAt(String at) {
+    private void toAtNet(String at) {
         AtTask atTask = new AtTask();
         atTask.setAt(at);
         WjProtocol wjProtocol = Sen_factory.getInstance(Sen_1000_0200.main, Sen_1000_0200.sub, atTask);
@@ -276,7 +278,7 @@ public class NetService extends Service implements NettyClientListener {
     }
 
     //手机→网关 手机选择设备厂商后传递给网关信息
-    private void toDeviceComp(NetDevCompFileTask netDevCompTask) {
+    private void deviceComp(NetDevCompFileTask netDevCompTask) {
 
 //        WjProtocol wjProtocol = new WjProtocol();
 //        wjProtocol.setPlat(new byte[]{0x50, 0x00});
@@ -335,7 +337,7 @@ public class NetService extends Service implements NettyClientListener {
     }
 
     //手机→网关 认证完成，网关获取设备列表
-    private void toNetGetDevList(NetDevCompFileTask netDevCompFileTask) {
+    private void authOver(NetDevCompFileTask netDevCompFileTask) {
 //        WjProtocol wjProtocol = new WjProtocol();
 //        wjProtocol.setPlat(new byte[]{0x50, 0x00});
 //        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
@@ -364,7 +366,7 @@ public class NetService extends Service implements NettyClientListener {
     }
 
     //手机→网关 手机配置房间后传递给网关信息
-    private void toNetRoomInfo(NetDevCompTask netDevCompTask) {
+    private void saveDevice(NetDevCompTask netDevCompTask) {
 //        WjProtocol wjProtocol = new WjProtocol();
 //        wjProtocol.setPlat(new byte[]{0x50, 0x00});
 //        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
