@@ -25,6 +25,7 @@ import com.littlegreens.netty.client.extra.task.NetDevCompTask;
 import com.littlegreens.netty.client.extra.task.NetInfoTask;
 import com.littlegreens.netty.client.extra.task.NetSearchNetDto;
 import com.littlegreens.netty.client.extra.task.NetSearchNetDtos;
+import com.littlegreens.netty.client.extra.task.NetSearchNetTask;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
@@ -52,8 +53,10 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
 
     //        private static final String mHomeUrl = "http://192.168.4.17:8848/wujieweb/page/login/login.html";
     private static final String mHomeUrl = "http://192.168.4.86:8080/wujieweb/page/login/login.html";
-    private static final String mChatUrl = "http://192.168.4.15:8080/wujieweb/page/login/chat.html";
+    private static final String mChatUrl = "http://192.168.4.86:8080/wujieweb/page/login/chat.html";
+    private static final String mAddChatUrl = "http://192.168.4.86:8080/wujieweb/page/login/addchat.html";
     private static final String mIndexUrl = "http://192.168.4.15:8080/wujieweb/page/login/index.html";
+    private static final String baseUrl = "http://192.168.4.86:8080/wujieweb/page/login/iframe.html";
     //    private static final String mHomeUrl = "http://www.baidu.com";
     private static final String authUrl = "/shared/tcube_app/APP_code/APP_choose_device.php";
 
@@ -69,6 +72,8 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     private ManageChatMsgAtParam chatMsgData;
     private boolean fromTcp = false;
     private String netSearchNetDtos = "[]";
+    private String newClubAt = "";
+    private String mobileBackWebParam = "";
 
 
     @Override
@@ -190,14 +195,20 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 LL.V("onPageFinished.url=" + url);
-                if (url.equals(mChatUrl) && fromTcp) {
-                    if (chatMsgData != null) {
-                        LL.V(chatMsgData.getEventNo());
-                        webView.loadUrl("javascript:flushChat('" + chatMsgData.getEventNo() + "')");
-                        chatMsgData = null;
-                    }
-                    fromTcp = false;
-                }
+                LL.V("onPageFinished.mobileBackWebParam=" + mobileBackWebParam);
+//                webView.loadUrl("javascript:fromMobile('" + mobileBackWebParam + "')");
+
+//                if (url.equals(mChatUrl) && fromTcp) {
+//                    if (chatMsgData != null) {
+//                        LL.V(chatMsgData.getEventNo());
+//                        webView.loadUrl("javascript:flushChat('" + chatMsgData.getEventNo() + "')");
+//                        chatMsgData = null;
+//                    }
+//                    fromTcp = false;
+//                } else if (url.equals(mAddChatUrl)) {
+//                    webView.loadUrl("javascript:flushChat('" + newClubAt + "')");
+//                }
+
 //                else if (url.equals(mIndexUrl)) {
 //                    LL.V("netSearchNetDtos=" + netSearchNetDtos);
 //                    webView.loadUrl("javascript:nets('"+netSearchNetDtos+"')");
@@ -206,7 +217,8 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
             }
 
         });
-        webView.loadUrl(mHomeUrl);
+//        webView.loadUrl(mHomeUrl);
+        webView.loadUrl(baseUrl);
     }
 
     @Override
@@ -337,7 +349,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         ManageChatMsgTask manageChatMsgTask = new ManageChatMsgTask();
         manageChatMsgTask.setOid(loginEntity.getFzwno());
         manageChatMsgTask.setEventNo(eventNo);
-        manageChatMsgTask.setMsg(msg);
+        manageChatMsgTask.setMsgContent(msg);
         manageChatMsgTask.setMsgType("txt");//消息类型:txt;img;voice;video
         sendMsgToManageService(WebViewWebSocketFuctionEnum.sendChatMsg.name(), manageChatMsgTask);
 
@@ -355,7 +367,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
         ManageChatMsgTask manageChatMsgTask = new ManageChatMsgTask();
         manageChatMsgTask.setOid(loginEntity.getFzwno());
         manageChatMsgTask.setEventNo("");
-        manageChatMsgTask.setMsg("手机事件产生了 ");
+        manageChatMsgTask.setMsgContent("手机事件产生了 ");
         manageChatMsgTask.setMsgType("txt");//消息类型:txt;img;voice;video
         sendMsgToManageService(WebViewWebSocketFuctionEnum.toGenEvent.name(), manageChatMsgTask);
     }
@@ -445,6 +457,103 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     }
 
     @Override
+    @JavascriptInterface
+    public void fromWeb(String request) {
+        LL.V("-----------webFun.param=" + request);
+        JSONObject param = null;
+        try {
+            param = JSONObject.parseObject(request);
+        } catch (Exception e) {
+            LL.V("不支持的消息数据格式！");
+            return;
+        }
+        if (param == null) {
+            LL.V("不支持的消息数据格式！不能为空！");
+            return;
+        }
+        String type = param.get("type").toString();
+        WebViewWebSocketFuctionEnum webViewWebSocketFuctionEnum = null;
+        try {
+            webViewWebSocketFuctionEnum = WebViewWebSocketFuctionEnum.valueOf(type);
+        } catch (Exception e) {
+            LL.V("不支持的消息数据格式！类别解析出错！");
+            return;
+        }
+        Object data = param.get("data");
+        switch (webViewWebSocketFuctionEnum) {
+            case toHeart:
+//                backMsg(webViewWebSocketFuctionEnum, "心跳返回");//{"type":"toHeart","data":{}}
+                break;
+
+            case toTcp:
+                Connect connect = JSONObject.parseObject(data.toString(), Connect.class);
+
+                LoginEntity loginEntity = new LoginEntity();
+                loginEntity.setIp(connect.getIp());
+                loginEntity.setPort(connect.getPort());
+                loginEntity.setFzwno(connect.getFzwno());
+                SpManager.getInstance().getLoginSp().putLoginInfoEntity(loginEntity);
+
+                sendMsgToManageService(webViewWebSocketFuctionEnum.name(), connect);
+                break;
+
+            case sendChatMsg:
+                ManageChatMsgTask manageChatMsgTask = JSONObject.parseObject(data.toString(), ManageChatMsgTask.class);
+                sendMsgToManageService(webViewWebSocketFuctionEnum.name(), manageChatMsgTask);
+                break;
+            case toGenEvent:
+                ManageChatMsgTask manageChatMsgTask2 = JSONObject.parseObject(data.toString(), ManageChatMsgTask.class);
+                sendMsgToManageService(webViewWebSocketFuctionEnum.name(), manageChatMsgTask2);
+                break;
+//            case toLightOn:
+//                TcpClient.sendMsgToManageService(webViewWebSocketFuctionEnum, data);
+//                break;
+//            case toLightOff:
+//                TcpClient.sendMsgToManageService(webViewWebSocketFuctionEnum, data);
+//                break;
+            case toAt:
+                ManageLightTask manageLightTask3 =   JSONObject.parseObject(data.toString(),ManageLightTask.class);
+                sendMsgToManageService(webViewWebSocketFuctionEnum.name(), manageLightTask3);
+                break;
+
+
+
+            case toNetInfo:
+                NetInfoTask netInfoTask = JSONObject.parseObject(data.toString(), NetInfoTask.class);
+                sendMsgToNetService(webViewWebSocketFuctionEnum.name(), netInfoTask, "");
+                break;
+            case deviceComp:
+                NetDevCompFileTask netDevCompTask = JSONObject.parseObject(data.toString(), NetDevCompFileTask.class);
+                sendMsgToNetService(webViewWebSocketFuctionEnum.name(),netDevCompTask,"");
+                break;
+            case saveDevice:
+                NetDevCompTask netDevCompTask2 = JSONObject.parseObject(data.toString(), NetDevCompTask.class);
+                sendMsgToNetService(webViewWebSocketFuctionEnum.name(),netDevCompTask2,"");
+                break;
+            case authOver:
+                NetDevCompFileTask netDevCompFileTask = JSONObject.parseObject(data.toString(), NetDevCompFileTask.class);
+                sendMsgToNetService(webViewWebSocketFuctionEnum.name(),netDevCompFileTask,"");
+                break;
+            case toSearchNet:
+                sendMsgToNetService(webViewWebSocketFuctionEnum.name(),new NetSearchNetTask(),"");
+                break;
+            case toNetTcp:
+                String ip = (String) data;
+                sendMsgToNetService(webViewWebSocketFuctionEnum.name(),new BaseTask(),ip);
+                break;
+            case toConfigNet:
+                NetConfigTask netDevCompTask3 = JSONObject.parseObject(data.toString(), NetConfigTask.class);
+                sendMsgToNetService(webViewWebSocketFuctionEnum.name(),netDevCompTask3,"");
+                break;
+            case toAtNet:
+                String at = (String) data;
+                sendMsgToNetService(webViewWebSocketFuctionEnum.name(),new BaseTask(),at);
+                break;
+            default:
+        }
+    }
+
+    @Override
     protected boolean isRegisterEventBus() {
         return true;
     }
@@ -480,37 +589,49 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                 @Override
                 public void run() {
                     //获取从Service中传来的data
-                    nDataType = intent.getStringExtra(NetService.COUNTER_TYPE);
-                    if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.nettyNetGetDevListOver.name().equals(nDataType)) {
-                        NetDevCompFileTask data = (NetDevCompFileTask) intent.getSerializableExtra(NetService.COUNTER);
-                        String ip = intent.getStringExtra(NetService.COUNTER_ELSE);
-                        LL.V("ip:" + ip);
-                        //更新UI
-                        String url = "http://" + ip + ":8080/tcube_app/APP_code/APP_choose_device.php";
-                        LL.V("url:" + url);
-                        webView.loadUrl(url);
-                    } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.nettyNetFileDownOver.name().equals(nDataType)) {
-                        String ip = intent.getStringExtra(NetService.COUNTER_ELSE);
-                        LL.V("ip:" + ip);
+                    try {
+                        String nType = intent.getStringExtra(NetService.COUNTER_TYPE);
+                        LL.V("nType:" + nType);
+                        String nData = intent.getStringExtra(NetService.COUNTER_ELSE);
+                        LL.V("nData:" + nData);
 
-                        //更新UI
-                        String url = "http://" + ip + ":8080/tcube_app/APP_code/APP_choose_device.php";
-                        LL.V("url:" + url);
-                        webView.loadUrl(url);
-                    } else if (NetService.TOAST.equals(nDataType)) {
-                        String toast = intent.getStringExtra(NetService.COUNTER_ELSE);
-                        LL.V("toast:" + toast);
-
-                        Toast.makeText(WebActivity.this, toast, Toast.LENGTH_LONG).show();
-                    } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.backNets.name().equals(nDataType)) {
-                        NetSearchNetDtos data = (NetSearchNetDtos) intent.getSerializableExtra(NetService.COUNTER);
-                        List<NetSearchNetDto> netSearchNetDtoList = data.getNetSearchNetDtos();
-                        netSearchNetDtos = JSONObject.toJSONString(netSearchNetDtoList);
-                        LL.V("json:" + netSearchNetDtos);
-//                        webView.loadUrl(mIndexUrl);
-                        webView.loadUrl("javascript:nets('" + netSearchNetDtos + "')");
-//                        Toast.makeText(WebActivity.this, toast, Toast.LENGTH_LONG).show();
+                        Toast.makeText(WebActivity.this, nData, Toast.LENGTH_LONG).show();
+                        backMsg(WebViewWebSocketFuctionEnum.valueOf(nType), nData);
+                    } catch (Exception e) {
+                        LL.E(e.getMessage());
+                        e.printStackTrace();
                     }
+
+//                    if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.nettyNetGetDevListOver.name().equals(nDataType)) {
+//                        NetDevCompFileTask data = (NetDevCompFileTask) intent.getSerializableExtra(NetService.COUNTER);
+//                        String ip = intent.getStringExtra(NetService.COUNTER_ELSE);
+//                        LL.V("ip:" + ip);
+//                        //更新UI
+//                        String url = "http://" + ip + ":8080/tcube_app/APP_code/APP_choose_device.php";
+//                        LL.V("url:" + url);
+//                        webView.loadUrl(url);
+//                    } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.nettyNetFileDownOver.name().equals(nDataType)) {
+//                        String ip = intent.getStringExtra(NetService.COUNTER_ELSE);
+//                        LL.V("ip:" + ip);
+//
+//                        //更新UI
+//                        String url = "http://" + ip + ":8080/tcube_app/APP_code/APP_choose_device.php";
+//                        LL.V("url:" + url);
+//                        webView.loadUrl(url);
+//                    } else if (NetService.TOAST.equals(nDataType)) {
+//                        String toast = intent.getStringExtra(NetService.COUNTER_ELSE);
+//                        LL.V("toast:" + toast);
+//
+//                        Toast.makeText(WebActivity.this, toast, Toast.LENGTH_LONG).show();
+//                    } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.backNets.name().equals(nDataType)) {
+//                        NetSearchNetDtos data = (NetSearchNetDtos) intent.getSerializableExtra(NetService.COUNTER);
+//                        List<NetSearchNetDto> netSearchNetDtoList = data.getNetSearchNetDtos();
+//                        netSearchNetDtos = JSONObject.toJSONString(netSearchNetDtoList);
+//                        LL.V("json:" + netSearchNetDtos);
+////                        webView.loadUrl(mIndexUrl);
+//                        webView.loadUrl("javascript:nets('" + netSearchNetDtos + "')");
+////                        Toast.makeText(WebActivity.this, toast, Toast.LENGTH_LONG).show();
+//                    }
                 }
             });
         }
@@ -523,25 +644,54 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                 @Override
                 public void run() {
                     //获取从Service中传来的data
-                    mDataType = intent.getStringExtra(ManageService.COUNTER_TYPE);
-                    //更新UI
-                    if (ManageService.TOAST.equals(mDataType)) {
-                        String toast = intent.getStringExtra(ManageService.COUNTER_ELSE);
-                        LL.V("toast:" + toast);
+                    try {
+                        String mType = intent.getStringExtra(ManageService.COUNTER_TYPE);
+                        LL.V("mType:" + mType);
+                        String mData = intent.getStringExtra(ManageService.COUNTER_ELSE);
+                        LL.V("mData:" + mData);
 
-                        Toast.makeText(WebActivity.this, toast, Toast.LENGTH_LONG).show();
-                    } else if ("chatMsg".equals(mDataType)) {
-                        ManageChatMsgAtParam data = (ManageChatMsgAtParam) intent.getSerializableExtra(ManageService.COUNTER);
-
-                        LL.V("ManageChatMsgAtParam:eventNo=" + data.getEventNo());
-                        WebActivity.this.chatMsgData = data;
-                        WebActivity.this.fromTcp = true;
-                        webView.loadUrl(mChatUrl);
-//                        webView.loadUrl("javascript:flushChat('"+data.getEventNo()+"')");
+                        Toast.makeText(WebActivity.this, mData, Toast.LENGTH_LONG).show();
+                        backMsg(WebViewWebSocketFuctionEnum.valueOf(mType), mData);
+                    } catch (Exception e) {
+                        LL.E(e.getMessage());
+                        e.printStackTrace();
                     }
+                    //更新UI
+//                    if (ManageService.TOAST.equals(mDataType)) {
+//                        String toast = intent.getStringExtra(ManageService.COUNTER_ELSE);
+//                        LL.V("toast:" + toast);
+//
+//                        Toast.makeText(WebActivity.this, toast, Toast.LENGTH_LONG).show();
+//                        backMsg(WebViewWebSocketFuctionEnum.manageBack,toast);
+//                    } else if ("chatMsg".equals(mDataType)) {
+//                        ManageChatMsgAtParam data = (ManageChatMsgAtParam) intent.getSerializableExtra(ManageService.COUNTER);
+//
+//                        LL.V("ManageChatMsgAtParam:eventNo=" + data.getEventNo());
+//                        WebActivity.this.chatMsgData = data;
+//                        WebActivity.this.fromTcp = true;
+////                        webView.loadUrl(mChatUrl);
+//                    } else if ("newClub".equals(mDataType)) {
+//                        newClubAt = intent.getStringExtra(ManageService.COUNTER_ELSE);
+//                        LL.V("newClub:" + newClubAt);
+//
+////                        webView.loadUrl(mAddChatUrl);
+//                    }
                 }
             });
         }
+    }
+
+    public void backMsg(WebViewWebSocketFuctionEnum type, String msg) {
+        JSONObject resultJson = new JSONObject();
+        JSONObject resutlObj = new JSONObject();
+        resutlObj.put("code", "0");
+        resutlObj.put("msg", msg);
+
+        resultJson.put("type", type.name());
+        resultJson.put("data", resutlObj);
+        mobileBackWebParam = resultJson.toJSONString();
+
+        webView.loadUrl("javascript:fromMobile('" + mobileBackWebParam + "')");
     }
 
 }

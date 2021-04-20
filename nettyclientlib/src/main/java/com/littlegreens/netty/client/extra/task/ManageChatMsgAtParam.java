@@ -7,7 +7,7 @@ public class ManageChatMsgAtParam extends BaseTask {
     @JSONField(name="event_no")
     private String eventNo;
     @JSONField(name="msg_content")
-    private String msg;
+    private String msgContent;
     @JSONField(name="msg_type")
     private String msgType;
 
@@ -19,12 +19,12 @@ public class ManageChatMsgAtParam extends BaseTask {
         this.eventNo = eventNo;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getMsgContent() {
+        return msgContent;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setMsgContent(String msgContent) {
+        this.msgContent = msgContent;
     }
 
     public String getMsgType() {

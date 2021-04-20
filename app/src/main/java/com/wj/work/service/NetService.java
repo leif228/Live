@@ -53,7 +53,7 @@ public class NetService extends Service implements NettyClientListener {
 
     List<NetSearchNetDto> netSearchNetDtos = new ArrayList<>();
 
-    private String data_type;
+//    private String data_type;
 
     NettyManager nettyManager;
     Queue<WjProtocol> queue;
@@ -78,7 +78,7 @@ public class NetService extends Service implements NettyClientListener {
 //        sendBroadCastToCenter(new NetSearchNetTask());
     }
 
-    private void toNetTcp(String netIp) {
+    private void toNetTcp(String data_type, String netIp) {
         LL.V("connectNet  ip=" + netIp);
         this.ip = netIp;
         if (nettyManager != null) {
@@ -93,43 +93,84 @@ public class NetService extends Service implements NettyClientListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        //从Activity获取data
-        data_type = intent.getStringExtra(COUNTER_TYPE);
+        try {
+            //从Activity获取data
+            String data_type = intent.getStringExtra(COUNTER_TYPE);
+            WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum webViewWebSocketFuctionEnum = WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.valueOf(data_type);
 
-        LL.V("NetService onStartCommand: " + data_type);
+            LL.V("NetService onStartCommand: " + data_type);
 
-        if ("1".equals(data_type)) {
-//            getIpConnectNet();
-//            sendBroadCastToCenter(new NetSearchNetTask());
-        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toNetInfo.name().equals(data_type)) {
-            NetInfoTask netInfoTask = (NetInfoTask) intent.getSerializableExtra(COUNTER);
-            toNetInfo(netInfoTask);
-        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.deviceComp.name().equals(data_type)) {
-            NetDevCompFileTask netDevCompTask = (NetDevCompFileTask) intent.getSerializableExtra(COUNTER);
-            deviceComp(netDevCompTask);
-        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.saveDevice.name().equals(data_type)) {
-            NetDevCompTask netDevCompTask = (NetDevCompTask) intent.getSerializableExtra(COUNTER);
-            saveDevice(netDevCompTask);
-        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.authOver.name().equals(data_type)) {
-            NetDevCompFileTask netDevCompFileTask = (NetDevCompFileTask) intent.getSerializableExtra(COUNTER);
-            authOver(netDevCompFileTask);
-        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toSearchNet.name().equals(data_type)) {
-            toSearchNet(new NetSearchNetTask());
-        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toNetTcp.name().equals(data_type)) {
-            String ip = intent.getStringExtra(COUNTER_ELSE);
-            toNetTcp(ip);
-        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toConfigNet.name().equals(data_type)) {
-            NetConfigTask netDevCompTask = (NetConfigTask) intent.getSerializableExtra(COUNTER);
-            toConfigNet(netDevCompTask);
-        }else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toAtNet.name().equals(data_type)) {
-            String at = intent.getStringExtra(COUNTER_ELSE);
-            toAtNet(at);
+            switch (webViewWebSocketFuctionEnum) {
+                case toNetInfo:
+                    NetInfoTask netInfoTask = (NetInfoTask) intent.getSerializableExtra(COUNTER);
+                    toNetInfo(data_type, netInfoTask);
+                    break;
+                case deviceComp:
+                    NetDevCompFileTask netDevCompTask = (NetDevCompFileTask) intent.getSerializableExtra(COUNTER);
+                    deviceComp(data_type, netDevCompTask);
+                    break;
+                case saveDevice:
+                    NetDevCompTask netDevCompTask2 = (NetDevCompTask) intent.getSerializableExtra(COUNTER);
+                    saveDevice(data_type, netDevCompTask2);
+                    break;
+                case authOver:
+                    NetDevCompFileTask netDevCompFileTask = (NetDevCompFileTask) intent.getSerializableExtra(COUNTER);
+                    authOver(data_type, netDevCompFileTask);
+                    break;
+                case toSearchNet:
+                    toSearchNet(data_type, new NetSearchNetTask());
+                    break;
+                case toNetTcp:
+                    String ip = intent.getStringExtra(COUNTER_ELSE);
+                    toNetTcp(data_type, ip);
+                    break;
+                case toConfigNet:
+                    NetConfigTask netDevCompTask3 = (NetConfigTask) intent.getSerializableExtra(COUNTER);
+                    toConfigNet(data_type, netDevCompTask3);
+                    break;
+                case toAtNet:
+                    String at = intent.getStringExtra(COUNTER_ELSE);
+                    toAtNet(data_type, at);
+                    break;
+                default:
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            LL.V("NetService onStartCommand报错了: " + e.getMessage());
         }
+
+//        if ("1".equals(data_type)) {
+////            getIpConnectNet();
+////            sendBroadCastToCenter(new NetSearchNetTask());
+//        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toNetInfo.name().equals(data_type)) {
+//            NetInfoTask netInfoTask = (NetInfoTask) intent.getSerializableExtra(COUNTER);
+//            toNetInfo(netInfoTask);
+//        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.deviceComp.name().equals(data_type)) {
+//            NetDevCompFileTask netDevCompTask = (NetDevCompFileTask) intent.getSerializableExtra(COUNTER);
+//            deviceComp(netDevCompTask);
+//        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.saveDevice.name().equals(data_type)) {
+//            NetDevCompTask netDevCompTask = (NetDevCompTask) intent.getSerializableExtra(COUNTER);
+//            saveDevice(netDevCompTask);
+//        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.authOver.name().equals(data_type)) {
+//            NetDevCompFileTask netDevCompFileTask = (NetDevCompFileTask) intent.getSerializableExtra(COUNTER);
+//            authOver(netDevCompFileTask);
+//        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toSearchNet.name().equals(data_type)) {
+//            toSearchNet(new NetSearchNetTask());
+//        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toNetTcp.name().equals(data_type)) {
+//            String ip = intent.getStringExtra(COUNTER_ELSE);
+//            toNetTcp(ip);
+//        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toConfigNet.name().equals(data_type)) {
+//            NetConfigTask netDevCompTask = (NetConfigTask) intent.getSerializableExtra(COUNTER);
+//            toConfigNet(netDevCompTask);
+//        }else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toAtNet.name().equals(data_type)) {
+//            String at = intent.getStringExtra(COUNTER_ELSE);
+//            toAtNet(at);
+//        }
 
         return START_STICKY;
     }
 
-    private void toSearchNet(NetSearchNetTask netSearchNetTask) {
+    private void toSearchNet(String data_type, NetSearchNetTask netSearchNetTask) {
         if (!isSearching) {
             isSearching = true;
             BroadCastToCenter broadCastToCenter = new BroadCastToCenter(netSearchNetTask);
@@ -140,17 +181,17 @@ public class NetService extends Service implements NettyClientListener {
                     netSearchNetDtos = broadCastToCenter.getNetSearchNetDtos();
                     broadCastToCenter.stopStay();
                     isSearching = false;
-                    backNets();
+                    backNets(data_type);
                 }
             }, 3000l);
         }
     }
 
-    private void backNets() {
+    private void backNets(String data_type) {
         NetSearchNetDtos netSearchNetDtoList = new NetSearchNetDtos();
         netSearchNetDtoList.setNetSearchNetDtos(netSearchNetDtos);
 
-        sendMsgToActivity(netSearchNetDtoList, WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.backNets.name(), "");
+        sendMsgToActivity(netSearchNetDtoList, data_type, "");
     }
 
     private void sendMsgToActivity(BaseTask baseTask, String type, String elses) {
@@ -185,7 +226,7 @@ public class NetService extends Service implements NettyClientListener {
     @Override
     public void connectSuccess(String ip, int index) {
         LL.V(ip + ":index:" + index);
-        this.sendMsgToActivity(null, TOAST, "tcp连接到网关成功:ip=" + ip);
+        this.sendMsgToActivity(null, WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toNetTcp.name(), ip);
 //        toSearchNet();
 //        this.doTask();
     }
@@ -231,13 +272,12 @@ public class NetService extends Service implements NettyClientListener {
 
     @Override
     public void atTask(String tx, JSONObject objParam) {
-        LL.V("atTask:" + tx);
-
-        this.sendMsgToActivity(null, TOAST, "收到网关:at=" + tx);
+        LL.V("收到at消息：" + tx);
+        this.sendMsgToActivity(null, WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.netBack.name(), tx);
     }
 
     //手机←→网关 业务
-    private void toAtNet(String at) {
+    private void toAtNet(String data_type, String at) {
         AtTask atTask = new AtTask();
         atTask.setAt(at);
         WjProtocol wjProtocol = Sen_factory.getInstance(Sen_1000_0200.main, Sen_1000_0200.sub, atTask);
@@ -246,7 +286,7 @@ public class NetService extends Service implements NettyClientListener {
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
-            this.sendMsgToActivity(null, TOAST, "发送at命令成功");
+            this.sendMsgToActivity(null, data_type, "发送at命令成功");
         } else {
             queue.offer(wjProtocol);
         }
@@ -278,7 +318,7 @@ public class NetService extends Service implements NettyClientListener {
     }
 
     //手机→网关 手机选择设备厂商后传递给网关信息
-    private void deviceComp(NetDevCompFileTask netDevCompTask) {
+    private void deviceComp(String data_type, NetDevCompFileTask netDevCompTask) {
 
 //        WjProtocol wjProtocol = new WjProtocol();
 //        wjProtocol.setPlat(new byte[]{0x50, 0x00});
@@ -301,14 +341,14 @@ public class NetService extends Service implements NettyClientListener {
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
-            this.sendMsgToActivity(null, TOAST, "选择设备厂商后传递给网关信息成功");
+            this.sendMsgToActivity(null, data_type, "选择设备厂商后传递给网关信息成功");
         } else {
             queue.offer(wjProtocol);
         }
     }
 
     //手机→网关 手机注册后传递给网关信息
-    private void toNetInfo(NetInfoTask netInfoTask) {
+    private void toNetInfo(String data_type, NetInfoTask netInfoTask) {
 //        WjProtocol wjProtocol = new WjProtocol();
 //        wjProtocol.setPlat(new byte[]{0x50, 0x00});
 //        wjProtocol.setMaincmd(new byte[]{0x00, 0x00});
@@ -330,14 +370,14 @@ public class NetService extends Service implements NettyClientListener {
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
-            this.sendMsgToActivity(null, TOAST, "注册后传递给网关信息成功");
+            this.sendMsgToActivity(null, data_type, "注册后传递给网关信息成功");
         } else {
             queue.offer(wjProtocol);
         }
     }
 
     //手机→网关 认证完成，网关获取设备列表
-    private void authOver(NetDevCompFileTask netDevCompFileTask) {
+    private void authOver(String data_type, NetDevCompFileTask netDevCompFileTask) {
 //        WjProtocol wjProtocol = new WjProtocol();
 //        wjProtocol.setPlat(new byte[]{0x50, 0x00});
 //        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
@@ -359,14 +399,14 @@ public class NetService extends Service implements NettyClientListener {
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
-            this.sendMsgToActivity(null, TOAST, "认证完成，网关获取设备列表成功");
+            this.sendMsgToActivity(null, data_type, "认证完成，网关获取设备列表成功");
         } else {
             queue.offer(wjProtocol);
         }
     }
 
     //手机→网关 手机配置房间后传递给网关信息
-    private void saveDevice(NetDevCompTask netDevCompTask) {
+    private void saveDevice(String data_type, NetDevCompTask netDevCompTask) {
 //        WjProtocol wjProtocol = new WjProtocol();
 //        wjProtocol.setPlat(new byte[]{0x50, 0x00});
 //        wjProtocol.setMaincmd(new byte[]{0x12, 0x00});
@@ -388,7 +428,7 @@ public class NetService extends Service implements NettyClientListener {
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
-            this.sendMsgToActivity(null, TOAST, "手机配置房间后传递给网关信息成功");
+            this.sendMsgToActivity(null, data_type, "手机配置房间后传递给网关信息成功");
         } else {
             queue.offer(wjProtocol);
         }
@@ -424,14 +464,14 @@ public class NetService extends Service implements NettyClientListener {
     }
 
     //手机→网关 手机配置网关
-    private void toConfigNet(NetConfigTask netDevCompTask) {
+    private void toConfigNet(String data_type, NetConfigTask netDevCompTask) {
         WjProtocol wjProtocol = Sen_factory.getInstance(Sen_1200_0400.main, Sen_1200_0400.sub, netDevCompTask);
         if (wjProtocol == null)
             return;
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
-            this.sendMsgToActivity(null, TOAST, "手机配置网关任务成功");
+            this.sendMsgToActivity(null, data_type, "手机配置网关任务成功");
         } else {
             queue.offer(wjProtocol);
         }

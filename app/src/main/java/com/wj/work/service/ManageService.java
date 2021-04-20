@@ -21,6 +21,7 @@ import com.littlegreens.netty.client.extra.WjProtocol;
 import com.littlegreens.netty.client.extra.task.ManageChatMsgAtParam;
 import com.littlegreens.netty.client.extra.task.ManageChatMsgTask;
 import com.littlegreens.netty.client.extra.task.ManageLightTask;
+import com.littlegreens.netty.client.extra.task.NewClubAtParamDto;
 import com.littlegreens.netty.client.listener.NettyClientListener;
 import com.littlegreens.netty.client.status.ConnectState;
 import com.wj.work.db.SpManager;
@@ -42,7 +43,7 @@ public class ManageService extends Service implements NettyClientListener {
 
     //    private boolean havaConnectSuccessed = false;
 //    int connetSuccessIndex = -1;//连接成功的下标
-    private String data_type;
+//    private String data_type;
 
     NettyManager nettyManager;
     List<NettyManager> nettyManagers = new ArrayList<>();
@@ -79,49 +80,85 @@ public class ManageService extends Service implements NettyClientListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        //从Activity获取data
-        data_type = intent.getStringExtra(COUNTER_TYPE);
+        try {
+            //从Activity获取data
+            String data_type = intent.getStringExtra(COUNTER_TYPE);
+            WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum webViewWebSocketFuctionEnum = WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.valueOf(data_type);
 
-        LL.V("ManageService onStartCommand :" + data_type);
-
-//        if ("1".equals(data)) {
-//            ConnectTask connectTask = (ConnectTask) intent.getSerializableExtra("task");
-//            fzwno = connectTask.getFzwno();
-//            //重连
-//            reConnectManage(connectTask);
-//        } else
-        if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toTcp.name().equals(data_type)) {
-            Connect connect = (Connect) intent.getSerializableExtra(COUNTER);
-            fzwno = connect.getFzwno();
-            //新建连接
-            toTcp(connect);
-        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.sendChatMsg.name().equals(data_type)) {
-
-            ManageChatMsgTask manageChatMsgTask = (ManageChatMsgTask) intent.getSerializableExtra(COUNTER);
-            sendChatMsg(manageChatMsgTask);
-        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toGenEvent.name().equals(data_type)) {
-
-            ManageChatMsgTask manageChatMsgTask = (ManageChatMsgTask) intent.getSerializableExtra(COUNTER);
-            toGenEvent(manageChatMsgTask);
-        } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toLightOn.name().equals(data_type)) {
-
-            ManageLightTask manageLightTask = (ManageLightTask) intent.getSerializableExtra(COUNTER);
-            toLightOn(manageLightTask.getAt());
-        }else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toLightOff.name().equals(data_type)) {
-
-            ManageLightTask manageLightTask = (ManageLightTask) intent.getSerializableExtra(COUNTER);
-            toLightOff(manageLightTask.getAt());
-        }else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toAt.name().equals(data_type)) {
-
-            ManageLightTask manageLightTask = (ManageLightTask) intent.getSerializableExtra(COUNTER);
-            toAt(manageLightTask.getAt());
+            LL.V("ManageService onStartCommand :" + data_type);
+            switch (webViewWebSocketFuctionEnum) {
+                case toTcp:
+                    Connect connect = (Connect) intent.getSerializableExtra(COUNTER);
+                    fzwno = connect.getFzwno();
+                    //新建连接
+                    toTcp(data_type, connect);
+                    break;
+                case sendChatMsg:
+                    ManageChatMsgTask manageChatMsgTask = (ManageChatMsgTask) intent.getSerializableExtra(COUNTER);
+                    sendChatMsg(data_type, manageChatMsgTask);
+                    break;
+                case toGenEvent:
+                    ManageChatMsgTask manageChatMsgTask2 = (ManageChatMsgTask) intent.getSerializableExtra(COUNTER);
+                    toGenEvent(data_type, manageChatMsgTask2);
+                    break;
+//            case toLightOn:
+//                ManageLightTask manageLightTask = JSONObject.parseObject(data.toString(),ManageLightTask.class);
+//                toLightOn(webViewWebSocketFuctionEnum,manageLightTask.getAt());
+//                break;
+//            case toLightOff:
+//                ManageLightTask manageLightTask2 = JSONObject.parseObject(data.toString(),ManageLightTask.class);
+//                toLightOff(webViewWebSocketFuctionEnum,manageLightTask2.getAt());
+//                break;
+                case toAt:
+                    ManageLightTask manageLightTask = (ManageLightTask) intent.getSerializableExtra(COUNTER);
+                    toAt(data_type, manageLightTask.getAt());
+                    break;
+                default:
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            LL.V("ManageService onStartCommand报错了: " + e.getMessage());
         }
+
+////        if ("1".equals(data)) {
+////            ConnectTask connectTask = (ConnectTask) intent.getSerializableExtra("task");
+////            fzwno = connectTask.getFzwno();
+////            //重连
+////            reConnectManage(connectTask);
+////        } else
+//            if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toTcp.name().equals(data_type)) {
+//                Connect connect = (Connect) intent.getSerializableExtra(COUNTER);
+//                fzwno = connect.getFzwno();
+//                //新建连接
+//                toTcp(data_type, connect);
+//            } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.sendChatMsg.name().equals(data_type)) {
+//
+//                ManageChatMsgTask manageChatMsgTask = (ManageChatMsgTask) intent.getSerializableExtra(COUNTER);
+//                sendChatMsg(data_type, manageChatMsgTask);
+//            } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toGenEvent.name().equals(data_type)) {
+//
+//                ManageChatMsgTask manageChatMsgTask = (ManageChatMsgTask) intent.getSerializableExtra(COUNTER);
+//                toGenEvent(data_type, manageChatMsgTask);
+//            } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toLightOn.name().equals(data_type)) {
+//
+//                ManageLightTask manageLightTask = (ManageLightTask) intent.getSerializableExtra(COUNTER);
+//                toLightOn(data_type, manageLightTask.getAt());
+//            } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toLightOff.name().equals(data_type)) {
+//
+//                ManageLightTask manageLightTask = (ManageLightTask) intent.getSerializableExtra(COUNTER);
+//                toLightOff(data_type, manageLightTask.getAt());
+//            } else if (WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toAt.name().equals(data_type)) {
+//
+//                ManageLightTask manageLightTask = (ManageLightTask) intent.getSerializableExtra(COUNTER);
+//                toAt(data_type, manageLightTask.getAt());
+//            }
+
 
         return START_STICKY;
     }
 
-    private void toAt(String at) {
-        LL.V("at事件" );
+    private void toAt(String data_type, String at) {
+        LL.V("at事件");
 
         AtTask atTask = new AtTask();
         atTask.setAt(at);
@@ -132,14 +169,14 @@ public class ManageService extends Service implements NettyClientListener {
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
-            this.sendMsgToActivity(null, TOAST, "发送at事件成功");
+            this.sendMsgToActivity(null, data_type, "发送at事件成功");
         } else {
             queue.offer(wjProtocol);
         }
     }
 
-    private void toLightOff(String at) {
-        LL.V("关灯事件" );
+    private void toLightOff(String data_type, String at) {
+        LL.V("关灯事件");
 
 //        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"000000\"}#*";
         AtTask atTask = new AtTask();
@@ -151,14 +188,14 @@ public class ManageService extends Service implements NettyClientListener {
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
-            this.sendMsgToActivity(null, TOAST, "发送关灯事件成功");
+            this.sendMsgToActivity(null, data_type, "发送关灯事件成功");
         } else {
             queue.offer(wjProtocol);
         }
     }
 
-    private void toLightOn(String at) {
-        LL.V("开灯事件" );
+    private void toLightOn(String data_type, String at) {
+        LL.V("开灯事件");
 
 //        String at = "AT@Nchn0L0a30202010260001100000000012120101100150100001FFFF001C{\"way\":\"ctl\",\"val\":\"FFFFFF\"}#*";
         AtTask atTask = new AtTask();
@@ -170,16 +207,23 @@ public class ManageService extends Service implements NettyClientListener {
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
-            this.sendMsgToActivity(null, TOAST, "发送开灯事件成功");
+            this.sendMsgToActivity(null, data_type, "发送开灯事件成功");
         } else {
             queue.offer(wjProtocol);
         }
     }
 
-    private void toGenEvent(ManageChatMsgTask manageChatMsgTask) {
+    private void toGenEvent(String data_type, ManageChatMsgTask manageChatMsgTask) {
         LL.V("事件产生json：" + manageChatMsgTask.getOid());
 
-        String at = this.genAt("N", manageChatMsgTask.getOid(), "0500", "A001", "0001", "0001", manageChatMsgTask.getOid());
+        ManageChatMsgAtParam manageChatMsgAtParam = new ManageChatMsgAtParam();
+        manageChatMsgAtParam.setMsgContent("新事件开始了");
+        manageChatMsgAtParam.setMsgType("txt");
+        manageChatMsgAtParam.setEventNo("");
+
+        String content = JSONObject.toJSONString(manageChatMsgAtParam);
+
+        String at = this.genAt("N", manageChatMsgTask.getOid(), "0500", "A001", "0001", "0001", content);
         AtTask atTask = new AtTask();
         atTask.setAt(at);
 
@@ -189,14 +233,14 @@ public class ManageService extends Service implements NettyClientListener {
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
-            this.sendMsgToActivity(null, TOAST, "发送事件产生消息成功");
+            this.sendMsgToActivity(null, data_type, "发送事件产生消息成功");
         } else {
             queue.offer(wjProtocol);
         }
     }
 
     //新建连接
-    private void toTcp(Connect connect) {
+    private void toTcp(String data_type, Connect connect) {
         if (nettyManager != null) {
             nettyManager.release();
             nettyManager = null;
@@ -306,7 +350,7 @@ public class ManageService extends Service implements NettyClientListener {
         LoginTask loginTask = new LoginTask();
         loginTask.setOID(fzwno);
         nettyManager = nettyManagers.get(index);
-        this.sendMsgToActivity(null, TOAST, "连接到管理服务器成功");
+        this.sendMsgToActivity(null, WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toTcp.name(), "连接到管理服务器成功");
         manageLoin(loginTask);
         this.doTask();
     }
@@ -345,20 +389,26 @@ public class ManageService extends Service implements NettyClientListener {
     public void atTask(String tx, JSONObject objParam) {
         try {
             LL.V("收到at消息：" + tx);
-            AtProtocol atProtocol = AtProtocol.doAtTask(tx);
-            if ("E001".equals(atProtocol.getBusinessNum()) && "0001".equals(atProtocol.getCommand())) {
-                LL.V("收到atjson消息Para=" + atProtocol.getPara());
-                JSONObject objParamAt = JSONObject.parseObject(atProtocol.getPara());
-//                LL.V("收到atjson消息eventNo=" + objParamAt.getString("event_no"));
-                ManageChatMsgAtParam manageChatMsgAtParam = (ManageChatMsgAtParam) JSONObject.toJavaObject(objParamAt, ManageChatMsgAtParam.class);
-//                LL.V("收到at消息eventNo=" + manageChatMsgAtParam.getEventNo());
-
-                this.sendMsgToActivity(manageChatMsgAtParam, "chatMsg", "");
-            } else {
-
-                LL.E("收到at业务暂时还不能处理！buss=" + atProtocol.getBusinessNum() + ",cmd=" + atProtocol.getCommand());
-                this.sendMsgToActivity(null, TOAST, "收到at业务暂时还不能处理！buss=" + atProtocol.getBusinessNum() + ",cmd=" + atProtocol.getCommand());
-            }
+            this.sendMsgToActivity(null, WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.manageBack.name(), tx);
+//            AtProtocol atProtocol = AtProtocol.doAtTask(tx);
+//            if ("E001".equals(atProtocol.getBusinessNum()) && "0001".equals(atProtocol.getCommand())) {
+//                LL.V("收到atjson消息Para=" + atProtocol.getPara());
+//                JSONObject objParamAt = JSONObject.parseObject(atProtocol.getPara());
+////                LL.V("收到atjson消息eventNo=" + objParamAt.getString("event_no"));
+//                ManageChatMsgAtParam manageChatMsgAtParam = (ManageChatMsgAtParam) JSONObject.toJavaObject(objParamAt, ManageChatMsgAtParam.class);
+////                LL.V("收到at消息eventNo=" + manageChatMsgAtParam.getEventNo());
+//
+//                this.sendMsgToActivity(manageChatMsgAtParam, "chatMsg", "");
+//            } else if("E012".equals(atProtocol.getBusinessNum()) && "0002".equals(atProtocol.getCommand())){
+//                LL.V("收到atjson消息Para=" + atProtocol.getPara());
+////                JSONObject objParamAt = JSONObject.parseObject(atProtocol.getPara());
+////                NewClubAtParamDto manageChatMsgAtParam = (NewClubAtParamDto) JSONObject.toJavaObject(objParamAt, NewClubAtParamDto.class);
+//                this.sendMsgToActivity(null, "newClub", tx);
+//            }else {
+//
+//                LL.E("收到at业务暂时还不能处理！buss=" + atProtocol.getBusinessNum() + ",cmd=" + atProtocol.getCommand());
+//                this.sendMsgToActivity(null, TOAST, "收到at业务暂时还不能处理！buss=" + atProtocol.getBusinessNum() + ",cmd=" + atProtocol.getCommand());
+//            }
         } catch (Exception e) {
             LL.E("处理at业务出错了！" + e.getMessage());
         }
@@ -387,17 +437,17 @@ public class ManageService extends Service implements NettyClientListener {
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
-            this.sendMsgToActivity(null, TOAST, "发送登录信息到管理服务器成功");
+            this.sendMsgToActivity(null, WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.toast.name(), "发送登录信息到管理服务器成功");
         } else {
             queue.offer(wjProtocol);
         }
     }
 
     //发送聊天消息
-    private void sendChatMsg(ManageChatMsgTask manageChatMsgTask) {
+    private void sendChatMsg(String data_type, ManageChatMsgTask manageChatMsgTask) {
         ManageChatMsgAtParam manageChatMsgAtParam = new ManageChatMsgAtParam();
         manageChatMsgAtParam.setEventNo(manageChatMsgTask.getEventNo());
-        manageChatMsgAtParam.setMsg(manageChatMsgTask.getMsg());
+        manageChatMsgAtParam.setMsgContent(manageChatMsgTask.getMsgContent());
         manageChatMsgAtParam.setMsgType(manageChatMsgTask.getMsgType());
 
         String json = JSONObject.toJSONString(manageChatMsgAtParam);
@@ -413,7 +463,7 @@ public class ManageService extends Service implements NettyClientListener {
 
         if (nettyManager != null) {
             nettyManager.senMessage(wjProtocol);
-            this.sendMsgToActivity(null, TOAST, "发送聊天消息成功");
+            this.sendMsgToActivity(null, data_type, "发送聊天消息成功");
         } else {
             queue.offer(wjProtocol);
         }

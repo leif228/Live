@@ -20,6 +20,8 @@ public interface WebViewJavaScriptFunction {
 	public void toNetTcp(String ip);
 	public void toConfigNet(String ntype,String addr);
 
+	public void fromWeb(String param);
+
 	public enum WebViewWebSocketFuctionEnum {
 		toHeart,
 		toTcp,
@@ -42,6 +44,10 @@ public interface WebViewJavaScriptFunction {
 
 		nettyNetFileDownOver,
 		nettyNetGetDevListOver,
-		backNets;
+		backNets,
+		netBack,
+		manageBack,
+
+		toast;
 	}
 }
