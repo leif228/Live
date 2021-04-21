@@ -195,7 +195,7 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 LL.V("onPageFinished.url=" + url);
-                LL.V("onPageFinished.mobileBackWebParam=" + mobileBackWebParam);
+//                LL.V("onPageFinished.mobileBackWebParam=" + mobileBackWebParam);
 //                webView.loadUrl("javascript:fromMobile('" + mobileBackWebParam + "')");
 
 //                if (url.equals(mChatUrl) && fromTcp) {
@@ -512,10 +512,9 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
 //                TcpClient.sendMsgToManageService(webViewWebSocketFuctionEnum, data);
 //                break;
             case toAt:
-                ManageLightTask manageLightTask3 =   JSONObject.parseObject(data.toString(),ManageLightTask.class);
+                ManageLightTask manageLightTask3 = JSONObject.parseObject(data.toString(), ManageLightTask.class);
                 sendMsgToManageService(webViewWebSocketFuctionEnum.name(), manageLightTask3);
                 break;
-
 
 
             case toNetInfo:
@@ -524,30 +523,30 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                 break;
             case deviceComp:
                 NetDevCompFileTask netDevCompTask = JSONObject.parseObject(data.toString(), NetDevCompFileTask.class);
-                sendMsgToNetService(webViewWebSocketFuctionEnum.name(),netDevCompTask,"");
+                sendMsgToNetService(webViewWebSocketFuctionEnum.name(), netDevCompTask, "");
                 break;
             case saveDevice:
                 NetDevCompTask netDevCompTask2 = JSONObject.parseObject(data.toString(), NetDevCompTask.class);
-                sendMsgToNetService(webViewWebSocketFuctionEnum.name(),netDevCompTask2,"");
+                sendMsgToNetService(webViewWebSocketFuctionEnum.name(), netDevCompTask2, "");
                 break;
             case authOver:
                 NetDevCompFileTask netDevCompFileTask = JSONObject.parseObject(data.toString(), NetDevCompFileTask.class);
-                sendMsgToNetService(webViewWebSocketFuctionEnum.name(),netDevCompFileTask,"");
+                sendMsgToNetService(webViewWebSocketFuctionEnum.name(), netDevCompFileTask, "");
                 break;
             case toSearchNet:
-                sendMsgToNetService(webViewWebSocketFuctionEnum.name(),new NetSearchNetTask(),"");
+                sendMsgToNetService(webViewWebSocketFuctionEnum.name(), new NetSearchNetTask(), "");
                 break;
             case toNetTcp:
                 String ip = (String) data;
-                sendMsgToNetService(webViewWebSocketFuctionEnum.name(),new BaseTask(),ip);
+                sendMsgToNetService(webViewWebSocketFuctionEnum.name(), new BaseTask(), ip);
                 break;
             case toConfigNet:
                 NetConfigTask netDevCompTask3 = JSONObject.parseObject(data.toString(), NetConfigTask.class);
-                sendMsgToNetService(webViewWebSocketFuctionEnum.name(),netDevCompTask3,"");
+                sendMsgToNetService(webViewWebSocketFuctionEnum.name(), netDevCompTask3, "");
                 break;
             case toAtNet:
                 String at = (String) data;
-                sendMsgToNetService(webViewWebSocketFuctionEnum.name(),new BaseTask(),at);
+                sendMsgToNetService(webViewWebSocketFuctionEnum.name(), new BaseTask(), at);
                 break;
             default:
         }
@@ -593,6 +592,31 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
                         String nType = intent.getStringExtra(NetService.COUNTER_TYPE);
                         LL.V("nType:" + nType);
                         String nData = intent.getStringExtra(NetService.COUNTER_ELSE);
+
+                        WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum webViewWebSocketFuctionEnum = WebViewJavaScriptFunction.WebViewWebSocketFuctionEnum.valueOf(nType);
+
+                        switch (webViewWebSocketFuctionEnum) {
+                            case toNetInfo:
+                                break;
+                            case deviceComp:
+                                break;
+                            case saveDevice:
+                                break;
+                            case authOver:
+                                break;
+                            case toSearchNet:
+                                NetSearchNetDtos data = (NetSearchNetDtos) intent.getSerializableExtra(NetService.COUNTER);
+                                List<NetSearchNetDto> netSearchNetDtoList = data.getNetSearchNetDtos();
+                                nData = JSONObject.toJSONString(netSearchNetDtoList);
+                                break;
+                            case toNetTcp:
+                                break;
+                            case toConfigNet:
+                                break;
+                            case toAtNet:
+                                break;
+                            default:
+                        }
                         LL.V("nData:" + nData);
 
                         Toast.makeText(WebActivity.this, nData, Toast.LENGTH_LONG).show();
@@ -689,8 +713,9 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
 
         resultJson.put("type", type.name());
         resultJson.put("data", resutlObj);
-        mobileBackWebParam = resultJson.toJSONString();
+        String mobileBackWebParam = resultJson.toJSONString();
 
+//        webView.loadUrl(baseUrl);
         webView.loadUrl("javascript:fromMobile('" + mobileBackWebParam + "')");
     }
 
