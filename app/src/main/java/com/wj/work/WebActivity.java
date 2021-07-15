@@ -1,10 +1,15 @@
 package com.wj.work;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
+import android.os.Build;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
@@ -26,6 +31,8 @@ import com.littlegreens.netty.client.extra.task.NetInfoTask;
 import com.littlegreens.netty.client.extra.task.NetSearchNetDto;
 import com.littlegreens.netty.client.extra.task.NetSearchNetDtos;
 import com.littlegreens.netty.client.extra.task.NetSearchNetTask;
+import com.tencent.smtt.sdk.ValueCallback;
+import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
@@ -57,7 +64,8 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     private static final String mAddChatUrl = "http://192.168.4.86:8080/wujieweb/page/login/addchat.html";
     private static final String mIndexUrl = "http://192.168.4.15:8080/wujieweb/page/login/index.html";
     private static final String baseUrl = "http://192.168.4.86:8080/wujieweb/page/login/iframe.html";
-    //    private static final String mHomeUrl = "http://www.baidu.com";
+//    private static final String baseUrl = "http://192.168.4.17:8848/wujieweb/page/login/headportrait.html";
+//        private static final String baseUrl = "http://www.baidu.com";
     private static final String authUrl = "/shared/tcube_app/APP_code/APP_choose_device.php";
 
     private String mDataType = "";
@@ -74,6 +82,10 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
     private String netSearchNetDtos = "[]";
     private String newClubAt = "";
     private String mobileBackWebParam = "";
+
+    private ValueCallback<Uri> mUploadMessage;
+    private ValueCallback<Uri[]> mUploadCallbackAboveL;
+    private static int FILE_CHOOSER_RESULT_CODE = 0;
 
 
     @Override
@@ -217,8 +229,81 @@ public class WebActivity extends BaseMvpActivity<WebPresenter> implements WebVie
             }
 
         });
+        //android WebView如何响应H5中读取文件的请求，唤起文件浏览界面https://blog.csdn.net/yonghuming_jesse/article/details/80583392
+        WebChromeClient chromeClient = new WebChromeClient(){
+            // For Android < 3.0
+            public void openFileChooser(ValueCallback<Uri> valueCallback) {
+                mUploadMessage = valueCallback;
+                openImageChooserActivity();
+            }
+
+            // For Android  >= 3.0
+            public void openFileChooser(ValueCallback valueCallback, String acceptType) {
+                mUploadMessage = valueCallback;
+                openImageChooserActivity();
+            }
+
+            //For Android  >= 4.1
+            public void openFileChooser(ValueCallback<Uri> valueCallback, String acceptType, String capture) {
+                mUploadMessage = valueCallback;
+                openImageChooserActivity();
+            }
+
+            // For Android >= 5.0
+            @Override
+            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams) {
+                mUploadCallbackAboveL = filePathCallback;
+                openImageChooserActivity();
+                return true;
+            }
+        };
+        webView.setWebChromeClient(chromeClient);
 //        webView.loadUrl(mHomeUrl);
         webView.loadUrl(baseUrl);
+    }
+    private void openImageChooserActivity() {
+        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        i.setType("image/*");
+        startActivityForResult(Intent.createChooser(i, "Image Chooser"), FILE_CHOOSER_RESULT_CODE);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == FILE_CHOOSER_RESULT_CODE) {
+            if (null == mUploadMessage && null == mUploadCallbackAboveL) return;
+            Uri result = data == null || resultCode != RESULT_OK ? null : data.getData();
+            if (mUploadCallbackAboveL != null) {
+                onActivityResultAboveL(requestCode, resultCode, data);
+            } else if (mUploadMessage != null) {
+                mUploadMessage.onReceiveValue(result);
+                mUploadMessage = null;
+            }
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void onActivityResultAboveL(int requestCode, int resultCode, Intent intent) {
+        if (requestCode != FILE_CHOOSER_RESULT_CODE || mUploadCallbackAboveL == null)
+            return;
+        Uri[] results = null;
+        if (resultCode == Activity.RESULT_OK) {
+            if (intent != null) {
+                String dataString = intent.getDataString();
+                ClipData clipData = intent.getClipData();
+                if (clipData != null) {
+                    results = new Uri[clipData.getItemCount()];
+                    for (int i = 0; i < clipData.getItemCount(); i++) {
+                        ClipData.Item item = clipData.getItemAt(i);
+                        results[i] = item.getUri();
+                    }
+                }
+                if (dataString != null)
+                    results = new Uri[]{Uri.parse(dataString)};
+            }
+        }
+        mUploadCallbackAboveL.onReceiveValue(results);
+        mUploadCallbackAboveL = null;
     }
 
     @Override

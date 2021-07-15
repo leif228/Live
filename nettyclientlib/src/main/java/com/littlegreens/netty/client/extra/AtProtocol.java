@@ -65,12 +65,14 @@ public class AtProtocol {
                     int len = HexStringToInt(paramLen);
                     Log.v(WjDecoderHandler.TAG, "len：" + len);
                     index += paramLen.length();
-                    String param = tx.substring(index, index + len);
+//                    String param = tx.substring(index, index + len);
+//                    Log.v(WjDecoderHandler.TAG, "解码后的param为：" + param);
+//                    atProtocol.setPara(param);
+//                    index += param.length();
+//
+//                    String strend = tx.substring(index, index + END.length());//取出帧尾
+                    String param = tx.substring(index, tx.length()-END.length());
                     Log.v(WjDecoderHandler.TAG, "解码后的param为：" + param);
-                    atProtocol.setPara(param);
-                    index += param.length();
-
-                    String strend = tx.substring(index, index + END.length());//取出帧尾
                 }
 
                 return atProtocol;
